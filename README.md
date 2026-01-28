@@ -10,5 +10,6 @@ Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosna
 Tarin des pins - TAPI (*Spinus pinus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)\
 Durbec des sapins - DUSA (*Pinicola enucleator*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)\
 Sizerin flammé - SIFL (*Acanthis flammea*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)\
-Jaseur boréal - JABO (*Bombycilla garrulus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)\
+Jaseur boréal - JABO (*Bombycilla garrulus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)
+
 
