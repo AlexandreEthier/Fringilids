@@ -38,3 +38,5 @@ bague_modifie |>
     ecart_type = sd(Masse, na.rm = TRUE))
 
 
+# Commentaire
+
