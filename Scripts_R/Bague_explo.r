@@ -4,6 +4,7 @@ library(dplyr)
 library(ggplot2)
 # Importe le jeu de données
 bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
+bague <- read_excel("C:/Users/alexe/Fringilids/Data/Baguage.xlsx")
 
 #Créer une colonne "Condition" pour avoir le ratio (masse/aile)
 bague_modifie <- bague %>%
@@ -32,7 +33,9 @@ ggplot(bague_modifie, aes(x = Année, y = Condition, color = Espèce)) +
 bague_modifie |>
   group_by(Espèce) |>
   summarise(
-    masse_moyenne = mean(Masse, na.rm = TRUE))
+    masse_moyenne = mean(Masse, na.rm = TRUE),
+    ecart_type = sd(Masse, na.rm = TRUE))
+
 
 # Commentaire
 
