@@ -39,3 +39,18 @@ bague_modifie |>
 
 # Commentaire
 
+# Visualisation de l'écart-type
+
+ggplot(bague_modifie, aes(x = Année, y = Masse, color = Espèce)) +
+  geom_point(alpha = 0.6) + # ajoute les points
+  geom_smooth(se = FALSE) + #ajoute ligne pour suivre tendance
+  theme_minimal() +
+  labs(
+    title = "Masse en fonction des années",
+    y = "Masse",
+    color = "Espèce"
+  )
+
+
+
+
