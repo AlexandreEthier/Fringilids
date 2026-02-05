@@ -1,3 +1,4 @@
+#Berince commentaire
 #Librarie
 library(readxl)
 library(dplyr)
@@ -36,4 +37,6 @@ bague_modifie |>
     masse_moyenne = mean(Masse, na.rm = TRUE),
     ecart_type = sd(Masse, na.rm = TRUE))
 
+
+# Commentaire
 
