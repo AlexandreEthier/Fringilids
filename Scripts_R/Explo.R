@@ -35,18 +35,29 @@ abond <- abond %>%
   mutate(Ntot = sum(c(DUSA, JABO, SIFL, TAPI))) %>% 
   ungroup()
 
-ggplot(abond, aes(x = Annee, y = Ntot))+
-  geom_col(fill = "black")+
+plot_ntot <- ggplot(abond, aes(x = Annee, y = Ntot))+
+  geom_point()+
+  geom_line(stat = "identity", col = "red")
   geom_text(aes(label = Effort),
             vjust = -1,
             colour = "black")+
   labs(title = "Abondance totale des espèces cibles par année",
        x = "Année",
        y = "N. individus recensés")+
+  scale_y_continuous(limits = c(0, 300000),
+                     breaks = seq(0, 300000, 50000))+
   theme_classic()
+plot_ntot
 
+# DUSA
 
-
+plot_dusa_tot <- ggplot(abond, aes(x = Annee, y = DUSA))+
+  geom_point()+
+  labs(title = "Abondance du DUSA par année",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()
+plot_dusa_tot
 
 
 # BAGUAGE ####
