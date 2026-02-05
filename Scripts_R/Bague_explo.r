@@ -27,3 +27,10 @@ ggplot(bague_modifie, aes(x = Année, y = Condition, color = Espèce)) +
     color = "Espèce"
   )
 
+# Moyenne de masse corporelle
+
+bague_modifie |>
+  group_by(Espèce) |>
+  summarise(
+    masse_moyenne = mean(Masse, na.rm = TRUE))
+
