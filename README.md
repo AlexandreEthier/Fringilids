@@ -26,9 +26,23 @@
 
  Les modifications devraient apparaître en ligne 
 
+### 12/02
 
+Maxence : Tarin
+Adrien : Durbec 
+Bérince : Jaseur
+Alex : Sizerin
 
-  
+  standardiser les abondances par l'effort d'observation
+  checker abondance en fonction des classes ou proportion des classes
+  checker si l'effort de baguage est constant dans le temps
+
+  condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleur est la condition et inversement
+
+  code sur EXPLO.R
+
+  Sizerin : Faire graphique abondance annuelle dans le même graphique
+
 
 
 
