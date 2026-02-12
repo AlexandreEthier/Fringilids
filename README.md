@@ -31,7 +31,7 @@
 Maxence : Tarin\
 Adrien : Durbec\
 Bérince : Jaseur\
-Alex : Sizerin\
+Alex : Sizerin
 
   standardiser les abondances par l'effort d'observation
   checker abondance en fonction des classes ou proportion des classes
@@ -42,6 +42,7 @@ Alex : Sizerin\
   code sur EXPLO.R
 
   Sizerin : Faire graphique abondance annuelle dans le même graphique
+
 
 
 
