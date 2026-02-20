@@ -1,7 +1,14 @@
 ### RÉPOSITOIRE GIT *FRINGILIDS*
-<u>Contacts</u>
+
+<ins>Contacts</ins>\
 Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
 Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
+
+<ins>Tâches</ins>\
+Maxence : Tarin\
+Adrien : Durbec\
+Bérince : Jaseur\
+Alex : Sizerin
 
 - - - 
 #### MARCHE À SUIVRE
@@ -58,6 +65,7 @@ Alex : Sizerin
   code sur EXPLO.R
 
   Sizerin : Faire graphique abondance annuelle dans le même graphique
+
 
 
 
