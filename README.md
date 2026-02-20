@@ -28,9 +28,9 @@
 
 ### 12/02
 
-Maxence : Tarin
-Adrien : Durbec 
-Bérince : Jaseur
+Maxence : Tarin\
+Adrien : Durbec\
+Bérince : Jaseur\
 Alex : Sizerin
 
   standardiser les abondances par l'effort d'observation
@@ -42,6 +42,8 @@ Alex : Sizerin
   code sur EXPLO.R
 
   Sizerin : Faire graphique abondance annuelle dans le même graphique
+
+
 
 
 
