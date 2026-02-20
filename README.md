@@ -1,11 +1,8 @@
 ### RÉPOSITOIRE GIT *FRINGILIDS*
-- - - 
-#### DOCUMENTATION
-- HappyGitwithR -> Lien utile pour faire le pont entre Git et R + toutes les commandes Git
-[HappyGitwithR](https://happygitwithr.com/git-commands)
+<u>Contacts</u>
+Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
+Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
 
-- Git help -> Documentation git
-[Git help](https://git-scm.com/book/en/v2/Getting-Started-Getting-Help)
 - - - 
 #### MARCHE À SUIVRE
 *Ne pas oublier d'avoir fait le lien entre R et Git. Vous devez travailler sur le projet Fringilids.Rproj*\
@@ -28,15 +25,22 @@
   4- Faire un commit -> `git commit -m "Un message de commit"`\
   5- Envoyer le commit en ligne -> `git push`
 
- Les modifications devraient apparaître en ligne 
-
-#### INFORMATIONS BD
-Ressources utiles
+ Les modifications devraient apparaître en ligne
+- - - 
+#### DOCUMENTATION
+Ressources oiseaux
 - Pyle, P. 1997. Identification Guide to North American Birds, Part 1, Slate Creek Press, Bolinas, California, 732 p.
 - Tarin des pins - TAPI (*Spinus pinus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)
 - Durbec des sapins - DUSA (*Pinicola enucleator*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)
 - Sizerin flammé - SIFL (*Acanthis flammea*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)
 - Jaseur boréal - JABO (*Bombycilla garrulus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)
+
+Ressources Git
+- HappyGitwithR -> Lien utile pour faire le pont entre Git et R + toutes les commandes Git
+[HappyGitwithR](https://happygitwithr.com/git-commands)
+- Git help -> Documentation git
+[Git help](https://git-scm.com/book/en/v2/Getting-Started-Getting-Help)
+
 
 ### 12/02
 
@@ -54,6 +58,7 @@ Alex : Sizerin
   code sur EXPLO.R
 
   Sizerin : Faire graphique abondance annuelle dans le même graphique
+
 
 
 
