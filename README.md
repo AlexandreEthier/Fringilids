@@ -8,7 +8,11 @@
 [Git help](https://git-scm.com/book/en/v2/Getting-Started-Getting-Help)
 - - - 
 #### MARCHE À SUIVRE
-*Ne pas oublier d'avoir fait le lien entre R et Git. Vous devez travailler sur le projet Fringilids.Rproj*
+*Ne pas oublier d'avoir fait le lien entre R et Git. Vous devez travailler sur le projet Fringilids.Rproj*\
+
+*S'assurer de changer les virgules (",") en point (".") dans les fichiers Excel car R ne les reconnaît pas*
+
+*Formatage des bases de données dans le "header" du script R - IMPORTANT de faire rouler ces lignes de code pour chaque personne*
 
 ##### Actions à réaliser dans le terminal
 
@@ -26,6 +30,14 @@
 
  Les modifications devraient apparaître en ligne 
 
+#### INFORMATIONS BD
+Ressources utiles
+- [Guide Pyle](Pyle, P. 1997. Identification Guide to North American Birds, Part 1, Slate Creek Press, Bolinas, California, 732 p.)
+- Tarin des pins - TAPI (*Spinus pinus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)\
+- Durbec des sapins - DUSA (*Pinicola enucleator*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)\
+- Sizerin flammé - SIFL (*Acanthis flammea*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)\
+- Jaseur boréal - JABO (*Bombycilla garrulus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)
+
 ### 12/02
 
 Maxence : Tarin\
@@ -42,6 +54,7 @@ Alex : Sizerin
   code sur EXPLO.R
 
   Sizerin : Faire graphique abondance annuelle dans le même graphique
+
 
 
 
