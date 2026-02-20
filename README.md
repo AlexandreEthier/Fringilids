@@ -1,18 +1,22 @@
 ### RÉPOSITOIRE GIT *FRINGILIDS*
 
-<ins>Contacts</ins>\
+##### Contacts
 Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
 Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
 
-<ins>Tâches</ins>\
+##### Tâches
 Maxence : Tarin\
 Adrien : Durbec\
 Bérince : Jaseur\
 Alex : Sizerin
 
+standardiser les abondances par l'effort d'observation
+checker abondance en fonction des classes ou proportion des classes
+checker si l'effort de baguage est constant dans le temps
+condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleur est la condition et inversement
 - - - 
 #### MARCHE À SUIVRE
-*Ne pas oublier d'avoir fait le lien entre R et Git. Vous devez travailler sur le projet Fringilids.Rproj*\
+*Ne pas oublier d'avoir fait le lien entre R et Git. Vous devez travailler sur le projet Fringilids.Rproj*
 
 *S'assurer de changer les virgules (",") en point (".") dans les fichiers Excel car R ne les reconnaît pas*
 
@@ -35,39 +39,18 @@ Alex : Sizerin
  Les modifications devraient apparaître en ligne
 - - - 
 #### DOCUMENTATION
-Ressources oiseaux
+##### Ressources oiseaux
 - Pyle, P. 1997. Identification Guide to North American Birds, Part 1, Slate Creek Press, Bolinas, California, 732 p.
 - Tarin des pins - TAPI (*Spinus pinus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)
 - Durbec des sapins - DUSA (*Pinicola enucleator*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)
 - Sizerin flammé - SIFL (*Acanthis flammea*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)
 - Jaseur boréal - JABO (*Bombycilla garrulus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)
 
-Ressources Git
+##### Ressources Git
 - HappyGitwithR -> Lien utile pour faire le pont entre Git et R + toutes les commandes Git
 [HappyGitwithR](https://happygitwithr.com/git-commands)
 - Git help -> Documentation git
 [Git help](https://git-scm.com/book/en/v2/Getting-Started-Getting-Help)
-
-
-### 12/02
-
-Maxence : Tarin\
-Adrien : Durbec\
-Bérince : Jaseur\
-Alex : Sizerin
-
-  standardiser les abondances par l'effort d'observation
-  checker abondance en fonction des classes ou proportion des classes
-  checker si l'effort de baguage est constant dans le temps
-
-  condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleur est la condition et inversement
-
-  code sur EXPLO.R
-
-  Sizerin : Faire graphique abondance annuelle dans le même graphique
-
-
-
 
 
 
