@@ -1,6 +1,9 @@
 
 # Chargement des packages -------------------------------------------------
 
+#install.packages("cowplot")
+
+library(cowplot)
 library(readxl)
 library(dplyr)
 library(ggplot2)
@@ -148,44 +151,167 @@ plot_std <- ggplot(abond, aes(x = Annee, y = abond_std, group = Espece, color = 
         panel.background = element_blank())
 plot_std
 
+# Graphique condition/espèce/année
+
+plot_condition <- ggplot(bague_modifie, aes(x = Année, y = Condition, group = Espèce, color = Espèce))+
+  geom_point(size = 3)+
+  labs(title = "Abondance standardisée des espèces cibles par année",
+       x = "Année",
+       y = "N. d'oiseaux/h",
+       color = "Espèce")+
+  theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        panel.background = element_blank())
+plot_condition
+
+# Calcule la moyenne de la condition par espèce et par année
+bague_moyenne <- bague_modifie %>%
+  group_by(Espèce, Année) %>%          # Regroupe par espèce et année
+  summarise(Condition_moyenne = mean(Condition, na.rm = TRUE),
+            Condition_sd = sd(Condition, na.rm = TRUE),  
+            Condition_se = Condition_sd / sqrt(n()))  
+
+
+plot_condition <- ggplot(bague_moyenne, aes(x = Année, y = Condition_moyenne, group = Espèce, color = Espèce)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1) +  
+  labs(title = "Condition moyenne par espèce et par année",
+       x = "Année",
+       y = "Condition moyenne",
+       color = "Espèce") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )+
+  geom_errorbar(aes(ymin = Condition_moyenne - Condition_se, ymax = Condition_moyenne + Condition_se), width = 0.2)
+
+print(plot_condition) # ne parait pas beaucoup évoluer dans le temps
+
 
 # DUSA (Adrien) -----------------------------------------------------------
 
+plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+
+  labs(title = "Abondance du DUSA par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_dusa_tot
 
 
+plot_condition_DUSA <- ggplot(bague_moyenne[bague_moyenne$Espèce=="DURBEC DES SAPINS",], aes(x = Année, y = Condition_moyenne, group=1)) +
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+  
+  labs(title = "Condition moyenne du durbec des sapins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )+
+  geom_errorbar(aes(ymin = Condition_moyenne - Condition_se, ymax = Condition_moyenne + Condition_se), width = 0.2, col="orange")
+print(plot_condition_DUSA) # il y a un trou entre 97-99, 99-01 et 2001-2007
 
+plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+
+  labs(title = "Abondance du DUSA par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_dusa_tot
+
+# combine les deux graphique :
+plot_grid(plot_dusa_tot, plot_condition_DUSA, ncol = 1) #graphique bof
 
 
 
 # JABO (Bérince) ----------------------------------------------------------
 
-
-
-
-
+plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkgreen")+
+  geom_path(linewidth = 1, col = "chartreuse4")+
+  labs(title = "Abondance du JABO par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_jabo_tot
 
 
 
 # SIFL (Alex) -------------------------------------------------------------
 
-
 SIFL <- abond[abond$Espece == "SIFL",]
 SIFL
 
-plot_sifl_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, group = 1))+
-  geom_point()+
-  geom_line()+
-  labs(title = "Abondance standardisée du SIFL par année",
+plot_sifl_tot <- ggplot(abond[abond$Espece=="SIFL",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_path(linewidth = 1, col = "turquoise3")+
+  labs(title = "Abondance du SIFL par heure d'observation",
        x = "Année",
-       y = "N. individus recensés * heure-1")+
-  theme_classic()
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_sifl_tot
 
 
 
 # TAPI (Maxence) ----------------------------------------------------------
 
+plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "violetred4")+
+  geom_path(linewidth = 1, col = "violetred3")+
+  labs(title = "Abondance du TAPI par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_tapi_tot
+
+
+# Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
+
+# Avoir les données d'abondance avec condition
+jointure <- left_join(
+  bague_modifie, 
+  abondance, 
+  by = c("Année" = "Année") )
+
+# D'abord filtrer pour garder seulement les Tarin
+jointure_tarin <- jointure[jointure$Espèce == "Tarin des pins", ]
+
+# Renommer la colonne
+names(jointure_tarin)[names(jointure_tarin) == "Tarin des pins_std"] <- "Tarin_std"
+
+#Conserver les colonnes utiles
+jointure_tarin <- jointure_tarin[, c("Année", "Espèce", "Condition", "groupe", "Effort", "Tarin des pins_std")]
+
+# Ensuite faire le modèle
+mod <- lm(Condition ~ groupe + Année + Tarin_std, data=jointure_tarin)
+summary(mod)
+
+par(mfrow = c(2, 2))
+plot(mod)
+
+# Visuellement les conditions semblent respectés
+
+# Tâche #4: Voir pour chaque année la proportion des classes selon les années
+
+
+
+# Analyse -----------------------------------------------------------------
+
+# Combine les 4 graphiques en 2x2
+plot_grid(plot_dusa_tot, plot_jabo_tot, plot_sifl_tot, plot_tapi_tot, ncol = 2)
+
 # Créer le dataframe NAO complet
+
 # Variable explicative
 # Créer le dataframe
 nao_data <- data.frame(
@@ -365,48 +491,6 @@ nao_data <- data.frame(
     -0.36
   )
 )
-
-
-# Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
-
-# Avoir les données d'abondance avec condition
-jointure <- left_join(
-  bague_modifie, 
-  abondance, 
-  by = c("Année" = "Année") )
-
-# D'abord filtrer pour garder seulement les Tarin
-jointure_tarin <- jointure[jointure$Espèce == "Tarin des pins", ]
-
-# Renommer la colonne
-names(jointure_tarin)[names(jointure_tarin) == "Tarin des pins_std"] <- "Tarin_std"
-
-#Conserver les colonnes utiles
-jointure_tarin <- jointure_tarin[, c("Année", "Espèce", "Condition", "groupe", "Effort", "Tarin des pins_std")]
-
-# Ensuite faire le modèle
-mod <- lm(Condition ~ groupe + Année + Tarin_std, data=jointure_tarin)
-summary(mod)
-
-par(mfrow = c(2, 2))
-plot(mod)
-
-# Visuellement les conditions semblent respectés
-
-# Tâche #4: Voir pour chaque année la proportion des classes selon les années
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
