@@ -1,46 +1,124 @@
-setwd("C:/Users/alexe/Fringilids")
 
-# Chargement des packages ####
+# Chargement des packages -------------------------------------------------
 
 library(readxl)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
 
+# Chargement des données ---------------------------------------------------
 
-################################################################################
-# EXPLORATION DES DONNÉES
-################################################################################
+# IMPORTANT - Spécifier votre propre chemin qui mène aux documents
+# IMPORTANT - SVP changez les virgules (,) en points (.) à même les deux fichiers Excel
 
-# ABONDANCE #####
+# Maxence:/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx
+#         /Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx
 
-# Chargement des données
+# Alex: C:/Users/alexe/Fringilids/Data/Abondance.xlsx
+#       C:/Users/alexe/Fringilids/Data/Baguage.xlsx
+setwd("C:/Users/alexe/Fringilids")
 
-abond <- read_excel("C:/Users/alexe/Fringilids/Data/Abondance.xlsx") %>% # Standardisation des en-têtes -> Sans espace, sans accents
+# Bérince:
+#
+
+# Adrien:
+#
+
+
+# Formatage - Abondance ---------------------------------------------------------------
+
+abond <- read_excel("") %>% # Ajoutez votre propre chemin
   rename(Annee = "Année", 
          DUSA = "Durbec des sapins", 
          JABO = "Jaseur boréal", 
          SIFL = "Sizerin flammé",
          TAPI = "Tarin des pins")
 
-str(abond)
-abond$Annee <- as.factor(abond$Annee)
-
-# Si on veut "tidyr" le dataframe (C'est-à-dire le mettre en une seule colonne)
-
 abond <- abond %>% 
-  gather(abond, key = "Espece", DUSA:TAPI)  # Fct. du package "tidyr"
-
-abond # Dataframe en une seule colonne
-      # 120 observations (1 abondance/année x 30 ans x 4 espèces)
-
-abond <- abond %>% 
-  mutate(abond_std = abond/Effort) # Ajout de l'effort standardisé
-
+  gather(abond, key = "Espece", DUSA:TAPI) %>%   # Dataframe en une seule colonne
+  mutate(abond_std = abond/Effort)               # Ajout de l'abondance standardisée
+                                                 
+abond$Annee <- as.integer(abond$Annee)
+abond$Effort <- as.integer(abond$Effort)
 abond$abond_std <- as.numeric(abond$abond_std)
 abond$Espece <- as.factor(abond$Espece)
 
 str(abond)
+
+
+# Formatage - Baguage -----------------------------------------------------------------
+
+bague <- read_excel("") %>% # Ajoutez votre propre chemin
+  rename(Espece = "Espèce",
+         Abrv = "Espèce (abréviation)",
+         Age = "Âge",
+         Annee = "Année")
+
+head(bague)
+
+str(bague)
+
+bague$Age <- as.factor(bague$Age)
+bague$Sexe <- as.factor(bague$Sexe)
+bague$Aile <- as.numeric(bague$Aile)
+bague$Gras <- as.factor(bague$Gras)
+bague$Queue <- as.numeric(bague$Queue)
+bague$Masse <- as.numeric(bague$Masse)
+bague$Annee <- as.integer(bague$Annee)
+
+# Vérification des colonnes de la bd
+
+# Noms d'espèce
+xtabs(~ Espece, data = bague) # Standardiser les noms
+
+bague$Espece <- replace(bague$Espece, bague$Espece %in% "DURBEC DES SAPINS", "Durbec des sapins")
+bague$Espece <- replace(bague$Espece, bague$Espece %in% "TARIN DES PINS", "Tarin des pins")
+bague$Espece <- replace(bague$Espece,  bague$Espece %in% "SIZERIN FLAMMÉ", "Sizerin flammé")
+
+
+# Abréviation
+xtabs(~ Abrv, data = bague) # Standardiser TAPI
+
+bague$Abrv <- replace(bague$Abrv, bague$Abrv %in% "tapi", "TAPI")
+
+
+# Âge
+xtabs(~ Age, data = bague) # Pooler les âges (HY vs AHY)
+
+bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")  # Unknown
+bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY") # Juv (Hatch year)
+bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY") # Non-juv (After-Hatch Year)
+
+
+# Sexe
+xtabs(~ Sexe, data = bague) # Standardiser sexe
+
+bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "u", "U") # Unknown
+bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "f", "F") # Femelle
+bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "m", "M") # Mâle
+
+
+# Site
+xtabs(~ Site, data = bague) # Exclusion des sites != "Dunes"
+
+bague <- bague %>% 
+  filter(Site == "Dunes") # Sélection des sites de capture aux Dunes de Tadoussac
+
+
+# Manipulation df
+
+bague <- bague %>% 
+  select(-Préfixe, -Suffixe, -Site, - Municipalité) %>%  # Retrait des colonnes non nécessaires
+  filter(Aile != "NA") %>%                               # Retrait des données manquantes pour "Aile"
+  filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
+  mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
+
+str(bague) # Tout propre
+
+
+# Exploration des données -------------------------------------------------
+
+# ABONDANCE
 
 # Visualisation graphique de l'abondance des 4 espèces en fonction des années
 
@@ -71,33 +149,42 @@ plot_std <- ggplot(abond, aes(x = Annee, y = abond_std, group = Espece, color = 
 plot_std
 
 
-# Graphique avec l'effort standardisé donne exactement la même chose
+# DUSA (Adrien) -----------------------------------------------------------
 
 
-# DUSA
 
-plot_dusa_tot <- ggplot(abond, aes(x = Annee, y = DUSA))+
+
+
+
+
+# JABO (Bérince) ----------------------------------------------------------
+
+
+
+
+
+
+
+
+# SIFL (Alex) -------------------------------------------------------------
+
+
+SIFL <- abond[abond$Espece == "SIFL",]
+SIFL
+
+plot_sifl_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, group = 1))+
   geom_point()+
   geom_line()+
-  labs(title = "Abondance du DUSA par année",
+  labs(title = "Abondance standardisée du SIFL par année",
        x = "Année",
-       y = "N. individus recensés")+
+       y = "N. individus recensés * heure-1")+
   theme_classic()
-plot_dusa_tot
+plot_sifl_tot
 
-xtabs(Effort ~ Annee, data = abond)
 
-################################################################################
-# EXPLORATION DES DONNÉES (Maxence=Tarin)
 
-#Importe le jeu de données
-bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
-abondance <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
+# TAPI (Maxence) ----------------------------------------------------------
 
-# Regarde le format du jeu de données
-str(bague)
-str(abondance)
-################################################################################
 # Créer le dataframe NAO complet
 # Variable explicative
 # Créer le dataframe
@@ -279,26 +366,6 @@ nao_data <- data.frame(
   )
 )
 
-################################################################################
-
-# Modifie les noms
-bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "durbec des sapins"] <- "Durbec des sapins"
-bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "tarin des pins"] <- "Tarin des pins"
-bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "sizerin flammé"] <- "Sizerin flammé"
-
-# Tâche #1: Standardiser les abondances par effort d'échantillonnage
-
-# Créer de nouvelles colonnes standardisées
-abondance$"Durbec des sapins_std" <- abondance$"Durbec des sapins" /abondance$Effort
-abondance$"Jaseur boréal_std"<- abondance$"Jaseur boréal"/ abondance$Effort
-abondance$"Sizerin flammé_std" <- abondance$"Sizerin flammé"/abondance$Effort
-abondance$"Tarin des pins_std" <- abondance$"Tarin des pins"/abondance$Effort
-
-# Tâche #2: Mesurer la condition physique
-bague_modifie <- bague %>%
-  mutate('Condition' = (Aile / Masse))
-str(bague_modifie)
-unique(bague_modifie$Espèce)
 
 # Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
 
@@ -328,15 +395,6 @@ plot(mod)
 
 # Tâche #4: Voir pour chaque année la proportion des classes selon les années
 
-#HY: Hatch Year and Local
-#AHY: After Hatch Year
-#Il y a vraiment plus de groupe que je pensais (je vais attendre de faire l'analyse)
-
-# Créer un nouveau groupe et remplacer "Local" par "AHY"
-bague_modifie$groupe <- bague_modifie$Âge
-bague_modifie$groupe[bague_modifie$groupe == "Local"] <- "AHY"
-
-################################################################################
 
 
 
