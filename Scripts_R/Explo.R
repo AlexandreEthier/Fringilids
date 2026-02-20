@@ -77,17 +77,57 @@ plot_std
 
 
 # DUSA
-
-plot_dusa_tot <- ggplot(abond, aes(x = Annee, y = DUSA))+
-  geom_point()+
-  geom_line()+
-  labs(title = "Abondance du DUSA par année",
+plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+
+  labs(title = "Abondance du DUSA par heure d'observation",
        x = "Année",
        y = "N. individus recensés")+
-  theme_classic()
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_dusa_tot
 
-xtabs(Effort ~ Annee, data = abond)
+# JABO
+plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkgreen")+
+  geom_path(linewidth = 1, col = "chartreuse4")+
+  labs(title = "Abondance du JABO par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_jabo_tot
+
+# SIFL
+plot_sifl_tot <- ggplot(abond[abond$Espece=="SIFL",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_path(linewidth = 1, col = "turquoise3")+
+  labs(title = "Abondance du SIFL par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_sifl_tot
+
+# TAPI
+plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "violetred4")+
+  geom_path(linewidth = 1, col = "violetred3")+
+  labs(title = "Abondance du TAPI par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_tapi_tot
+
+install.packages("cowplot")
+library(cowplot)
+
+# Combine les 4 graphiques en 2x2
+plot_grid(plot_dusa_tot, plot_jabo_tot, plot_sifl_tot, plot_tapi_tot, ncol = 2)
+
+
+xtabs(Effort ~ Annee, data = abond) # ?
 
 ################################################################################
 # EXPLORATION DES DONNÉES (Maxence=Tarin)
@@ -99,8 +139,18 @@ abondance <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondanc
 # Regarde le format du jeu de données
 str(bague)
 str(abondance)
+bague$Espèce<- as.factor(bague$Espèce)
+bague$`Espèce (abréviation)` <- as.factor(bague$`Espèce (abréviation)` )
+bague$Âge<- as.factor(bague$Âge)
+bague$Sexe<-as.factor(bague$Sexe)
+bague$Gras<-as.factor(bague$Gras)
+bague$Site<-as.factor(bague$Site)
+bague$Municipalité<-as.factor(bague$Municipalité)
+bague$Année<-as.factor(bague$Année)
+summary(bague)
+
 ################################################################################
-# Créer le dataframe NAO complet
+#### Créer le dataframe NAO complet ####
 # Variable explicative
 # Créer le dataframe
 nao_data <- data.frame(
@@ -282,11 +332,30 @@ nao_data <- data.frame(
 )
 
 ################################################################################
-
+#### Condition ####
 # Modifie les noms
 bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "durbec des sapins"] <- "Durbec des sapins"
+bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "durbec des sapins"] <- "DURBEC DES SAPINS"
+
 bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "tarin des pins"] <- "Tarin des pins"
+bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "tarin des pins"] <- "TARIN DES PINS"
+
 bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "sizerin flammé"] <- "Sizerin flammé"
+bague_modifie$Espèce[tolower(bague_modifie$Espèce) == "sizerin flammé"] <- "SIZERIN FLAMMÉ"
+
+bague_modifie$`Espèce (abréviation)` [tolower(bague_modifie$`Espèce (abréviation)` ) == "TAPI"] <- "tapi"
+
+
+bague_modifie$Espèce<- as.factor(bague_modifie$Espèce)
+bague_modifie$`Espèce (abréviation)` <- as.factor(bague_modifie$`Espèce (abréviation)` )
+bague_modifie$Âge<- as.factor(bague_modifie$Âge)
+bague_modifie$Sexe<-as.factor(bague_modifie$Sexe)
+bague_modifie$Gras<-as.factor(bague_modifie$Gras)
+bague_modifie$Site<-as.factor(bague_modifie$Site)
+bague_modifie$Municipalité<-as.factor(bague_modifie$Municipalité)
+bague_modifie$Année<-as.factor(bague_modifie$Année)
+summary((bague_modifie))
+
 
 # Tâche #1: Standardiser les abondances par effort d'échantillonnage
 
@@ -337,6 +406,75 @@ plot(mod)
 # Créer un nouveau groupe et remplacer "Local" par "AHY"
 bague_modifie$groupe <- bague_modifie$Âge
 bague_modifie$groupe[bague_modifie$groupe == "Local"] <- "AHY"
+
+
+################"##########################################
+## Graphique condition/espèce/année
+
+plot_condition <- ggplot(bague_modifie, aes(x = Année, y = Condition, group = Espèce, color = Espèce))+
+  geom_point(size = 3)+
+  labs(title = "Abondance standardisée des espèces cibles par année",
+       x = "Année",
+       y = "N. d'oiseaux/h",
+       color = "Espèce")+
+  theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        panel.background = element_blank())
+plot_condition
+
+library(dplyr)
+
+# Calcule la moyenne de la condition par espèce et par année
+bague_moyenne <- bague_modifie %>%
+  group_by(Espèce, Année) %>%          # Regroupe par espèce et année
+  summarise(Condition_moyenne = mean(Condition, na.rm = TRUE),
+            Condition_sd = sd(Condition, na.rm = TRUE),  
+            Condition_se = Condition_sd / sqrt(n()))  
+
+
+plot_condition <- ggplot(bague_moyenne, aes(x = Année, y = Condition_moyenne, group = Espèce, color = Espèce)) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 1) +  
+  labs(title = "Condition moyenne par espèce et par année",
+       x = "Année",
+       y = "Condition moyenne",
+       color = "Espèce") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )+
+  geom_errorbar(aes(ymin = Condition_moyenne - Condition_se, ymax = Condition_moyenne + Condition_se), width = 0.2)
+
+print(plot_condition) # ne parait pas beaucoup évoluer dans le temps
+
+## DUSA 
+plot_condition_DUSA <- ggplot(bague_moyenne[bague_moyenne$Espèce=="DURBEC DES SAPINS",], aes(x = Année, y = Condition_moyenne, group=1)) +
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+  
+  labs(title = "Condition moyenne du durbec des sapins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )+
+  geom_errorbar(aes(ymin = Condition_moyenne - Condition_se, ymax = Condition_moyenne + Condition_se), width = 0.2, col="orange")
+print(plot_condition_DUSA) # il y a un trou entre 97-99, 99-01 et 2001-2007
+
+plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+
+  labs(title = "Abondance du DUSA par heure d'observation",
+       x = "Année",
+       y = "N. individus recensés")+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_dusa_tot
+
+# combine les deux graphique :
+plot_grid(plot_dusa_tot, plot_condition_DUSA, ncol = 1) #graphique bof
 
 ################################################################################
 
