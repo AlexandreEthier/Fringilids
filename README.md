@@ -32,7 +32,7 @@
 
 #### INFORMATIONS BD
 Ressources utiles
-- [Guide Pyle](Pyle, P. 1997. Identification Guide to North American Birds, Part 1, Slate Creek Press, Bolinas, California, 732 p.)
+- Pyle, P. 1997. Identification Guide to North American Birds, Part 1, Slate Creek Press, Bolinas, California, 732 p.
 - Tarin des pins - TAPI (*Spinus pinus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)
 - Durbec des sapins - DUSA (*Pinicola enucleator*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)
 - Sizerin flammé - SIFL (*Acanthis flammea*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)
@@ -54,6 +54,7 @@ Alex : Sizerin
   code sur EXPLO.R
 
   Sizerin : Faire graphique abondance annuelle dans le même graphique
+
 
 
 
