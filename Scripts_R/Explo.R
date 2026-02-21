@@ -30,7 +30,7 @@ setwd("C:/Users/alexe/Fringilids")
 
 # Formatage - Abondance ---------------------------------------------------------------
 
-abond <- read_excel("") %>% # Ajoutez votre propre chemin
+abond <- read_excel("C:/Users/alexe/Fringilids/Data/Abondance.xlsx") %>% # Ajoutez votre propre chemin
   rename(Annee = "Année", 
          DUSA = "Durbec des sapins", 
          JABO = "Jaseur boréal", 
@@ -51,7 +51,7 @@ str(abond)
 
 # Formatage - Baguage -----------------------------------------------------------------
 
-bague <- read_excel("") %>% # Ajoutez votre propre chemin
+bague <- read_excel("C:/Users/alexe/Fringilids/Data/Baguage.xlsx") %>% # Ajoutez votre propre chemin
   rename(Espece = "Espèce",
          Abrv = "Espèce (abréviation)",
          Age = "Âge",
@@ -60,6 +60,8 @@ bague <- read_excel("") %>% # Ajoutez votre propre chemin
 head(bague)
 
 str(bague)
+
+xtabs(~ bague$Age)
 
 bague$Age <- as.factor(bague$Age)
 bague$Sexe <- as.factor(bague$Sexe)
@@ -92,6 +94,8 @@ bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")  # Unknown
 bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY") # Juv (Hatch year)
 bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY") # Non-juv (After-Hatch Year)
 
+levels(bague$Age) # Les catégories existent encore
+bague$Age <- droplevels(bague$Age) # Clean-up des levels
 
 # Sexe
 xtabs(~ Sexe, data = bague) # Standardiser sexe
@@ -99,6 +103,9 @@ xtabs(~ Sexe, data = bague) # Standardiser sexe
 bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "u", "U") # Unknown
 bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "f", "F") # Femelle
 bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "m", "M") # Mâle
+
+levels(bague$Sexe)
+bague$Sexe <- droplevels(bague$Sexe)
 
 
 # Site
@@ -250,15 +257,46 @@ plot_jabo_tot
 SIFL <- abond[abond$Espece == "SIFL",]
 SIFL
 
-plot_sifl_tot <- ggplot(abond[abond$Espece=="SIFL",], aes(x = Annee, y = abond_std, group =1))+
+SIFL <- SIFL %>% 
+  group_by(Annee) %>% 
+  filter(between(Annee, 2007, 2025))
+
+bague_SIFL <- bague[bague$Espece == "Sizerin flammé",] # Ne garde que SIFL
+bague_SIFL <- bague_SIFL[bague_SIFL$Age != "U",] # Ne garde que les individus âgés
+
+bague_SIFL <- bague_SIFL %>% # Regroupement des oiseaux bagués/année
+  group_by(Annee) %>% 
+  filter(between(Annee, 2007, 2025)) # Baguage plus régulier à partir de 2006 (ou 2007, à vérifier)
+
+plot_sifl_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, group = 1))+
   geom_point(size = 3, col = "turquoise4")+
   geom_path(linewidth = 1, col = "turquoise3")+
   labs(title = "Abondance du SIFL par heure d'observation",
        x = "Année",
-       y = "N. individus recensés")+
+       y = "N. individus recensés * heure-1")+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_sifl_tot
+
+# Proportion d'individus bagués par année 
+
+bague_annuel_SIFL <- bague_SIFL %>% # Nb. de SIFL bagués / année
+  summarise(n())
+
+ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
+
+n_bague_ann_SIFL <- as.data.frame(ann) %>% 
+  rename(Annee = "ann") %>% 
+  left_join(bague_annuel_SIFL, by = "Annee") %>% 
+  cbind(n_bague_ann_SIFL$`n()`/SIFL$abond) %>%            # Calcul la proportion de SIFL bagué par année
+  rename(prop_bague = "n_bague_ann_SIFL$`n()`/SIFL$abond")
+
+
+# Condition jeunes vs adultes par année
+
+ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  theme_classic()
 
 
 
