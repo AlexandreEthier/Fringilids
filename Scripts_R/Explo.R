@@ -25,8 +25,17 @@ setwd("C:/Users/alexe/Fringilids")
 #
 
 # Adrien:
-#
-
+abond <- read_excel("Abondance.xlsx") %>% 
+rename(Annee = "Année", 
+       DUSA = "Durbec des sapins", 
+       JABO = "Jaseur boréal", 
+       SIFL = "Sizerin flammé",
+       TAPI = "Tarin des pins")
+bague <- read_excel("Baguage.xlsx") %>% 
+  rename(Espece = "Espèce",
+         Abrv = "Espèce (abréviation)",
+         Age = "Âge",
+         Annee = "Année")
 
 # Formatage - Abondance ---------------------------------------------------------------
 
@@ -201,9 +210,9 @@ print(plot_condition) # ne parait pas beaucoup évoluer dans le temps
 plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkorange1")+
   geom_path(linewidth = 1, col = "orange")+
-  labs(title = "Abondance du DUSA par heure d'observation",
+  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
        x = "Année",
-       y = "N. individus recensés")+
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_dusa_tot
@@ -271,9 +280,9 @@ ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)
 plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkgreen")+
   geom_path(linewidth = 1, col = "chartreuse4")+
-  labs(title = "Abondance du JABO par heure d'observation",
+  labs(title = "Abondance du Jaseur Boréal par heure d'observation",
        x = "Année",
-       y = "N. individus recensés * heure-1")+
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_jabo_tot
@@ -299,9 +308,9 @@ bague_SIFL <- bague_SIFL %>% # Regroupement des oiseaux bagués/année
 plot_sifl_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, group = 1))+
   geom_point(size = 3, col = "turquoise4")+
   geom_path(linewidth = 1, col = "turquoise3")+
-  labs(title = "Abondance du SIFL par heure d'observation",
+  labs(title = "Abondance du Sizerin Flammé par heure d'observation",
        x = "Année",
-       y = "N. individus recensés * heure-1")+
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_sifl_tot
@@ -334,9 +343,9 @@ ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)
 plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "violetred4")+
   geom_path(linewidth = 1, col = "violetred3")+
-  labs(title = "Abondance du TAPI par heure d'observation",
+  labs(title = "Abondance du Tarin des Pins par heure d'observation",
        x = "Année",
-       y = "N. individus recensés * heure-1")+
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_tapi_tot
