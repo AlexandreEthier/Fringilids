@@ -14,8 +14,9 @@ library(tidyr)
 # IMPORTANT - Spécifier votre propre chemin qui mène aux documents
 # IMPORTANT - SVP changez les virgules (,) en points (.) à même les deux fichiers Excel
 
-# Maxence:/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx
-#         /Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx
+# Maxence
+abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
+bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
 
 # Alex: C:/Users/alexe/Fringilids/Data/Abondance.xlsx
 #       C:/Users/alexe/Fringilids/Data/Baguage.xlsx
@@ -39,7 +40,7 @@ bague <- read_excel("Baguage.xlsx") %>%
 
 # Formatage - Abondance ---------------------------------------------------------------
 
-abond <- read_excel("C:/Users/alexe/Fringilids/Data/Abondance.xlsx") %>% # Ajoutez votre propre chemin
+abond <- abond %>% # Ajoutez votre propre chemin
   rename(Annee = "Année", 
          DUSA = "Durbec des sapins", 
          JABO = "Jaseur boréal", 
@@ -87,7 +88,7 @@ hist(JABO$abond_std)
 
 # Formatage - Baguage -----------------------------------------------------------------
 
-bague <- read_excel("C:/Users/alexe/Fringilids/Data/Baguage.xlsx") %>% # Ajoutez votre propre chemin
+bague <- bague %>%  # Ajoutez votre propre chemin
   rename(Espece = "Espèce",
          Abrv = "Espèce (abréviation)",
          Age = "Âge",
@@ -161,7 +162,43 @@ bague <- bague %>%
   filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
   mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
 
-str(bague) # Tout propre
+
+## Ajouter la proportion de jeunes dans la population pour chaque espèce
+unique(bague$Espece)
+
+jeunes_par_an <- bague %>%
+  filter(Age != "U") %>%    # retire U du jeu de données
+  group_by(Abrv, Annee) %>%
+  summarise(
+    nb_HY = sum(Age == "HY"),
+    nb_AHY = sum(Age == "AHY"),
+    prop_jeunes = nb_HY / (nb_HY + nb_AHY),
+    .groups = "drop"
+  )
+
+unique(bague$Abrv)
+tables_par_espece <- split(jeunes_par_an, jeunes_par_an$Abrv)
+prop_Dubrec <- tables_par_espece[["DUSA"]]
+prop_Sizerin <- tables_par_espece[["TAPI"]]
+prop_Jaseur <- tables_par_espece[["SIFL"]]
+prop_Tarin <- tables_par_espece[["JABO"]]
+
+
+# Combiner tous les tableaux de proportions en un seul
+props_all <- bind_rows(
+  prop_Dubrec_sel,
+  prop_Sizerin_sel,
+  prop_Jaseur_sel,
+  prop_Tarin_sel
+)
+
+# Jointure avec abond
+abond_joint <- abond %>%
+  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee"))
+
+# Vérification
+head(abond_joint)
+
 
 
 # Exploration des données -------------------------------------------------
