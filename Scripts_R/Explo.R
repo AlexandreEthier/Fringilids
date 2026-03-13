@@ -1,13 +1,16 @@
 
 # Chargement des packages -------------------------------------------------
 
-#install.packages("cowplot")
+install.packages("emmeans")
 
 library(cowplot)
 library(readxl)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(ggpubr)
+library(nlme)
+library(emmeans)
 
 # Chargement des données ---------------------------------------------------
 
@@ -65,7 +68,9 @@ str(abond)
 DUSA <- abond %>% 
   filter(Espece == "DUSA")
 
+
 hist(DUSA$abond_std)
+
 
 # TAPI
 TAPI <- abond %>% 
@@ -233,8 +238,6 @@ plot_std <- ggplot(abond, aes(x = Annee, y = abond_std, group = Espece, color = 
         panel.background = element_blank())
 plot_std
 
-
-
 plot_log <- ggplot(abond, aes(x = Annee, y = log(abond_std), group = Espece, color = Espece))+
   geom_point(size = 3)+
   geom_line(linewidth = 1.5)+
@@ -247,19 +250,6 @@ plot_log <- ggplot(abond, aes(x = Annee, y = log(abond_std), group = Espece, col
         axis.line.y = element_line(color = "black", linewidth = 0.5),
         panel.background = element_blank())
 plot_log
-
-
-DUSA <- abond$abond_std[abond$Espece == "DUSA"]
-DUSA$Annee <- cbind(abond$Annee)
-
-
-
-
-
-
-lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond)
-
-
 
 
 # Graphique condition/espèce/année
@@ -311,6 +301,18 @@ plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_s
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_dusa_tot
+
+DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_smooth(method = "lm")+
+  stat_cor(method = "pearson")+
+  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+DUSA_log
+
+lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond)
 
 
 plot_condition_DUSA <- ggplot(bague_moyenne[bague_moyenne$Espèce=="DURBEC DES SAPINS",], aes(x = Année, y = Condition_moyenne, group=1)) +
@@ -383,6 +385,18 @@ plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_s
 plot_jabo_tot
 
 
+JABO$Annee <- as.factor(as.numeric(JABO$Annee))
+JABO$Annee <- as.integer(JABO$Annee)
+
+JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "darkgreen")+
+  geom_smooth(method = "lm")+
+  stat_cor(method = "pearson")+
+  labs(title = "Abondance du Jaseur Boréal par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+JABO_log
 
 # SIFL (Alex) -------------------------------------------------------------
 
@@ -410,6 +424,17 @@ plot_sifl_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, group = 1))+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_sifl_tot
 
+SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_smooth(method = "lm")+
+  stat_cor(method = "pearson")+
+  labs(title = "Abondance du Sizerin Flammé par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+SIFL_log
+
+
 # Proportion d'individus bagués par année 
 
 bague_annuel_SIFL <- bague_SIFL %>% # Nb. de SIFL bagués / année
@@ -430,7 +455,7 @@ ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)
   geom_boxplot(aes(fill = Age))+
   theme_classic()
 
-
+str(TAPI)
 
 
 # TAPI (Maxence) ----------------------------------------------------------
@@ -444,6 +469,26 @@ plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_s
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_tapi_tot
+
+
+# CHANGER AXE DES X POUR AVOUR LES ANNÉES
+
+TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "violetred4")+
+  geom_line()+
+  geom_abline(intercept = coef(lm_TAPI)[1], slope = coef(lm_TAPI)[2], color = "red")+
+  labs(title = "Abondance du Tarin des Pins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+TAPI_log+
+  annotate(geom ="text",x = 5, y = 5, label ="y = 1.66 + 0.067x")
+
+summary(lm_TAPI)
+
+#stat_cor(method = "pearson")+
+  
+
 
 
 # Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
@@ -479,40 +524,352 @@ plot(mod)
 # Analyse -----------------------------------------------------------------
 
 # Combine les 4 graphiques en 2x2
-plot_grid(plot_dusa_tot, plot_jabo_tot, plot_sifl_tot, plot_tapi_tot, ncol = 2)
+plot_grid(DUSA_log,
+          TAPI_log,
+          SIFL_log,
+          JABO_log, ncol = 2)
 
 
 
 
 # TENDANCE TEMPORELLE -----------------------------------------------------
 
-abond
-
 # Tendance temporelle depuis 1996 - 2025
 
-
-
-
-
 # SIFL
+
+abond_modif_SIFL <- log(SIFL$abond_std + 1)
+abond_modif_SIFL
+
+lm_SIFL <- lm(log(abond_std) ~ Annee, data = SIFL)
+
+summary(lm_SIFL)
+
+par(mfrow = c(2,2))
+plot(lm_SIFL)
+
+SIFL_int <- lm_SIFL$coefficients["(Intercept)"]
+SIFL_annee <- lm_SIFL$coefficients["Annee"]
+SIFL_annee
+SIFL_sd <- coef(summary(lm_SIFL))[, "Std. Error"]
+SIFL_sd
+
+summary(lm_SIFL)
+
+
+# Intercepte
+upper_ic_SIFL <- SIFL_int + (1.96 * SIFL_sd[1])
+lower_ic_SIFL <- SIFL_int - (1.96 * SIFL_sd[1])
+lower_ic_SIFL
+
+upper_ic_annee_SIFL <- SIFL_annee + (1.96 * SIFL_sd[2])
+upper_ic_annee_SIFL
+lower_ic_annee_SIFL <- SIFL_annee - (1.96 * SIFL_sd[2])
+lower_ic_annee_SIFL
+
+plot(exp(SIFL_annee),
+     ylim = c(0.95, 1.15))
+abline(h = 1, lty = 2, col = "red")
+segments(x0 = 1, y0 = exp(lower_ic_annee_SIFL),
+         x1 = 1, y1 = exp(upper_ic_annee_SIFL))
+
+
+n_sim <- 5000
+SIFL_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
+SIFL_sim <- SIFL[, c("Annee")]
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  SIFL_sim$abond_std <- sample(x = SIFL$abond_std, replace = FALSE)
+  
+  lm_SIFL_rand <- lm(log(abond_std) ~ Annee, data = SIFL_sim)
+  
+  SIFL_output[i,1] <- coef(lm_SIFL_rand)[1] # Beta intercepte (abond_std)
+  SIFL_output[i,2] <- coef(lm_SIFL_rand)[2] # Beta année
+  
+}
+
+SIFL_output
+
+hist(SIFL_output[,1])
+hist(SIFL_output[,2])
+
+pbeta_annee <- sum(SIFL_output[, 2] >= coef(lm_SIFL)[2])/n_sim
+pbeta_annee
+
+summary(lm_SIFL)
+
+exp(SIFL_annee) # 1,07 oiseau de plus/heure/année 
+exp(SIFL_int) 
 
 
 # TAPI
 
+abond_modif_TAPI <- log(TAPI$abond_std + 1)
+abond_modif_TAPI
+
+lm_TAPI <- lm(log(abond_std) ~ Annee, data = TAPI)
+
+summary(lm_TAPI)
+
+plot(lm_TAPI)
+
+
+TAPI_int <- lm_TAPI$coefficients["(Intercept)"]
+TAPI_annee <- lm_TAPI$coefficients["Annee"]
+TAPI_annee
+TAPI_sd <- coef(summary(lm_TAPI))[, "Std. Error"]
+TAPI_sd
+
+summary(lm_TAPI)
+
+
+# Intercepte
+upper_ic_TAPI <- TAPI_int + (1.96 * TAPI_sd[1])
+lower_ic_TAPI <- TAPI_int - (1.96 * TAPI_sd[1])
+lower_ic_TAPI
+
+upper_ic_annee_TAPI <- TAPI_annee + (1.96 * TAPI_sd[2])
+upper_ic_annee_TAPI
+lower_ic_annee_TAPI <- TAPI_annee - (1.96 * TAPI_sd[2])
+lower_ic_annee_TAPI
+
+plot(exp(TAPI_annee),
+     ylim = c(0.95, 1.15))
+abline(h = 1, lty = 2, col = "red")
+segments(x0 = 1, y0 = exp(lower_ic_annee),
+         x1 = 1, y1 = exp(upper_ic_annee))
+
+
+n_sim <- 5000
+TAPI_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
+TAPI_sim <- TAPI[, c("Annee")]
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  TAPI_sim$abond_std <- sample(x = TAPI$abond_std, replace = FALSE)
+  
+  lm_TAPI_rand <- lm(log(abond_std) ~ Annee, data = TAPI_sim)
+  
+  TAPI_output[i,1] <- coef(lm_TAPI_rand)[1] # Beta intercepte (abond_std)
+  TAPI_output[i,2] <- coef(lm_TAPI_rand)[2] # Beta année
+  
+}
+
+TAPI_output
+
+hist(TAPI_output[,1])
+hist(TAPI_output[,2])
+
+pbeta_annee <- sum(TAPI_output[, 2] >= coef(lm_TAPI)[2])/n_sim
+pbeta_annee
+
+summary(lm_TAPI)
+
+exp(TAPI_annee) # 1,07 oiseau de plus/heure/année 
+exp(TAPI_int) 
+
 
 # DUSA
 
+DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
+DUSA$Annee <- as.integer(DUSA$Annee)
+
+abond_modif_DUSA <- log(DUSA$abond_std + 1)
+abond_modif_DUSA
+
+lm_DUSA <- lm(log(abond_std) ~ Annee, data = DUSA)
+
+summary(lm_DUSA)
+
+par(mfrow = c(2,2))
+plot(lm_DUSA)
+dev.off()
+
+DUSA_int <- lm_DUSA$coefficients["(Intercept)"]
+DUSA_annee <- lm_DUSA$coefficients["Annee"]
+DUSA_annee
+DUSA_sd <- coef(summary(lm_DUSA))[, "Std. Error"]
+DUSA_sd
+
+summary(lm_DUSA)
+
+
+# Intercepte
+upper_ic_DUSA <- DUSA_int + (1.96 * DUSA_sd[1])
+lower_ic_DUSA <- DUSA_int - (1.96 * DUSA_sd[1])
+lower_ic_DUSA
+
+upper_ic_annee_DUSA <- DUSA_annee + (1.96 * DUSA_sd[2])
+upper_ic_annee_DUSA
+lower_ic_annee_DUSA <- DUSA_annee - (1.96 * DUSA_sd[2])
+lower_ic_annee_DUSA
+
+plot(exp(DUSA_annee),
+     ylim = c(0.95, 1.15))
+abline(h = 1, lty = 2, col = "red")
+segments(x0 = 1, y0 = exp(lower_ic_annee_DUSA),
+         x1 = 1, y1 = exp(upper_ic_annee_DUSA))
+
+
+n_sim <- 5000
+DUSA_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
+DUSA_sim <- DUSA[, c("Annee")]
+
+set.seed(0088)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  DUSA_sim$abond_std <- sample(x = DUSA$abond_std, replace = FALSE)
+  
+  lm_DUSA_rand <- lm(log(abond_std) ~ Annee, data = DUSA_sim)
+  
+  DUSA_output[i,1] <- coef(lm_DUSA_rand)[1] # Beta intercepte (abond_std)
+  DUSA_output[i,2] <- coef(lm_DUSA_rand)[2] # Beta année
+  
+}
+
+DUSA_output
+
+hist(DUSA_output[,1])
+hist(DUSA_output[,2])
+
+pbeta_annee <- sum(DUSA_output[, 2] >= coef(lm_DUSA)[2])/n_sim
+pbeta_annee
+
+exp(DUSA_annee) # 1,07 oiseau de plus/heure/année 
+exp(DUSA_int) 
 
 
 # JABO
 
+# Puisqu'on a une abondance ~ 0 (log(8)) -> +1 sur toutes les données pour éviter 0
+
+abond_modif_JABO <- log(JABO$abond_std + 1)
+abond_modif_JABO
+
+lm_JABO <- lm(abond_modif_JABO ~ Annee, data = JABO)
+
+summary(lm_JABO)
+
+par(mfrow = c(2,2))
+plot(lm_JABO) # MIEUX!!
+
+JABO_int <- lm_JABO$coefficients["(Intercept)"]
+JABO_annee <- lm_JABO$coefficients["Annee"]
+JABO_annee
+JABO_sd <- coef(summary(lm_JABO))[, "Std. Error"]
+JABO_sd
+
+
+# Intercepte
+upper_ic_JABO <- JABO_int + (1.96 * JABO_sd[1])
+lower_ic_JABO <- JABO_int - (1.96 * JABO_sd[1])
+lower_ic_JABO
+
+upper_ic_annee_JABO <- JABO_annee + (1.96 * JABO_sd[2])
+upper_ic_annee_JABO
+lower_ic_annee_JABO <- JABO_annee - (1.96 * JABO_sd[2])
+lower_ic_annee_JABO
+
+plot(exp(JABO_annee),
+     ylim = c(0.95, 1.15))
+abline(h = 1, lty = 2, col = "red")
+segments(x0 = 1, y0 = exp(lower_ic_annee_JABO),
+         x1 = 1, y1 = exp(upper_ic_annee_JABO))
+
+summary(lm_JABO)
+
+
+n_sim <- 5000
+JABO_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
+JABO_sim <- JABO[, c("Annee")]
+
+set.seed(5555)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  JABO_sim$abond_std <- sample(x = JABO$abond_std, replace = FALSE)
+  
+  lm_JABO_rand <- lm(log(abond_std) ~ Annee, data = JABO_sim)
+  
+  JABO_output[i,1] <- coef(lm_JABO_rand)[1] # Beta intercepte (abond_std)
+  JABO_output[i,2] <- coef(lm_JABO_rand)[2] # Beta année
+  
+}
+
+JABO_output
+
+hist(JABO_output[,1])
+hist(JABO_output[,2])
+
+pbeta_annee <- sum(JABO_output[, 2] >= coef(lm_JABO)[2])/n_sim
+pbeta_annee
+
+summary(lm_JABO)
+
+exp(JABO_annee) # 1,07 oiseau de plus/heure/année 
+exp(JABO_int) 
 
 
 
+# Mettre les "prédictions" en un seul graphique
+
+SIFL_int
+upper_ic_annee_SIFL
+lower_ic_annee_SIFL
+
+JABO_int
+upper_ic_annee_JABO
+lower_ic_annee_JABO
+
+DUSA_int
+upper_ic_annee_DUSA
+lower_ic_annee_DUSA
+
+TAPI_int
+upper_ic_annee_TAPI
+lower_ic_annee_TAPI
+
+tab_comp <- data.frame(c(DUSA_int, JABO_int, TAPI_int, SIFL_int),
+                       c(DUSA_annee, JABO_annee, TAPI_annee, SIFL_annee),
+                       c(lower_ic_annee_DUSA, lower_ic_annee_JABO, lower_ic_annee_TAPI, lower_ic_annee_SIFL),
+                       c(upper_ic_annee_DUSA, upper_ic_annee_JABO, upper_ic_annee_TAPI, upper_ic_annee_SIFL))
 
 
+rownames(tab_comp) <- c("DUSA", "JABO", "TAPI", "SIFL")
+colnames(tab_comp) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
 
+axex <- 1:4
 
+plot(tab_comp$annee, data = tab_comp,
+     xaxt = "n",
+     ylim = c(-0.1, 0.15),
+     ylab = "log estimé de beta",
+     xlab = "Espèces",
+     main = "Estimés de log beta avec IC 95%")
+abline(h = 0, lty = 2, col = "red")
+axis(side = 1, at = axex, labels = c("DUSA", "JABO", "TAPI", "SIFL"))
+segments(x0 = 1, y0 = lower_ic_annee_DUSA,
+         x1 = 1, y1 = upper_ic_annee_DUSA)
+segments(x0 = 2, y0 = lower_ic_annee_JABO,
+         x1 = 2, y1 = upper_ic_annee_JABO)
+segments(x0 = 3, y0 = lower_ic_annee_TAPI,
+         x1 = 3, y1 = upper_ic_annee_TAPI)
+segments(x0 = 4, y0 = lower_ic_annee_SIFL,
+         x1 = 4, y1 = upper_ic_annee_SIFL)
 
 
 

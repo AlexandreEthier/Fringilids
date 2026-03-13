@@ -56,6 +56,10 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 #### Définition irruption 
 <img width="537" height="402" alt="image" src="https://github.com/user-attachments/assets/d3eaba0c-3e1a-4059-8be7-cf5b34e3ae49" />
 
+# NOTE ALEX 
+Mettre dev.off() après les par(mfrow)
+Rajouter pour chaque espèces -> as.factor(as.numeric(ESPECE)
+                             -> as.integer(ESPECE)
 
 
 
