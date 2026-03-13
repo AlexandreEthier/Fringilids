@@ -17,8 +17,8 @@ bague_clean <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringi
 abond_clean <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.xlsx")
 
 #Votre chemin messieurs
-#bague_clean <- read_excel("")
-#abond_clean <- read_excel("")
+bague_clean <- read_excel("bague_clean.xlsx")
+abond_clean <- read_excel("abond_clean.xlsx")
   
 # Petite transformation
 bague_clean$Age <- as.factor(bague_clean$Age)
@@ -29,7 +29,13 @@ bague_clean$Queue <- as.numeric(bague_clean$Queue)
 bague_clean$Masse <- as.numeric(bague_clean$Masse)
 bague_clean$Annee <- as.integer(bague_clean$Annee)
 
+bague_clean <- bague_clean %>%
+  filter(Age != "U") %>%
+  filter(between(Annee, 2007, 2025)) %>%
+  rename(espece = Abrv)
+
 str(bague_clean)
+summary(bague_clean)
 
 # Petite transformation
 abond_clean$Annee <- as.integer(abond_clean$Annee)
@@ -66,7 +72,7 @@ props_all <- bind_rows(
   prop_Jaseur,
   prop_Tarin
 )
-
+props_all
 # Jointure avec abond
 abond_joint <- abond_clean %>%
   left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee"))
@@ -92,16 +98,68 @@ plot_condition <- ggplot(abond_joint, aes(x = Annee, y = prop_jeunes, group = Es
         panel.background = element_blank())
 plot_condition
 
+# tendance proportion jeune -----------------------------------------------
 
+plot_condition <- ggplot(abond_joint, aes(x = Annee, y = prop_jeunes, groupe= Espece, color= Espece)) +
+  geom_point() +
+  geom_line()+
+  scale_color_manual(
+    values = c(
+      "DUSA" = "orange",
+      "JABO" = "darkgreen",
+      "SIFL"= "darkblue",
+      "TAPI" = "violetred3"
+    )
+  ) +
+  labs(title = "Proportion de jeune",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition) #on voit rien  mdr
+
+plot_condition <- ggplot(abond_joint, aes(x = Annee, y = prop_jeunes, color = Espece))+
+  geom_line() +
+  geom_point(size = 3)+
+  facet_wrap(~ Espece)+
+  scale_color_manual(
+    values = c(
+      "DUSA" = "orange",
+      "JABO" = "darkgreen",
+      "SIFL"= "darkblue",
+      "TAPI" = "violetred3"
+    )
+  ) +
+  labs(title = "Proportion de jeunes selon les années",
+       x = "Année",
+       y = "Proportion de jeunes",
+       color = "Espèce")+
+  stat_cor(method = "pearson") +
+  theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        panel.background = element_blank())
+plot_condition 
+# pas de tendance à long terme mais forte variation = lien avec l'abondance ?
 # # Relation Abondance-Proportion de jeunes -------------------------------
 
 # J'ai mis log + 3, parce que sinon j'avais deux valeurs aberrantes
-plot_condition <- ggplot(abond_joint, aes(x = (log(abond_std) +3), y = prop_jeunes, group = Espece, color = Espece))+
+plot_condition <- ggplot(abond_joint, aes(x = prop_jeunes, y = (log(abond_std) +3), group = Espece, color = Espece))+
   geom_line() +
   geom_point(size = 3)+
+  scale_color_manual(
+    values = c(
+      "DUSA" = "orange",
+      "JABO" = "darkgreen",
+      "SIFL"= "darkblue",
+      "TAPI" = "violetred3"
+    )
+  ) +
   labs(title = "Relation abondance standardisé et proportion de jeunes",
-       x = "Abondance standardisé",
-       y = "Proportion de jeunes",
+       x = "Proportion de jeunes",
+       y = "Abondance standardisé (log)",
        color = "Espèce")+
   stat_cor(method = "pearson") +
   theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
@@ -113,13 +171,21 @@ plot_condition
 ggplotly(plot_condition, tooltip = c("x", "y", "colour"))
 
 # 4 graphiques
-plot_condition <- ggplot(abond_joint, aes(x = (log(abond_std) +3), y = prop_jeunes, color = Espece))+
+plot_condition <- ggplot(abond_joint, aes(x = prop_jeunes, y = (log(abond_std) +3), color = Espece))+
   geom_line() +
   geom_point(size = 3)+
   facet_wrap(~ Espece)+
-  labs(title = "Relation abondance standardisé et proportion de jeunes",
-       x = "Abondance standardisé",
-       y = "Proportion de jeunes",
+  scale_color_manual(
+    values = c(
+      "DUSA" = "orange",
+      "JABO" = "darkgreen",
+      "SIFL"= "darkblue",
+      "TAPI" = "violetred3"
+    )
+  ) +
+  labs(title = "Abondance standardisé selon la proportion de jeunes",
+       x = "Proportion de jeunes",
+       y = "Abondance standardisé (log)",
        color = "Espèce")+
   stat_cor(method = "pearson") +
   theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
@@ -127,11 +193,11 @@ plot_condition <- ggplot(abond_joint, aes(x = (log(abond_std) +3), y = prop_jeun
         panel.background = element_blank())
 plot_condition
 
-# Modèle linéaire mixte ---------------------------------------------------------
+# Modèle linéaire mixte abondance/proportion ---------------------------------------------------------
 
-mod1 <- lme(prop_jeunes ~ abond_std , random =~ 1 | Annee, data = abond_joint, na.action = na.omit)
+mod1 <- lme(abond_std ~ prop_jeunes , random =~ 1 | Annee, data = abond_joint, na.action = na.omit)
 
-mod2 <- lme(prop_jeunes ~ abond_std + Espece, random =~ 1 | Annee, data = abond_joint, na.action = na.omit)
+mod2 <- lme(abond_std ~ prop_jeunes + Espece, random =~ 1 | Annee, data = abond_joint, na.action = na.omit)
 
 # CA des deux modèles ---------------------------------------------------------
 
@@ -159,6 +225,9 @@ qqline(coef(mod2)$"(Intercept)")
 ##boxplot of residuals
 boxplot(residuals(mod2, type = "pearson")~ abond_joint$abond_std)
 
+
+summary(mod1)
+summary(mod2)
 #============================================================================
 
 # Évolution condition corporelle ------------------------------------------
@@ -211,7 +280,7 @@ plot_condition <- ggplot(abond_joint, aes(x = (Annee), y = moyenne_condition, co
         panel.background = element_blank())
 plot_condition
 
-# 4 graphiques, mais séparé
+# 4 graphiques condition, mais séparé
 
 plot_DUSA <- ggplot(abond_joint %>% filter(Espece == "DUSA"), 
                     aes(x = Annee, y = moyenne_condition))+
@@ -265,3 +334,65 @@ plot_DUSA
 plot_JABO
 plot_SIFL
 plot_TAPI
+
+# graphique condition par classe
+
+plot_condition_age_DUSA<-ggplot(bague_clean %>% filter(espece == "DUSA"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age)) +
+  scale_fill_manual(
+    values = c(
+      "AHY" = "orange",
+      "HY" = "darkorange3", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de durbec des sapins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_DUSA)
+
+plot_condition_age_JABO<-ggplot(bague_clean %>% filter(espece == "JABO"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "green",
+      "HY" = "darkgreen", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de jaseur boréal par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_JABO)
+
+plot_condition_age_SIFL<-ggplot(bague_clean %>% filter(espece == "SIFL"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "turquoise",
+      "HY" = "darkblue", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de sizerin flammé par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_SIFL)
+
+plot_condition_age_TAPI<-ggplot(bague_clean %>% filter(espece == "TAPI"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "violet",
+      "HY" = "violetred4", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de tarin des pins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_TAPI)
+
+plot_grid(plot_condition_age_DUSA,
+          plot_condition_age_TAPI,
+          plot_condition_age_SIFL, 
+          plot_condition_age_JABO, ncol = 2)
+
+
+

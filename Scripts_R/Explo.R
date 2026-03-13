@@ -545,7 +545,6 @@ plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_s
 plot_tapi_tot
 
 
-<<<<<<< HEAD
 # CHANGER AXE DES X POUR AVOUR LES ANNÉES
 
 TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
