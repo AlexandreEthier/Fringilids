@@ -1,8 +1,6 @@
 
 # Chargement des packages -------------------------------------------------
 
-install.packages("emmeans")
-
 library(cowplot)
 library(readxl)
 library(dplyr)
@@ -74,13 +72,17 @@ str(abond)
 DUSA <- abond %>% 
   filter(Espece == "DUSA")
 
+DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
+DUSA$Annee <- as.integer(DUSA$Annee)
 
 hist(DUSA$abond_std)
-
 
 # TAPI
 TAPI <- abond %>% 
   filter(Espece == "TAPI")
+
+TAPI$Annee <- as.factor(as.numeric(TAPI$Annee))
+TAPI$Annee <- as.integer(TAPI$Annee)
 
 hist(TAPI$abond_std)
 
@@ -88,11 +90,17 @@ hist(TAPI$abond_std)
 SIFL <- abond %>% 
   filter(Espece == "SIFL")
 
+SIFL$Annee <- as.factor(as.numeric(SIFL$Annee))
+SIFL$Annee <- as.integer(SIFL$Annee)
+
 hist(SIFL$abond_std)
 
 # JABO
 JABO <- abond %>% 
   filter(Espece == "JABO")
+
+JABO$Annee <- as.factor(as.numeric(JABO$Annee))
+JABO$Annee <- as.integer(JABO$Annee)
 
 hist(JABO$abond_std)
 
@@ -313,16 +321,6 @@ plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_s
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_dusa_tot
 
-DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
-  geom_point(size = 3, col = "darkorange1")+
-  geom_smooth(method = "lm")+
-  stat_cor(method = "pearson")+
-  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  theme_classic()
-DUSA_log
-
 lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond)
 
 
@@ -380,9 +378,6 @@ ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)
 
 
 
-
-
-
 # JABO (Bérince) ----------------------------------------------------------
 
 plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
@@ -394,20 +389,6 @@ plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_s
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_jabo_tot
-
-
-JABO$Annee <- as.factor(as.numeric(JABO$Annee))
-JABO$Annee <- as.integer(JABO$Annee)
-
-JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
-  geom_point(size = 3, col = "darkgreen")+
-  geom_smooth(method = "lm")+
-  stat_cor(method = "pearson")+
-  labs(title = "Abondance du Jaseur Boréal par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  theme_classic()
-JABO_log
 
 # SIFL (Alex) -------------------------------------------------------------
 
@@ -434,17 +415,6 @@ plot_sifl_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, group = 1))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_sifl_tot
-
-SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
-  geom_point(size = 3, col = "turquoise4")+
-  geom_smooth(method = "lm")+
-  stat_cor(method = "pearson")+
-  labs(title = "Abondance du Sizerin Flammé par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  theme_classic()
-SIFL_log
-
 
 # Proportion d'individus bagués par année 
 
@@ -482,26 +452,6 @@ plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_s
 plot_tapi_tot
 
 
-# CHANGER AXE DES X POUR AVOUR LES ANNÉES
-
-TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
-  geom_point(size = 3, col = "violetred4")+
-  geom_line()+
-  geom_abline(intercept = coef(lm_TAPI)[1], slope = coef(lm_TAPI)[2], color = "red")+
-  labs(title = "Abondance du Tarin des Pins par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  theme_classic()
-TAPI_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 1.66 + 0.067x")
-
-summary(lm_TAPI)
-
-#stat_cor(method = "pearson")+
-  
-
-
-
 # Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
 
 # Avoir les données d'abondance avec condition
@@ -529,16 +479,6 @@ plot(mod)
 # Visuellement les conditions semblent respectés
 
 # Tâche #4: Voir pour chaque année la proportion des classes selon les années
-
-
-
-# Analyse -----------------------------------------------------------------
-
-# Combine les 4 graphiques en 2x2
-plot_grid(DUSA_log,
-          TAPI_log,
-          SIFL_log,
-          JABO_log, ncol = 2)
 
 
 
@@ -618,7 +558,20 @@ exp(SIFL_annee) # 1,07 oiseau de plus/heure/année
 exp(SIFL_int) 
 
 
-# TAPI
+# GRAPHIQUE
+
+SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_line()+
+  geom_abline(intercept = coef(lm_SIFL)[1], slope = coef(lm_SIFL)[2], color = "red")+
+  labs(title = "Abondance du Sizerin Flammé par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+SIFL_log+
+  annotate(geom ="text",x = 5, y = 5, label ="y = 2.35 + 0.025x")
+
+# TAPI --------------------------------------------------------------------
 
 abond_modif_TAPI <- log(TAPI$abond_std + 1)
 abond_modif_TAPI
@@ -627,8 +580,9 @@ lm_TAPI <- lm(log(abond_std) ~ Annee, data = TAPI)
 
 summary(lm_TAPI)
 
+par(mfrow = c(2,2))
 plot(lm_TAPI)
-
+dev.off()
 
 TAPI_int <- lm_TAPI$coefficients["(Intercept)"]
 TAPI_annee <- lm_TAPI$coefficients["Annee"]
@@ -652,8 +606,8 @@ lower_ic_annee_TAPI
 plot(exp(TAPI_annee),
      ylim = c(0.95, 1.15))
 abline(h = 1, lty = 2, col = "red")
-segments(x0 = 1, y0 = exp(lower_ic_annee),
-         x1 = 1, y1 = exp(upper_ic_annee))
+segments(x0 = 1, y0 = exp(lower_ic_annee_TAPI),
+         x1 = 1, y1 = exp(upper_ic_annee_TAPI))
 
 
 n_sim <- 5000
@@ -688,11 +642,23 @@ summary(lm_TAPI)
 exp(TAPI_annee) # 1,07 oiseau de plus/heure/année 
 exp(TAPI_int) 
 
+# INSERTION GRAPHIQUE
 
-# DUSA
+TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "violetred4")+
+  geom_line()+
+  geom_abline(intercept = coef(lm_TAPI)[1], slope = coef(lm_TAPI)[2], color = "red")+
+  labs(title = "Abondance du Tarin des Pins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+TAPI_log+
+  annotate(geom ="text",x = 5, y = 5, label ="y = 1.66 + 0.067x")
 
-DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
-DUSA$Annee <- as.integer(DUSA$Annee)
+
+
+# DUSA --------------------------------------------------------------------
+
 
 abond_modif_DUSA <- log(DUSA$abond_std + 1)
 abond_modif_DUSA
@@ -761,6 +727,19 @@ pbeta_annee
 exp(DUSA_annee) # 1,07 oiseau de plus/heure/année 
 exp(DUSA_int) 
 
+# GRAPHIQUE
+
+DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_line()+
+  geom_abline(intercept = coef(lm_DUSA)[1], slope = coef(lm_DUSA)[2], color = "red")+
+  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+DUSA_log+
+  annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
+  
 
 # JABO
 
@@ -775,6 +754,7 @@ summary(lm_JABO)
 
 par(mfrow = c(2,2))
 plot(lm_JABO) # MIEUX!!
+dev.off()
 
 JABO_int <- lm_JABO$coefficients["(Intercept)"]
 JABO_annee <- lm_JABO$coefficients["Annee"]
@@ -834,25 +814,29 @@ summary(lm_JABO)
 exp(JABO_annee) # 1,07 oiseau de plus/heure/année 
 exp(JABO_int) 
 
+# GRAPHIQUE
+
+JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "darkgreen")+
+  geom_line()+
+  geom_abline(intercept = coef(lm_JABO)[1], slope = coef(lm_JABO)[2], color = "red")+
+  labs(title = "Abondance du Jaseur Boréal par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+JABO_log+
+  annotate(geom ="text",x = 5, y = 5, label ="y = 1.19 + 0.015x")
+
+
 
 
 # Mettre les "prédictions" en un seul graphique
 
-SIFL_int
-upper_ic_annee_SIFL
-lower_ic_annee_SIFL
-
-JABO_int
-upper_ic_annee_JABO
-lower_ic_annee_JABO
-
-DUSA_int
-upper_ic_annee_DUSA
-lower_ic_annee_DUSA
-
-TAPI_int
-upper_ic_annee_TAPI
-lower_ic_annee_TAPI
+# Combine les 4 graphiques en 2x2
+plot_grid(DUSA_log,
+          TAPI_log,
+          SIFL_log,
+          JABO_log, ncol = 2)
 
 tab_comp <- data.frame(c(DUSA_int, JABO_int, TAPI_int, SIFL_int),
                        c(DUSA_annee, JABO_annee, TAPI_annee, SIFL_annee),
