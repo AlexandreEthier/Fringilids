@@ -2,6 +2,7 @@
 # Chargement des packages -------------------------------------------------
 
 install.packages("emmeans")
+install.packages("ggpubr")
 
 library(cowplot)
 library(readxl)
@@ -28,6 +29,7 @@ setwd("C:/Users/alexe/Fringilids")
 #
 
 # Adrien:
+
 abond <- read_excel("Abondance.xlsx") %>% 
 rename(Annee = "Année", 
        DUSA = "Durbec des sapins", 
@@ -164,6 +166,7 @@ bague <- bague %>%
   select(-Préfixe, -Suffixe, -Site, - Municipalité) %>%  # Retrait des colonnes non nécessaires
   filter(Aile != "NA") %>%                               # Retrait des données manquantes pour "Aile"
   filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
+  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%  # Retrait des années avant 2007
   mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
 
 str(bague) # Tout propre
@@ -205,9 +208,9 @@ plot_log <- ggplot(abond, aes(x = Annee, y = log(abond_std), group = Espece, col
   geom_point(size = 3)+
   geom_line(linewidth = 1.5)+
   scale_y_continuous(limits = c(0, 7), n.breaks = 15)+
-  labs(title = "Abondance standardisée des espèces cibles par année",
+  labs(title = "Logarythme de l'abondance standardisée des espèces cibles par année",
        x = "Année",
-       y = "N. d'oiseaux/h",
+       y = "log N. d'oiseaux/h",
        color = "Espèce")+
   theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
         axis.line.y = element_line(color = "black", linewidth = 0.5),
@@ -219,9 +222,9 @@ plot_log
 
 plot_condition <- ggplot(bague, aes(x = Annee, y = Condition, group = Espece, color = Espece))+
   geom_point(size = 3)+
-  labs(title = "Abondance standardisée des espèces cibles par année",
+  labs(title = "Condition des espèces cibles par année",
        x = "Année",
-       y = "N. d'oiseaux/h",
+       y = "Condition",
        color = "Espèce")+
   theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
         axis.line.y = element_line(color = "black", linewidth = 0.5),
@@ -234,7 +237,9 @@ bague_moyenne <- bague_modifie %>%
   summarise(Condition_moyenne = mean(Condition, na.rm = TRUE),
             Condition_sd = sd(Condition, na.rm = TRUE),  
             Condition_se = Condition_sd / sqrt(n()))  
-
+bague_moyenne<-bague_moyenne %>%
+  filter(!Année %in% c(1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))  # Retrait des années avant 2007
+  
 
 plot_condition <- ggplot(bague_moyenne, aes(x = Année, y = Condition_moyenne, group = Espèce, color = Espèce)) +
   geom_point(size = 3) +
@@ -254,7 +259,7 @@ print(plot_condition) # ne parait pas beaucoup évoluer dans le temps
 
 
 # DUSA (Adrien) -----------------------------------------------------------
-
+# abondance
 plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkorange1")+
   geom_path(linewidth = 1, col = "orange")+
@@ -265,6 +270,7 @@ plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_s
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_dusa_tot
 
+#log abondance
 DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
   geom_point(size = 3, col = "darkorange1")+
   geom_smooth(method = "lm")+
@@ -278,58 +284,50 @@ DUSA_log
 lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond)
 
 
-plot_condition_DUSA <- ggplot(bague_moyenne[bague_moyenne$Espèce=="DURBEC DES SAPINS",], aes(x = Année, y = Condition_moyenne, group=1)) +
-  geom_point(size = 3, col = "darkorange1")+
-  geom_path(linewidth = 1, col = "orange")+  
-  labs(title = "Condition moyenne du durbec des sapins par année",
-       x = "Année",
-       y = "Condition moyenne") +
-  theme(
-    axis.line.x = element_line(color = "black", linewidth = 0.5),
-    axis.line.y = element_line(color = "black", linewidth = 0.5),
-    panel.background = element_blank()
-  )+
-  geom_errorbar(aes(ymin = Condition_moyenne - Condition_se, ymax = Condition_moyenne + Condition_se), width = 0.2, col="orange")
-print(plot_condition_DUSA) # il y a un trou entre 97-99, 99-01 et 2001-2007
-
-plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
-  geom_point(size = 3, col = "darkorange1")+
-  geom_path(linewidth = 1, col = "orange")+
-  labs(title = "Abondance du DUSA par heure d'observation",
-       x = "Année",
-       y = "N. individus recensés * heure-1")+
-  theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
-plot_dusa_tot
-
 # combine les deux graphique :
 plot_grid(plot_dusa_tot, plot_condition_DUSA, ncol = 1) #graphique bof
 
 # Condition
 bague_DUSA <- bague[bague$Espece == "Durbec des sapins",] # Ne garde que DUSA
-bague_DUSA <- bague_DUSA[bague_SIFL$Age != "U",] # Ne garde que les individus âgés
+bague_DUSA <- bague_DUSA[bague_DUSA$Age != "U",] # Ne garde que les individus âgés
 
 bague_DUSA <- bague_DUSA %>% # Regroupement des oiseaux bagués/année
   group_by(Annee) %>% 
   filter(between(Annee, 2007, 2025)) # Baguage plus régulier à partir de 2006 (ou 2007, à vérifier)
-bague_annuel_DUSA <- bague_DUSA %>% # Nb. de SIFL bagués / année
+bague_annuel_DUSA <- bague_DUSA %>% # Nb. de DUSA bagués / année
   summarise(n())
-
 ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
 
-#n_bague_ann_DUSA <- as.data.frame(ann) %>% 
-  rename(Annee = "ann") %>% 
-  left_join(bague_annuel_DUSA, by = "Annee") %>% 
-  cbind(bague_annuel_DUSA$`n()`/DUSA$abond) %>%            # Calcul la proportion de SIFL bagué par année
-  rename(prop_bague = "n_bague_ann_DUSA$`n()`/DUSA$abond")
+summary(bague_DUSA)
 
-
+# Condition population
+plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = Annee)) +
+    geom_boxplot(fill = "darkorange1") +
+    labs(title = "Condition moyenne du durbec des sapins par année",
+         x = "Année",
+         y = "Condition moyenne") +
+    theme(
+      axis.line.x = element_line(color = "black", linewidth = 0.5),
+      axis.line.y = element_line(color = "black", linewidth = 0.5),
+      panel.background = element_blank()
+    )
+  print(plot_condition_DUSA)
+  
 # Condition jeunes vs adultes par année
 
-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
-  geom_boxplot(aes(fill = Age))+
-  theme_classic() #encore U
+plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age)) +
+  scale_fill_manual(
+    values = c(
+      "AHY" = "orange",
+      "HY" = "darkorange3", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de durbec des sapins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
 
+print(plot_condition_age_DUSA)
 
 
 
@@ -360,6 +358,48 @@ JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
 JABO_log
+
+# Condition
+bague_JABO <- bague[bague$Espece == "Jaseur boréal",] # Ne garde que JABO
+bague_JABO <- bague_JABO[bague_JABO$Age != "U",] # Ne garde que les individus âgés
+
+bague_JABO <- bague_JABO %>% # Regroupement des oiseaux bagués/année
+  group_by(Annee) %>% 
+  filter(between(Annee, 2007, 2025)) # Baguage plus régulier à partir de 2006 (ou 2007, à vérifier)
+bague_annuel_JABO <- bague_JABO %>% # Nb. de JABO bagués / année
+  summarise(n())
+ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
+
+summary(bague_JABO)
+
+# Condition population
+plot_condition_JABO <- ggplot(bague_JABO, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "darkgreen") +
+  labs(title = "Condition moyenne du jaseur boréal par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_JABO)
+
+# Condition jeunes vs adultes par année
+
+plot_condition_age_JABO<-ggplot(bague_JABO, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "green",
+      "HY" = "darkgreen", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de jaseur boréal par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_JABO)
+
 
 # SIFL (Alex) -------------------------------------------------------------
 
@@ -400,23 +440,44 @@ SIFL_log
 
 # Proportion d'individus bagués par année 
 
-bague_annuel_SIFL <- bague_SIFL %>% # Nb. de SIFL bagués / année
+#bague_annuel_SIFL <- bague_SIFL %>% # Nb. de SIFL bagués / année
   summarise(n())
 
-ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
+#ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
 
-n_bague_ann_SIFL <- as.data.frame(ann) %>% 
+#n_bague_ann_SIFL <- as.data.frame(ann) %>% 
   rename(Annee = "ann") %>% 
   left_join(bague_annuel_SIFL, by = "Annee") %>% 
   cbind(n_bague_ann_SIFL$`n()`/SIFL$abond) %>%            # Calcul la proportion de SIFL bagué par année
   rename(prop_bague = "n_bague_ann_SIFL$`n()`/SIFL$abond")
 
+# Condition
+plot_condition_SIFL <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "turquoise") +
+  labs(title = "Condition moyenne du sizerin flammé par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_SIFL)
 
 # Condition jeunes vs adultes par année
 
-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_SIFL<-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
-  theme_classic()
+  scale_fill_manual(
+    values = c(
+      "AHY" = "turquoise",
+      "HY" = "darkblue", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de sizerin flammé par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_SIFL)
 
 str(TAPI)
 
@@ -438,20 +499,60 @@ plot_tapi_tot
 
 TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
   geom_point(size = 3, col = "violetred4")+
-  geom_line()+
+  geom_line(col="violetred3")+
   geom_abline(intercept = coef(lm_TAPI)[1], slope = coef(lm_TAPI)[2], color = "red")+
   labs(title = "Abondance du Tarin des Pins par heure d'observation",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
 TAPI_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 1.66 + 0.067x")
+  annotate(geom ="text",x = 2000, y = 5, label ="y = 1.66 + 0.067x")
 
 summary(lm_TAPI)
 
 #stat_cor(method = "pearson")+
   
+# Condition
+bague_TAPI <- bague[bague$Espece == "Tarin des pins",] # Ne garde que TAPI
+bague_TAPI <- bague_TAPI[bague_TAPI$Age != "U",] # Ne garde que les individus âgés
 
+bague_TAPI <- bague_TAPI %>% # Regroupement des oiseaux bagués/année
+  group_by(Annee) %>% 
+  filter(between(Annee, 2007, 2025)) # Baguage plus régulier à partir de 2006 (ou 2007, à vérifier)
+bague_annuel_TAPI <- bague_TAPI %>% # Nb. de TAPI bagués / année
+  summarise(n())
+ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
+
+
+summary(bague_TAPI)
+
+# Condition population
+plot_condition_TAPI <- ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "violetred4") +
+  labs(title = "Condition moyenne du tarin des pins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_TAPI)
+
+# Condition jeunes vs adultes par année
+
+plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "violet",
+      "HY" = "violetred4", "U" = "red" # il n'y en a plus
+    ))+
+  labs(title = "Condition moyenne des classes de tarin des pins par année",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic() 
+print(plot_condition_age_TAPI)
 
 
 # Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
@@ -487,13 +588,23 @@ plot(mod)
 # Analyse -----------------------------------------------------------------
 
 # Combine les 4 graphiques en 2x2
+# abondance log
 plot_grid(DUSA_log,
           TAPI_log,
           SIFL_log,
           JABO_log, ncol = 2)
 
+# condition
+plot_grid(plot_condition_DUSA, 
+         plot_condition_TAPI, 
+         plot_condition_SIFL, 
+         plot_condition_JABO, ncol=2)
 
-
+# condition par age
+plot_grid(plot_condition_age_DUSA,
+          plot_condition_age_TAPI,
+          plot_condition_age_SIFL, 
+          plot_condition_age_JABO, ncol = 2)
 
 # TENDANCE TEMPORELLE -----------------------------------------------------
 
