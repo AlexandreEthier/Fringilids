@@ -11,6 +11,7 @@ library(tidyr)
 library(ggpubr)
 library(nlme)
 library(emmeans)
+library(writexl)
 
 # Chargement des données ---------------------------------------------------
 
@@ -60,6 +61,11 @@ abond$abond_std <- as.numeric(abond$abond_std)
 abond$Espece <- as.factor(abond$Espece)
 
 str(abond)
+
+# Créer Excel avec nouvelles modifications
+#chemin1 <- "/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.xlsx"
+# Exporter (my_data_expanded=jeu de données dans envrionnement)
+#write_xlsx(abond, path = chemin1)
 
 
 # Création d'un dataframe pour chaque espèce
@@ -167,6 +173,11 @@ bague <- bague %>%
   filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
   mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
 
+# Exporter le dossier bague tout nettoyé dans un Excel (au lieu de rouler le code à chaque fois)
+
+#chemin <- "/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.xlsx"
+# Exporter (my_data_expanded=jeu de données dans envrionnement)
+#write_xlsx(bague, path = chemin)
 
 ## Ajouter la proportion de jeunes dans la population pour chaque espèce
 unique(bague$Espece)
