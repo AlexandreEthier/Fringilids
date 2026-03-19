@@ -32,7 +32,7 @@ bague_clean$Annee <- as.integer(bague_clean$Annee)
 bague_clean <- bague_clean %>%
   filter(Age != "U") %>%
   filter(between(Annee, 2007, 2025)) %>%
-  rename(espece = Abrv)
+  rename(code = Abrv)
 
 str(bague_clean)
 summary(bague_clean)
@@ -50,7 +50,7 @@ str(abond_clean)
 
 jeunes_par_an <- bague_clean %>%
   filter(Age != "U") %>%    # retire U du jeu de données
-  group_by(Abrv, Annee) %>%
+  group_by(code, Annee) %>%
   summarise(
     nb_HY = sum(Age == "HY"),
     nb_AHY = sum(Age == "AHY"),
@@ -58,7 +58,7 @@ jeunes_par_an <- bague_clean %>%
     .groups = "drop")
 
 # 4 tableaux pour chaque espèce
-tables_par_espece <- split(jeunes_par_an, jeunes_par_an$Abrv)
+tables_par_espece <- split(jeunes_par_an, jeunes_par_an$code)
 prop_Dubrec <- tables_par_espece[["DUSA"]]
 prop_Sizerin <- tables_par_espece[["TAPI"]]
 prop_Jaseur <- tables_par_espece[["SIFL"]]
@@ -75,13 +75,27 @@ props_all <- bind_rows(
 props_all
 # Jointure avec abond
 abond_joint <- abond_clean %>%
-  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee"))
+  left_join(props_all, by = c("Espece" = "code", "Annee" = "Annee"))
 
 # On va retirer <2007
 abond_joint <- abond_joint[abond_joint$Annee >= 2007, ]
 # Vérification
 head(abond_joint)
+str(abond_joint)
 
+## nb oiseau bagué en fonction abondance totale
+ggplot(abond_joint %>% filter(Espece == "TAPI"), aes(x= log(abond_std+1), y= (nb_AHY +nb_HY), group =Espece, color = Espece ))+
+  geom_line()+
+  geom_point()+
+  labs(title = "Nombre d'individus bagués selon l'abondance",
+       x = "log Abondance standardisée",
+       y = "nombre d'oiseaux bagués",
+       color = "Espèce")+
+  stat_cor(method = "pearson") +
+  theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        panel.background = element_blank())
+  
 
 # Visualisation des jeunes dans le temps ----------------------------------
 
@@ -235,7 +249,7 @@ summary(mod2)
 # Prépare le jeu de données
 
 bague_joint <- bague_clean %>%
-  group_by(Abrv, Annee) %>%
+  group_by(code, Annee) %>%
   summarise(
     moyenne_condition = mean(Condition, na.rm = TRUE),
     sd_condition = sd(Condition, na.rm = TRUE),
@@ -246,7 +260,7 @@ bague_joint <- bague_clean %>%
 
 # Jointure avec abond
 abond_joint <- abond_joint %>%
-  left_join(bague_joint, by = c("Espece" = "Abrv", "Annee" = "Annee"))
+  left_join(bague_joint, by = c("Espece" = "code", "Annee" = "Annee"))
 
 
 # Visualisation de la condition corporelle --------------------------------
@@ -337,7 +351,7 @@ plot_TAPI
 
 # graphique condition par classe
 
-plot_condition_age_DUSA<-ggplot(bague_clean %>% filter(espece == "DUSA"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_DUSA<-ggplot(bague_clean %>% filter(code == "DUSA"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age)) +
   scale_fill_manual(
     values = c(
@@ -350,7 +364,7 @@ plot_condition_age_DUSA<-ggplot(bague_clean %>% filter(espece == "DUSA"), aes(x 
   theme_classic() 
 print(plot_condition_age_DUSA)
 
-plot_condition_age_JABO<-ggplot(bague_clean %>% filter(espece == "JABO"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_JABO<-ggplot(bague_clean %>% filter(code == "JABO"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
@@ -363,7 +377,7 @@ plot_condition_age_JABO<-ggplot(bague_clean %>% filter(espece == "JABO"), aes(x 
   theme_classic() 
 print(plot_condition_age_JABO)
 
-plot_condition_age_SIFL<-ggplot(bague_clean %>% filter(espece == "SIFL"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_SIFL<-ggplot(bague_clean %>% filter(code == "SIFL"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
@@ -376,7 +390,7 @@ plot_condition_age_SIFL<-ggplot(bague_clean %>% filter(espece == "SIFL"), aes(x 
   theme_classic() 
 print(plot_condition_age_SIFL)
 
-plot_condition_age_TAPI<-ggplot(bague_clean %>% filter(espece == "TAPI"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_TAPI<-ggplot(bague_clean %>% filter(code == "TAPI"), aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
