@@ -15,6 +15,7 @@ library(ggpubr)
 library(nlme)
 library(emmeans)
 library(writexl)
+library(AICcmodavg)
 
 # Chargement des données ---------------------------------------------------
 
@@ -34,13 +35,13 @@ setwd("C:/Users/alexe/Fringilids")
 
 # Adrien:
 
-abond <- read_excel("Abondance.xlsx") %>% 
+abond <- read_excel("C:/Users/alexe/Fringilids/Data/Abondance.xlsx") %>% 
 rename(Annee = "Année", 
        DUSA = "Durbec des sapins", 
        JABO = "Jaseur boréal", 
        SIFL = "Sizerin flammé",
        TAPI = "Tarin des pins")
-bague <- read_excel("Baguage.xlsx") %>% 
+bague <- read_excel("C:/Users/alexe/Fringilids/Data/Baguage.xlsx") %>% 
   rename(Espece = "Espèce",
          Abrv = "Espèce (abréviation)",
          Age = "Âge",
@@ -49,8 +50,7 @@ bague <- read_excel("Baguage.xlsx") %>%
 # Formatage - Abondance ---------------------------------------------------------------
 
 abond <- abond %>% # Ajoutez votre propre chemin
-  rename(Annee = "Année", 
-         DUSA = "Durbec des sapins", 
+  rename(DUSA = "Durbec des sapins", 
          JABO = "Jaseur boréal", 
          SIFL = "Sizerin flammé",
          TAPI = "Tarin des pins")
@@ -742,8 +742,10 @@ SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
-SIFL_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 2.35 + 0.025x")
+SIFL_log <- SIFL_log+
+  annotate(geom ="text",x = 2000, y = 5, label ="y = 2.35 + 0.025x")
+
+SIFL_log
 
 # TAPI --------------------------------------------------------------------
 
@@ -826,7 +828,7 @@ TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
-TAPI_log+
+TAPI_log <- TAPI_log+
   annotate(geom ="text",x = 5, y = 5, label ="y = 1.66 + 0.067x")
 
 
@@ -901,6 +903,26 @@ pbeta_annee
 exp(DUSA_annee) # 1,07 oiseau de plus/heure/année 
 exp(DUSA_int) 
 
+val_pred_DUSA <- predict.lm(lm_DUSA)
+val_pred_DUSA
+
+
+coefficients(lm_DUSA)
+
+sigma(lm_DUSA)
+
+# Indice annuelle
+coef_irrupt_DUSA <- (DUSA$abond_std - mean(DUSA$abond_std)/sigma(lm_DUSA))
+coef_irrupt_DUSA # Lamontagne and Boutin, 2009
+
+# Indice avec valeurs prédites
+ind_irrupt_DUSA <- (DUSA$abond_std - val_pred_DUSA)/sigma(lm_DUSA)
+ind_irrupt_DUSA # Widick et al., 2023
+
+DUSA$abond_std - mean(DUSA$abond_std)
+
+
+
 # GRAPHIQUE
 
 DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
@@ -911,7 +933,7 @@ DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
-DUSA_log+
+DUSA_log <- DUSA_log+
   annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
   
 
@@ -998,10 +1020,8 @@ JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
-JABO_log+
+JABO_log <- JABO_log+
   annotate(geom ="text",x = 5, y = 5, label ="y = 1.19 + 0.015x")
-
-
 
 
 # Mettre les "prédictions" en un seul graphique
