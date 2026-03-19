@@ -56,8 +56,11 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 #### Définition irruption 
 <img width="537" height="402" alt="image" src="https://github.com/user-attachments/assets/d3eaba0c-3e1a-4059-8be7-cf5b34e3ae49" />
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 0067f75f5e5c8641c1fd5bd89dc744c6b4b06728
 
 
 
