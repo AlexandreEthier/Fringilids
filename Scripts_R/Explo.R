@@ -35,13 +35,13 @@ setwd("C:/Users/alexe/Fringilids")
 
 # Adrien:
 
-abond <- read_excel("C:/Users/alexe/Fringilids/Data/Abondance.xlsx") %>% 
+abond <- read_excel("Abondance.xlsx") %>% 
 rename(Annee = "Année", 
        DUSA = "Durbec des sapins", 
        JABO = "Jaseur boréal", 
        SIFL = "Sizerin flammé",
        TAPI = "Tarin des pins")
-bague <- read_excel("C:/Users/alexe/Fringilids/Data/Baguage.xlsx") %>% 
+bague <- read_excel("Baguage.xlsx") %>% 
   rename(Espece = "Espèce",
          Abrv = "Espèce (abréviation)",
          Age = "Âge",
@@ -344,7 +344,6 @@ DUSA_log
 
 
 lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond)
-
 
 # combine les deux graphique :
 plot_grid(plot_dusa_tot, plot_condition_DUSA, ncol = 1) #graphique bof
@@ -743,7 +742,7 @@ SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
 SIFL_log <- SIFL_log+
-  annotate(geom ="text",x = 2000, y = 5, label ="y = 2.35 + 0.025x")
+  annotate(geom ="text",x = 10, y = 5, label ="y = 2.35 + 0.025x")
 
 SIFL_log
 
@@ -1061,6 +1060,77 @@ segments(x0 = 4, y0 = lower_ic_annee_SIFL,
          x1 = 4, y1 = upper_ic_annee_SIFL)
 
 
+## irruption 
+# formule : D = N-P / sigma(détrendés = écart type de la différence N-P)
+# DUSA 
+range(log(DUSA$abond_std +1))
+# doit-on utiliser le log +1 ? Si oui aucune irruption pour DUSA
+lm_DUSA <- lm(log(abond_std+1)~Annee, data = DUSA)
+#prédiction modèle
+pred_DUSA<- predict(lm_DUSA, DUSA)
+pred_DUSA
+écart_DUSA<- log(DUSA$abond_std+1) - pred_DUSA
+écart_DUSA
+sd(écart_DUSA)
+deviation_DUSA<- écart_DUSA/sd(écart_DUSA)
+deviation_DUSA
+threshold_DUSA<-abs(min(deviation_DUSA))
+threshold_DUSA
+DUSA$irruption <- deviation_DUSA> threshold_DUSA
+DUSA$irruption
+# si log pas d'année à cause de la valeur 24 anormalement faible :(
+# 3 valeurs si pas log
 
 
+# SIFL 
+range(log(SIFL$abond_std +1))
+# année 29 trop basse si log utilisé
+lm_SIFL <- lm((abond_std)~Annee, data = SIFL)
+pred_SIFL<- predict(lm_SIFL, SIFL)
+pred_SIFL
+écart_SIFL<- (SIFL$abond_std) - pred_SIFL
+écart_SIFL
+sd(écart_SIFL)
+deviation_SIFL<- écart_SIFL/sd(écart_SIFL)
+deviation_SIFL
+threshold_SIFL<-abs(min(deviation_SIFL))
+SIFL$irruption <- deviation_SIFL> threshold_SIFL
+SIFL$irruption
+# 2 pics mais d'autres pics ne sont pas marqués :(
 
+# JABO 
+#vérifier le + à utiliser
+range(log(JABO$abond_std+2))
+#lm
+lm_JABO <- lm((abond_std)~Annee, data = JABO)
+summary(lm_JABO)
+#valeurs prédites
+pred_JABO<- predict(lm_JABO, JABO)
+pred_JABO
+écart_JABO<- (JABO$abond_std) - pred_JABO
+écart_JABO
+sd(écart_JABO)
+deviation_JABO<- écart_JABO/sd(écart_JABO)
+deviation_JABO
+threshold_JABO<-abs(min(deviation_JABO))
+threshold_JABO
+JABO$irruption <- deviation_JABO> threshold_JABO
+JABO$irruption
+# 1 valeurs log +2 ; 4 sans log 
+
+# TAPI 
+range(log(TAPI$abond_std))
+
+lm_TAPI <- lm(log(abond_std)~Annee, data = TAPI)
+lm_TAPI
+pred_TAPI<- predict(lm_TAPI, TAPI)
+pred_TAPI
+écart_TAPI<- (log(TAPI$abond_std)) - pred_TAPI
+écart_TAPI
+sd(écart_TAPI)
+deviation_TAPI<- écart_TAPI/sd(écart_TAPI)
+deviation_TAPI
+threshold_TAPI<-abs(min(deviation_SIFL))
+TAPI$irruption <- deviation_TAPI> threshold_TAPI
+TAPI$irruption
+# une seule année par ce que sd est très élevé

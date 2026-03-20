@@ -45,7 +45,6 @@ abond_clean$Espece <- as.factor(abond_clean$Espece)
 
 str(abond_clean)
 
-
 # Calcul des proportions --------------------------------------------------
 
 jeunes_par_an <- bague_clean %>%
