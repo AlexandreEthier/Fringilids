@@ -1060,12 +1060,13 @@ segments(x0 = 4, y0 = lower_ic_annee_SIFL,
          x1 = 4, y1 = upper_ic_annee_SIFL)
 
 
-## irruption 
+#### irruption ####
 # formule : D = N-P / sigma(détrendés = écart type de la différence N-P)
 # DUSA 
 range(log(DUSA$abond_std +1))
 # doit-on utiliser le log +1 ? Si oui aucune irruption pour DUSA
 lm_DUSA <- lm(log(abond_std+1)~Annee, data = DUSA)
+summary(lm_DUSA) # lm OK !
 #prédiction modèle
 pred_DUSA<- predict(lm_DUSA, DUSA)
 pred_DUSA
@@ -1086,9 +1087,11 @@ DUSA$irruption
 range(log(SIFL$abond_std +1))
 # année 29 trop basse si log utilisé
 lm_SIFL <- lm((abond_std)~Annee, data = SIFL)
-pred_SIFL<- predict(lm_SIFL, SIFL)
-pred_SIFL
-écart_SIFL<- (SIFL$abond_std) - pred_SIFL
+summary(lm_SIFL) # pas significatif donc on ne peut pas utiliser lm comme prédicteur
+#pred_SIFL<- predict(lm_SIFL, SIFL)
+#pred_SIFL
+#écart_SIFL<- (SIFL$abond_std) - pred_SIFL
+écart_SIFL<- (SIFL$abond_std) - mean(SIFL$abond_std)
 écart_SIFL
 sd(écart_SIFL)
 deviation_SIFL<- écart_SIFL/sd(écart_SIFL)
@@ -1096,18 +1099,20 @@ deviation_SIFL
 threshold_SIFL<-abs(min(deviation_SIFL))
 SIFL$irruption <- deviation_SIFL> threshold_SIFL
 SIFL$irruption
-# 2 pics mais d'autres pics ne sont pas marqués :(
+print(SIFL[,c( "Annee", "irruption")], n=30)
+
 
 # JABO 
 #vérifier le + à utiliser
 range(log(JABO$abond_std+2))
 #lm
 lm_JABO <- lm((abond_std)~Annee, data = JABO)
-summary(lm_JABO)
+summary(lm_JABO)# pas significatif donc on ne peut pas utiliser lm comme prédicteur
 #valeurs prédites
-pred_JABO<- predict(lm_JABO, JABO)
-pred_JABO
-écart_JABO<- (JABO$abond_std) - pred_JABO
+#pred_JABO<- predict(lm_JABO, JABO)
+# pred_JABO
+# écart_JABO<- (JABO$abond_std) - pred_JABO
+écart_JABO<- (JABO$abond_std) - mean(JABO$abond_std)
 écart_JABO
 sd(écart_JABO)
 deviation_JABO<- écart_JABO/sd(écart_JABO)
@@ -1115,14 +1120,15 @@ deviation_JABO
 threshold_JABO<-abs(min(deviation_JABO))
 threshold_JABO
 JABO$irruption <- deviation_JABO> threshold_JABO
-JABO$irruption
+JABO
+print(JABO[,c( "Annee", "irruption")], n=30)
 # 1 valeurs log +2 ; 4 sans log 
 
 # TAPI 
 range(log(TAPI$abond_std))
 
 lm_TAPI <- lm(log(abond_std)~Annee, data = TAPI)
-lm_TAPI
+summary(lm_TAPI) # significatif : on peut utiliser lm"
 pred_TAPI<- predict(lm_TAPI, TAPI)
 pred_TAPI
 écart_TAPI<- (log(TAPI$abond_std)) - pred_TAPI
@@ -1133,4 +1139,4 @@ deviation_TAPI
 threshold_TAPI<-abs(min(deviation_SIFL))
 TAPI$irruption <- deviation_TAPI> threshold_TAPI
 TAPI$irruption
-# une seule année par ce que sd est très élevé
+# une seule année parce que sd est très élevé sinon utiliser log 
