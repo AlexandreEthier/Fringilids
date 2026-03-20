@@ -84,9 +84,9 @@ head(abond_joint)
 str(abond_joint)
 
 ## nb oiseau bagué en fonction abondance totale
-ggplot(abond_joint %>% filter(Espece == "TAPI"), aes(x= log(abond_std+1), y= (nb_AHY +nb_HY), group =Espece, color = Espece ))+
+ggplot(abond_joint, aes(x= log(abond_std+1), y= (nb_AHY +nb_HY)))+
+  geom_point()+ 
   geom_line()+
-  geom_point()+
   labs(title = "Nombre d'individus bagués selon l'abondance",
        x = "log Abondance standardisée",
        y = "nombre d'oiseaux bagués",
