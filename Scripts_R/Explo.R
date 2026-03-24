@@ -23,204 +23,214 @@ library(AICcmodavg)
 # IMPORTANT - SVP changez les virgules (,) en points (.) à même les deux fichiers Excel
 
 # Maxence
-abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
-bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
+#abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
+#bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
 
 # Alex: C:/Users/alexe/Fringilids/Data/Abondance.xlsx
 #       C:/Users/alexe/Fringilids/Data/Baguage.xlsx
-setwd("C:/Users/alexe/Fringilids")
+#setwd("C:/Users/alexe/Fringilids")
 
 # Bérince:
 #
 
 # Adrien:
 
-abond <- read_excel("Abondance.xlsx") %>% 
-rename(Annee = "Année", 
-       DUSA = "Durbec des sapins", 
-       JABO = "Jaseur boréal", 
-       SIFL = "Sizerin flammé",
-       TAPI = "Tarin des pins")
-bague <- read_excel("Baguage.xlsx") %>% 
-  rename(Espece = "Espèce",
-         Abrv = "Espèce (abréviation)",
-         Age = "Âge",
-         Annee = "Année")
+#abond <- read_excel("Abondance.xlsx") %>% 
+#rename(Annee = "Année", 
+#       DUSA = "Durbec des sapins", 
+#       JABO = "Jaseur boréal", 
+#       SIFL = "Sizerin flammé",
+#       TAPI = "Tarin des pins")
+#bague <- read_excel("Baguage.xlsx") %>% 
+#  rename(Espece = "Espèce",
+#         Abrv = "Espèce (abréviation)",
+#         Age = "Âge",
+#         Annee = "Année")
 
-# Formatage - Abondance ---------------------------------------------------------------
 
-abond <- abond %>% # Ajoutez votre propre chemin
-  rename(DUSA = "Durbec des sapins", 
-         JABO = "Jaseur boréal", 
-         SIFL = "Sizerin flammé",
-         TAPI = "Tarin des pins")
+#abond <- abond %>% # Ajoutez votre propre chemin
+#  rename(DUSA = "Durbec des sapins", 
+#         JABO = "Jaseur boréal", 
+#         SIFL = "Sizerin flammé",
+#         TAPI = "Tarin des pins")
 
-abond <- abond %>% 
-  gather(abond, key = "Espece", DUSA:TAPI) %>%   # Dataframe en une seule colonne
-  mutate(abond_std = abond/Effort)               # Ajout de l'abondance standardisée
+#abond <- abond %>% 
+#  gather(abond, key = "Espece", DUSA:TAPI) %>%   # Dataframe en une seule colonne
+#  mutate(abond_std = abond/Effort)               # Ajout de l'abondance standardisée
                                                  
-abond$Annee <- as.integer(abond$Annee)
-abond$Effort <- as.integer(abond$Effort)
-abond$abond_std <- as.numeric(abond$abond_std)
-abond$Espece <- as.factor(abond$Espece)
+#abond$Annee <- as.integer(abond$Annee)
+#abond$Effort <- as.integer(abond$Effort)
+#abond$abond_std <- as.numeric(abond$abond_std)
+#abond$Espece <- as.factor(abond$Espece)
 
-str(abond)
-
-# Créer Excel avec nouvelles modifications
-#chemin1 <- "/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.xlsx"
-# Exporter (my_data_expanded=jeu de données dans envrionnement)
-#write_xlsx(abond, path = chemin1)
+#str(abond)
 
 
-# Création d'un dataframe pour chaque espèce
 
-# DUSA
+# Manipulation jeu de données bague ---------------------------------------
+
+
+
+#bague <- bague %>%  
+#  rename(Espece = "Espèce",
+#         Abrv = "Espèce (abréviation)",
+#         Age = "Âge",
+#         Annee = "Année")
+
+#head(bague)
+
+#str(bague)
+
+#xtabs(~ bague$Age)
+
+#xtabs(~Sexe, data = bague)
+
+#bague$Age <- as.factor(bague$Age)
+#bague$Sexe <- as.factor(bague$Sexe)
+#bague$Aile <- as.numeric(bague$Aile)
+#bague$Gras <- as.factor(bague$Gras)
+#bague$Queue <- as.numeric(bague$Queue)
+#bague$Masse <- as.numeric(bague$Masse)
+#bague$Annee <- as.integer(bague$Annee)
+
+# Vérification des colonnes de la bd
+
+# Noms d'espèce
+#xtabs(~ Espece, data = bague) # Standardiser les noms
+
+#bague$Espece <- replace(bague$Espece, bague$Espece %in% "DURBEC DES SAPINS", "Durbec des sapins")
+#bague$Espece <- replace(bague$Espece, bague$Espece %in% "TARIN DES PINS", "Tarin des pins")
+#bague$Espece <- replace(bague$Espece,  bague$Espece %in% "SIZERIN FLAMMÉ", "Sizerin flammé")
+
+
+# Abréviation
+#xtabs(~ Abrv, data = bague) # Standardiser TAPI
+
+#bague$Abrv <- replace(bague$Abrv, bague$Abrv %in% "tapi", "TAPI")
+
+
+# Âge
+#xtabs(~ Age, data = bague) # Pooler les âges (HY vs AHY)
+
+#bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")  # Unknown
+#bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY") # Juv (Hatch year)
+#bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY") # Non-juv (After-Hatch Year)
+
+#levels(bague$Age) # Les catégories existent encore
+#bague$Age <- droplevels(bague$Age) # Clean-up des levels
+
+# Sexe
+#xtabs(~ Sexe, data = bague) # Standardiser sexe
+
+#bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "u", "U") # Unknown
+#bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "f", "F") # Femelle
+#bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "m", "M") # Mâle
+
+#levels(bague$Sexe)
+#bague$Sexe <- droplevels(bague$Sexe)
+
+
+# Site
+#xtabs(~ Site, data = bague) # Exclusion des sites != "Dunes"
+
+#bague <- bague %>% 
+#  filter(Site == "Dunes") # Sélection des sites de capture aux Dunes de Tadoussac
+
+
+# Manipulation df
+
+#bague <- bague %>% 
+#  select(-Préfixe, -Suffixe, -Site, - Municipalité) %>%  # Retrait des colonnes non nécessaires
+#  filter(Aile != "NA") %>%                               # Retrait des données manquantes pour "Aile"
+#  filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
+#  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%  # Retrait des années avant 2007
+#  mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
+
+
+
+# Jeu de données propre ---------------------------------------------------
+
+# Importer Excel
+
+#Adrien:
+
+#Alex:
+
+#Bérince:
+
+#Maxence:
+abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.xlsx")
+bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.xlsx")
+
+
+# Création d'un dataframe pour chaque espèce pour abondance ------------------------------
+
+# DUSA (Durbec des sapins)
 DUSA <- abond %>% 
   filter(Espece == "DUSA")
 
 DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
 DUSA$Annee <- as.integer(DUSA$Annee)
 
-hist(DUSA$abond_std)
+#hist(DUSA$abond_std)
 
-# TAPI
+# TAPI (Tarin des Pins)
 TAPI <- abond %>% 
   filter(Espece == "TAPI")
 
 TAPI$Annee <- as.factor(as.numeric(TAPI$Annee))
 TAPI$Annee <- as.integer(TAPI$Annee)
 
-hist(TAPI$abond_std)
+#hist(TAPI$abond_std)
 
-# SIFL
+# SIFL (Sizerin flammé)
 SIFL <- abond %>% 
   filter(Espece == "SIFL")
 
 SIFL$Annee <- as.factor(as.numeric(SIFL$Annee))
 SIFL$Annee <- as.integer(SIFL$Annee)
 
-hist(SIFL$abond_std)
+#hist(SIFL$abond_std)
 
-# JABO
+# JABO (Jaseur Boréal)
 JABO <- abond %>% 
   filter(Espece == "JABO")
 
 JABO$Annee <- as.factor(as.numeric(JABO$Annee))
 JABO$Annee <- as.integer(JABO$Annee)
 
-hist(JABO$abond_std)
+#hist(JABO$abond_std)
 
 
-# Formatage - Baguage -----------------------------------------------------------------
-
-bague <- bague %>%  # Ajoutez votre propre chemin
-  rename(Espece = "Espèce",
-         Abrv = "Espèce (abréviation)",
-         Age = "Âge",
-         Annee = "Année")
-
-head(bague)
-
-str(bague)
-
-xtabs(~ bague$Age)
-
-xtabs(~Sexe, data = bague)
-
-bague$Age <- as.factor(bague$Age)
-bague$Sexe <- as.factor(bague$Sexe)
-bague$Aile <- as.numeric(bague$Aile)
-bague$Gras <- as.factor(bague$Gras)
-bague$Queue <- as.numeric(bague$Queue)
-bague$Masse <- as.numeric(bague$Masse)
-bague$Annee <- as.integer(bague$Annee)
-
-# Vérification des colonnes de la bd
-
-# Noms d'espèce
-xtabs(~ Espece, data = bague) # Standardiser les noms
-
-bague$Espece <- replace(bague$Espece, bague$Espece %in% "DURBEC DES SAPINS", "Durbec des sapins")
-bague$Espece <- replace(bague$Espece, bague$Espece %in% "TARIN DES PINS", "Tarin des pins")
-bague$Espece <- replace(bague$Espece,  bague$Espece %in% "SIZERIN FLAMMÉ", "Sizerin flammé")
-
-
-# Abréviation
-xtabs(~ Abrv, data = bague) # Standardiser TAPI
-
-bague$Abrv <- replace(bague$Abrv, bague$Abrv %in% "tapi", "TAPI")
-
-
-# Âge
-xtabs(~ Age, data = bague) # Pooler les âges (HY vs AHY)
-
-bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")  # Unknown
-bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY") # Juv (Hatch year)
-bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY") # Non-juv (After-Hatch Year)
-
-levels(bague$Age) # Les catégories existent encore
-bague$Age <- droplevels(bague$Age) # Clean-up des levels
-
-# Sexe
-xtabs(~ Sexe, data = bague) # Standardiser sexe
-
-bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "u", "U") # Unknown
-bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "f", "F") # Femelle
-bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "m", "M") # Mâle
-
-levels(bague$Sexe)
-bague$Sexe <- droplevels(bague$Sexe)
-
-
-# Site
-xtabs(~ Site, data = bague) # Exclusion des sites != "Dunes"
-
-bague <- bague %>% 
-  filter(Site == "Dunes") # Sélection des sites de capture aux Dunes de Tadoussac
-
-
-# Manipulation df
-
-bague <- bague %>% 
-  select(-Préfixe, -Suffixe, -Site, - Municipalité) %>%  # Retrait des colonnes non nécessaires
-  filter(Aile != "NA") %>%                               # Retrait des données manquantes pour "Aile"
-  filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
-  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%  # Retrait des années avant 2007
-  mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
-
-# Exporter le dossier bague tout nettoyé dans un Excel (au lieu de rouler le code à chaque fois)
-
-#chemin <- "/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.xlsx"
-# Exporter (my_data_expanded=jeu de données dans envrionnement)
-#write_xlsx(bague, path = chemin)
+# Calcul des proportions pour chaque espèce -------------------------------
 
 ## Ajouter la proportion de jeunes dans la population pour chaque espèce
 unique(bague$Espece)
 
 jeunes_par_an <- bague %>%
   filter(Age != "U") %>%    # retire U du jeu de données
-  group_by(Abrv, Annee) %>%
+  group_by(Abrv, Annee) %>% # par Abrv et Annee
   summarise(
-    nb_HY = sum(Age == "HY"),
-    nb_AHY = sum(Age == "AHY"),
-    prop_jeunes = nb_HY / (nb_HY + nb_AHY),
+    nb_HY = sum(Age == "HY"), # somme des jeunes
+    nb_AHY = sum(Age == "AHY"), # somme des adultes
+    prop_jeunes = nb_HY / (nb_HY + nb_AHY), #proportion de jeunes
     .groups = "drop"
   )
 
-unique(bague$Abrv)
+
 tables_par_espece <- split(jeunes_par_an, jeunes_par_an$Abrv)
-prop_Dubrec <- tables_par_espece[["DUSA"]]
-prop_Sizerin <- tables_par_espece[["TAPI"]]
-prop_Jaseur <- tables_par_espece[["SIFL"]]
-prop_Tarin <- tables_par_espece[["JABO"]]
+prop_DUSA <- tables_par_espece[["DUSA"]]
+prop_TAPI <- tables_par_espece[["TAPI"]]
+prop_SIFL <- tables_par_espece[["SIFL"]]
+prop_JABO <- tables_par_espece[["JABO"]]
 
 
 # Combiner tous les tableaux de proportions en un seul
 props_all <- bind_rows(
-  prop_Dubrec_sel,
-  prop_Sizerin_sel,
-  prop_Jaseur_sel,
-  prop_Tarin_sel
+  prop_DUSA,
+  prop_TAPI,
+  prop_JABO,
+  prop_SIFL
 )
 
 # Jointure avec abond
@@ -230,9 +240,7 @@ abond_joint <- abond %>%
 # Vérification
 head(abond_joint)
 
-
-
-# Exploration des données -------------------------------------------------
+# Exploration des données pour l'abondance -------------------------------------------------
 
 # ABONDANCE
 
@@ -264,6 +272,8 @@ plot_std <- ggplot(abond, aes(x = Annee, y = abond_std, group = Espece, color = 
         panel.background = element_blank())
 plot_std
 
+#Visualisation de l'abondance STANDARDISÉE en LOG des 4 espèces en fonction des années
+
 plot_log <- ggplot(abond, aes(x = Annee, y = log(abond_std), group = Espece, color = Espece))+
   geom_point(size = 3)+
   geom_line(linewidth = 1.5)+
@@ -278,7 +288,7 @@ plot_log <- ggplot(abond, aes(x = Annee, y = log(abond_std), group = Espece, col
 plot_log
 
 
-# Graphique condition/espèce/année
+# Graphique de la condition de chaque espèce en fonction des années
 
 plot_condition <- ggplot(bague, aes(x = Annee, y = Condition, group = Espece, color = Espece))+
   geom_point(size = 3)+
@@ -291,17 +301,24 @@ plot_condition <- ggplot(bague, aes(x = Annee, y = Condition, group = Espece, co
         panel.background = element_blank())
 plot_condition
 
-# Calcule la moyenne de la condition par espèce et par année
-bague_moyenne <- bague_modifie %>%
-  group_by(Espèce, Année) %>%          # Regroupe par espèce et année
+
+# Calcul la moyenne de la condition par espèce et par année ---------------
+
+bague_moyenne <- bague %>%
+  group_by(Espece, Annee) %>%          # Regroupe par espèce et année
   summarise(Condition_moyenne = mean(Condition, na.rm = TRUE),
             Condition_sd = sd(Condition, na.rm = TRUE),  
-            Condition_se = Condition_sd / sqrt(n()))  
+            Condition_se = Condition_sd / sqrt(n()),
+.groups = "drop")
+
+#Retire de 1997 à 2006
 bague_moyenne<-bague_moyenne %>%
-  filter(!Année %in% c(1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))  # Retrait des années avant 2007
+  filter(!Annee %in% c(1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))  # Retrait des années avant 2007
   
 
-plot_condition <- ggplot(bague_moyenne, aes(x = Année, y = Condition_moyenne, group = Espèce, color = Espèce)) +
+# Exploration des données pour bague moyenne ------------------------------
+
+plot_condition <- ggplot(bague_moyenne, aes(x = Annee, y = Condition_moyenne, group = Espece, color = Espece)) +
   geom_point(size = 3) +
   geom_line(linewidth = 1) +  
   labs(title = "Condition moyenne par espèce et par année",
@@ -318,7 +335,11 @@ plot_condition <- ggplot(bague_moyenne, aes(x = Année, y = Condition_moyenne, g
 print(plot_condition) # ne parait pas beaucoup évoluer dans le temps
 
 
-# DUSA (Adrien) -----------------------------------------------------------
+
+# Exploration des données par espèce --------------------------------------
+
+# DUSA (Adrien)
+
 # abondance
 plot_dusa_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkorange1")+
@@ -343,10 +364,13 @@ DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
 DUSA_log
 
 
-lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond)
+#lm_DUSA <- lm(abond$abond_std[abond$Espece == "DUSA"] ~ Annee, data = abond) ne fonctionne pas ce code
 
-# combine les deux graphique :
-plot_grid(plot_dusa_tot, plot_condition_DUSA, ncol = 1) #graphique bof
+#Filtre espèce
+abond_DUSA <- abond[abond$Espece == "DUSA", ]
+
+#Modèle linéaire
+lm_DUSA <- lm(abond_std ~ Annee, data = abond_DUSA)
 
 # Condition
 bague_DUSA <- bague[bague$Espece == "Durbec des sapins",] # Ne garde que DUSA
@@ -374,6 +398,8 @@ plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = 
     )
   print(plot_condition_DUSA)
   
+# combine les deux graphique :
+  plot_grid(plot_dusa_tot, plot_condition_DUSA, ncol = 1) #graphique bof
 # Condition jeunes vs adultes par année
 
 plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
@@ -391,7 +417,7 @@ plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group 
 print(plot_condition_age_DUSA)
 
 
-# JABO (Bérince) ----------------------------------------------------------
+# JABO (Bérince)
 
 plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkgreen")+
@@ -403,7 +429,7 @@ plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_s
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_jabo_tot
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 
 JABO$Annee <- as.factor(as.numeric(JABO$Annee))
 JABO$Annee <- as.integer(JABO$Annee)
@@ -461,7 +487,7 @@ print(plot_condition_age_JABO)
 
 
 
-# SIFL (Alex) -------------------------------------------------------------
+# SIFL (Alex) 
 
 SIFL <- abond[abond$Espece == "SIFL",]
 SIFL
@@ -489,16 +515,16 @@ plot_sifl_tot
 
 # Proportion d'individus bagués par année 
 
-#bague_annuel_SIFL <- bague_SIFL %>% # Nb. de SIFL bagués / année
+bague_annuel_SIFL <- bague_SIFL %>% # Nb. de SIFL bagués / année
   summarise(n())
 
-#ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
+ann <- seq(2007, 2025, 1) # Création d'un vecteur peuplé de 0
 
-#n_bague_ann_SIFL <- as.data.frame(ann) %>% 
-  rename(Annee = "ann") %>% 
-  left_join(bague_annuel_SIFL, by = "Annee") %>% 
-  cbind(n_bague_ann_SIFL$`n()`/SIFL$abond) %>%            # Calcul la proportion de SIFL bagué par année
-  rename(prop_bague = "n_bague_ann_SIFL$`n()`/SIFL$abond")
+#n_bague_ann_SIFL <- as.data.frame(ann) %>%  Problème avec ce code ici
+#  rename(Annee = "ann") %>% 
+#  left_join(bague_annuel_SIFL, by = "Annee") %>% 
+#  cbind(n_bague_ann_SIFL$`n()`/SIFL$abond) %>%            # Calcul la proportion de SIFL bagué par année
+#  rename(prop_bague = "n_bague_ann_SIFL$`n()`/SIFL$abond")
 
 # Condition
 plot_condition_SIFL <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = Annee)) +
@@ -528,10 +554,8 @@ plot_condition_age_SIFL<-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group 
   theme_classic() 
 print(plot_condition_age_SIFL)
 
-str(TAPI)
 
-
-# TAPI (Maxence) ----------------------------------------------------------
+# TAPI (Maxence) 
 
 plot_tapi_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "violetred4")+
@@ -545,6 +569,8 @@ plot_tapi_tot
 
 
 # CHANGER AXE DES X POUR AVOUR LES ANNÉES
+#Prend le lm pour le graphique
+lm_TAPI <- lm(log(abond_std) ~ Annee, data = TAPI)
 
 TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
   geom_point(size = 3, col = "violetred4")+
@@ -555,7 +581,7 @@ TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
 TAPI_log+
-  annotate(geom ="text",x = 2000, y = 5, label ="y = 1.66 + 0.067x")
+  annotate(geom ="text",x = 30, y = 5, label ="y = 1.66 + 0.067x")
 
 summary(lm_TAPI)
 
@@ -603,57 +629,31 @@ plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group 
   theme_classic() 
 print(plot_condition_age_TAPI)
 
-##############################################
-# Tâche #3: Voir si la condition physique des différentes classes est associée à l'abondance standardisé
+#Voir si la condition physique des différentes classes est associée à l'abondance standardisé
 
 # Avoir les données d'abondance avec condition
-jointure <- left_join(
-  bague_modifie, 
-  abondance, 
-  by = c("Année" = "Année") )
+#jointure <- left_join(
+#  bague_modifie, 
+#  abondance, 
+#  by = c("Année" = "Année") )
 
 # D'abord filtrer pour garder seulement les Tarin
-jointure_tarin <- jointure[jointure$Espèce == "Tarin des pins", ]
+#jointure_tarin <- jointure[jointure$Espèce == "Tarin des pins", ]
 
 # Renommer la colonne
-names(jointure_tarin)[names(jointure_tarin) == "Tarin des pins_std"] <- "Tarin_std"
+#names(jointure_tarin)[names(jointure_tarin) == "Tarin des pins_std"] <- "Tarin_std"
 
 #Conserver les colonnes utiles
-jointure_tarin <- jointure_tarin[, c("Année", "Espèce", "Condition", "groupe", "Effort", "Tarin des pins_std")]
+#jointure_tarin <- jointure_tarin[, c("Année", "Espèce", "Condition", "groupe", "Effort", "Tarin des pins_std")]
 
 # Ensuite faire le modèle
-mod <- lm(Condition ~ groupe + Année + Tarin_std, data=jointure_tarin)
-summary(mod)
+#mod <- lm(Condition ~ groupe + Année + Tarin_std, data=jointure_tarin)
+#summary(mod)
 
-par(mfrow = c(2, 2))
-plot(mod)
+#par(mfrow = c(2, 2))
+#plot(mod)
 
 # Visuellement les conditions semblent respectés
-
-# Tâche #4: Voir pour chaque année la proportion des classes selon les années
-
-
-
-# Analyse -----------------------------------------------------------------
-
-# Combine les 4 graphiques en 2x2
-# abondance log
-plot_grid(DUSA_log,
-          TAPI_log,
-          SIFL_log,
-          JABO_log, ncol = 2)
-
-# condition
-plot_grid(plot_condition_DUSA, 
-         plot_condition_TAPI, 
-         plot_condition_SIFL, 
-         plot_condition_JABO, ncol=2)
-
-# condition par age
-plot_grid(plot_condition_age_DUSA,
-          plot_condition_age_TAPI,
-          plot_condition_age_SIFL, 
-          plot_condition_age_JABO, ncol = 2)
 
 
 # TENDANCE TEMPORELLE -----------------------------------------------------
@@ -727,7 +727,7 @@ pbeta_annee
 
 summary(lm_SIFL)
 
-exp(SIFL_annee) # 1,07 oiseau de plus/heure/année 
+exp(SIFL_annee) # 1,002 oiseau de plus/heure/année 
 exp(SIFL_int) 
 
 
@@ -742,9 +742,9 @@ SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
 SIFL_log <- SIFL_log+
-  annotate(geom ="text",x = 10, y = 5, label ="y = 2.35 + 0.025x")
+  annotate(geom ="text",x = 2000, y = 5, label ="y = 2.35 + 0.025x")
 
-SIFL_log
+SIFL_log 
 
 # TAPI --------------------------------------------------------------------
 
@@ -899,7 +899,7 @@ hist(DUSA_output[,2])
 pbeta_annee <- sum(DUSA_output[, 2] >= coef(lm_DUSA)[2])/n_sim
 pbeta_annee
 
-exp(DUSA_annee) # 1,07 oiseau de plus/heure/année 
+exp(DUSA_annee) # 1,05 oiseau de plus/heure/année 
 exp(DUSA_int) 
 
 val_pred_DUSA <- predict.lm(lm_DUSA)
@@ -1006,11 +1006,34 @@ pbeta_annee
 
 summary(lm_JABO)
 
-exp(JABO_annee) # 1,07 oiseau de plus/heure/année 
+exp(JABO_annee) # 1,015 oiseau de plus/heure/année 
 exp(JABO_int) 
 
-# GRAPHIQUE
 
+
+# Analyse -----------------------------------------------------------------
+
+# Combine les 4 graphiques en 2x2
+# abondance log
+plot_grid(DUSA_log,
+          TAPI_log,
+          SIFL_log,
+          JABO_log, ncol = 2)
+
+# condition
+plot_grid(plot_condition_DUSA, 
+          plot_condition_TAPI, 
+          plot_condition_SIFL, 
+          plot_condition_JABO, ncol=2)
+
+# condition par age
+plot_grid(plot_condition_age_DUSA,
+          plot_condition_age_TAPI,
+          plot_condition_age_SIFL, 
+          plot_condition_age_JABO, ncol = 2)
+
+
+# GRAPHIQUE
 JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
   geom_point(size = 3, col = "darkgreen")+
   geom_line()+
@@ -1140,3 +1163,41 @@ threshold_TAPI<-abs(min(deviation_SIFL))
 TAPI$irruption <- deviation_TAPI> threshold_TAPI
 TAPI$irruption
 # une seule année parce que sd est très élevé sinon utiliser log 
+
+
+# Calcul des irruptions ---------------------------------------------------
+
+#Article de Widck et al. (2023)
+
+#We defined irruption years using the standardized deviate (Di,j) method, following LaMontagne and Boutin (2009). Standardized deviates were defined by
+
+# Ni,j,t is the mean count of species i in cell j in year t, 
+# Pi,j,t is the value predicted by the long-term trend in bird count for species i in cell j in year t, and 
+# σi,j is the standard deviation for all detrended years for species i in cell j. The numerator in this expression detrends the time series and the denominator scales to unit standard deviation. Following LaMontagne and Boutin (2009), years with positive standardized deviates greater than the absolute value of the minimum deviate were considered anomalously high and indicative of irruption years.
+
+#Qu'est-ce que ça veut dire ce paragraphe? 
+
+# N: c'est la moyenne pour une année (nous on a une valeur donc c'est ça)
+# P: c'est la valeur prédite à long terme d'une espèce à une année précise. Notre valeur prédite correspond au valeur prédite du modèle linéaire
+# Sigma: c'est l'écart-type du numérateur
+
+# On prend la valeur la plus petite de D (exemple -2.1) en valeur absolue comme seuil (2.1). Si D d'une année dépasse ce seuil (ex: D = 3.4 en 2016), alors 2016 est une année irruptive. 
+
+abond_irruption <- abond %>%
+  group_by(Espece) %>% # Par espèce
+  mutate( #On créé 6 nouvelles colonnes
+    N = abond_std, #valeur de N (mean count)
+    P  = predict(lm(abond_std ~ Annee)), # valeur de P (valeur prédite)
+    numerateur   = N-P, 
+    sigma       = sd(numerateur),
+    standardized_deviate           = numerateur / sigma,
+    seuil = abs(min(standardized_deviate)),
+    irruption   = standardized_deviate > seuil
+  ) %>%
+  ungroup()
+
+unique(abond_irruption$seuil) # Les 4 valeurs sont 1.4724033 pour DUSA 1.2248917 pour JABO 1.0243263 pour SIFL et 0.8864361 pour TAPI
+
+abond_irruption %>%
+  filter(irruption == TRUE) %>%
+  select(Espece, Annee, abond_std, standardized_deviate)
