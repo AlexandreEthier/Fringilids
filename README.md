@@ -63,6 +63,18 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 >>>>>>> 0067f75f5e5c8641c1fd5bd89dc744c6b4b06728
 
 
+### Les tâches à accomplir en date du 24 mars 2026 (1 mois avant la présentation)
+
+1) Comment évoluent la population de fringilidés boréaux (4 espèces) dans le temps (1996-2025); tendances temporelles sur 30 ans de suivi
+  a) Est-ce que la proportion de jeunes de l'année évolue dans le temps: On a réalisé des graphiques et des lm pour regarder les valeurs de p mais rien de plus.
+  b) Comment évolue la condition corporelle des différentes classes au cours du temps: On a réalisé des graphiques pour regarder les tendances mais rien de plus
+
+2) Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
+  a) Est-ce que la proportion de jeunes de l'année (indice de succès reproducteur) est corrélée avec l'abondance anuelle:
+  b) Est-ce que la condition corporelle est corrélée à l'abondance annuelle
+ 
+
+
 
 
 
