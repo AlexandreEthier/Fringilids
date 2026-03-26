@@ -79,7 +79,7 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 - `JABO`: Données d'abondance pour le Jaseur boréal
 
 - `props_all`: Propotion de jeunes pour les quatre espèces en un seul dataframe
-- `abond_joint`: Jointure de `abond` + `props_all` pour avoir l'abondance et la proportion bagué
+- `abond_joint`: Jointure de `abond` + `props_all` pour avoir l'abondance et la proportion bagué + `bague_moyenne` avec les infos sur moyenne, sd de la condition corporelle 
 
 - `bague_DUSA`: Données de baguage pour le Durbec des sapins
 - `bague_TAPI`: Données de baguage pour le Tarin des pins
