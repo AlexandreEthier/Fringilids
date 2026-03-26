@@ -56,12 +56,6 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 #### Définition irruption 
 <img width="537" height="402" alt="image" src="https://github.com/user-attachments/assets/d3eaba0c-3e1a-4059-8be7-cf5b34e3ae49" />
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 0067f75f5e5c8641c1fd5bd89dc744c6b4b06728
-
 
 ### Les tâches à accomplir en date du 24 mars 2026 (1 mois avant la présentation)
 
@@ -72,10 +66,23 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 2) Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
   a) Est-ce que la proportion de jeunes de l'année (indice de succès reproducteur) est corrélée avec l'abondance anuelle:
   b) Est-ce que la condition corporelle est corrélée à l'abondance annuelle
+
+
+#### GLOSSAIRE
+
+- `abond`: Dataframe du jeu de données d'abondance original nettoyé, à partir d'un fichier Excel
+- `bague`: Dataframe du jeu de données de baguage original nettoyé, à partir d'un fichier Excel
+
+- `DUSA`: Données d'abondance pour le Durbec des sapins
+- `TAPI`: Données d'abondance pour le Tarin des pins
+- `SIFL`: Données d'abondance pour le Sizerin flammé
+- `JABO`: Données d'abondance pour le Jaseur boréal
+
+- `props_all`: Propotion de jeunes pour les quatre espèces en un seul dataframe
+- `abond_joint`: Jointure de `abond` + `props_all` pour avoir l'abondance et la proportion bagué
+
+- `bague_DUSA`: Données de baguage pour le Durbec des sapins
+- `bague_TAPI`: Données de baguage pour le Tarin des pins
+- `bague_SIFL`: Données de baguage pour le Sizerin flammé
+- `bague_JABO`: Données de baguage pour le Jaseur boréal
  
-
-
-
-
-
-
