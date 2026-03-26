@@ -79,10 +79,28 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 - `JABO`: Données d'abondance pour le Jaseur boréal
 
 - `props_all`: Propotion de jeunes pour les quatre espèces en un seul dataframe
-- `abond_joint`: Jointure de `abond` + `props_all` pour avoir l'abondance et la proportion bagué + `bague_moyenne` avec les infos sur moyenne, sd de la condition corporelle 
-
+- `abond_joint`: Jointure de `abond` + `props_all` pour avoir l'abondance et la proportion bagué + le nombre d'oiseux bagués + condition_moyenne + sd + se
+- `abond_joint`: Bague + jeu de données résumé par année des conditions
+- `bague_moyenne`: Résumé par année de la condition des oiseaux avec moyenne, sd, se (à éviter)
 - `bague_DUSA`: Données de baguage pour le Durbec des sapins
 - `bague_TAPI`: Données de baguage pour le Tarin des pins
 - `bague_SIFL`: Données de baguage pour le Sizerin flammé
 - `bague_JABO`: Données de baguage pour le Jaseur boréal
+
+- `DUSA_modif`: Données annuelles de baguages de 2007 à 2025 et le calcul d'irruption
+
+- `abond_irruption`: Calcul pour définir les années irruptives pour chaque espèce
+
+
+###Comportement 
+
+- Si on prend la moyenne de DUSA de abond_std, on a des pics
+- Jusitifcation d'exclure predict(lm())
+   a) Certaines espèces aucune irruption à cause d'année extrêment basse
+   b) Article de Montagne utilise cette méthode
+
+
+  
+   
+  
  
