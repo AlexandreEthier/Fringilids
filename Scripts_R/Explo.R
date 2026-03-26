@@ -207,7 +207,7 @@ JABO$Annee <- as.integer(JABO$Annee)
 ## Ajouter la proportion de jeunes dans la population pour chaque espèce
 unique(bague$Espece)
 
-jeunes_par_an <- bague %>%
+props_all <- bague %>%
   filter(Age != "U") %>%    # retire U du jeu de données
   group_by(Abrv, Annee) %>% # par Abrv et Annee
   summarise(
@@ -217,21 +217,6 @@ jeunes_par_an <- bague %>%
     .groups = "drop"
   )
 
-
-tables_par_espece <- split(jeunes_par_an, jeunes_par_an$Abrv)
-prop_DUSA <- tables_par_espece[["DUSA"]]
-prop_TAPI <- tables_par_espece[["TAPI"]]
-prop_SIFL <- tables_par_espece[["SIFL"]]
-prop_JABO <- tables_par_espece[["JABO"]]
-
-
-# Combiner tous les tableaux de proportions en un seul
-props_all <- bind_rows(
-  prop_DUSA,
-  prop_TAPI,
-  prop_JABO,
-  prop_SIFL
-)
 
 # Jointure avec abond
 abond_joint <- abond %>%
