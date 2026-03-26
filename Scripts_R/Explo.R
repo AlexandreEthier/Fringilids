@@ -1,11 +1,6 @@
 
 # Chargement des packages -------------------------------------------------
 
-
-install.packages("emmeans")
-install.packages("ggpubr")
-
-
 library(cowplot)
 library(readxl)
 library(dplyr)
@@ -155,6 +150,8 @@ library(AICcmodavg)
 #Adrien:
 
 #Alex:
+abond <- read_excel("C:/Users/alexe/Fringilids/Data/abond_clean.xlsx")
+bague <- read_excel("C:/Users/alexe/Fringilids/Data/bague_clean.xlsx")
 
 #Bérince:
 
@@ -204,9 +201,6 @@ JABO$Annee <- as.integer(JABO$Annee)
 
 # Calcul des proportions pour chaque espèce -------------------------------
 
-## Ajouter la proportion de jeunes dans la population pour chaque espèce
-unique(bague$Espece)
-
 props_all <- bague %>%
   filter(Age != "U") %>%    # retire U du jeu de données
   group_by(Abrv, Annee) %>% # par Abrv et Annee
@@ -217,13 +211,40 @@ props_all <- bague %>%
     .groups = "drop"
   )
 
+props_all
 
 # Jointure avec abond
 abond_joint <- abond %>%
-  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee"))
+  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee")) %>% 
+  mutate(nb_total = nb_HY + nb_AHY) %>% 
+  filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
 
-# Vérification
-head(abond_joint)
+# Calcul la moyenne de la condition par espèce et par année ---------------
+
+
+bague <- bague %>% 
+  group_by(Espece, Annee) %>% 
+  mutate(Condition_moyenne = mean(Condition, na.rm = TRUE),
+         Condition_sd = sd(Condition, na.rm = TRUE),  
+         Condition_se = Condition_sd / sqrt(n())) %>% 
+  ungroup()
+
+bague_moyenne <- bague %>%
+  group_by(Espece, Annee) %>%          # Regroupe par espèce et année
+  summarise(Condition_moyenne = mean(Condition, na.rm = TRUE),
+            Condition_sd = sd(Condition, na.rm = TRUE),  
+            Condition_se = Condition_sd / sqrt(n())) %>% 
+  filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006)) %>%   # Retrait des années avant 2007
+ungroup()
+
+bague_moyenne$Espece <- replace(bague_moyenne$Espece, bague_moyenne$Espece %in% "Durbec des sapins", "DUSA")
+bague_moyenne$Espece <- replace(bague_moyenne$Espece, bague_moyenne$Espece %in% "Sizerin flammé", "SIFL")
+bague_moyenne$Espece <- replace(bague_moyenne$Espece, bague_moyenne$Espece %in% "Tarin des pins", "TAPI")
+bague_moyenne$Espece <- replace(bague_moyenne$Espece, bague_moyenne$Espece %in% "Jaseur boréal", "JABO")
+
+abond_joint <- abond_joint %>% 
+  left_join(bague_moyenne, by = c("Espece", "Annee"))
+
 
 # Exploration des données pour l'abondance -------------------------------------------------
 
@@ -285,21 +306,6 @@ plot_condition <- ggplot(bague, aes(x = Annee, y = Condition, group = Espece, co
         axis.line.y = element_line(color = "black", linewidth = 0.5),
         panel.background = element_blank())
 plot_condition
-
-
-# Calcul la moyenne de la condition par espèce et par année ---------------
-
-bague_moyenne <- bague %>%
-  group_by(Espece, Annee) %>%          # Regroupe par espèce et année
-  summarise(Condition_moyenne = mean(Condition, na.rm = TRUE),
-            Condition_sd = sd(Condition, na.rm = TRUE),  
-            Condition_se = Condition_sd / sqrt(n()),
-.groups = "drop")
-
-#Retire de 1997 à 2006
-bague_moyenne<-bague_moyenne %>%
-  filter(!Annee %in% c(1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))  # Retrait des années avant 2007
-  
 
 # Exploration des données pour bague moyenne ------------------------------
 
@@ -471,8 +477,7 @@ plot_condition_age_JABO<-ggplot(bague_JABO, aes(x = Annee, y = Condition, group 
 print(plot_condition_age_JABO)
 
 
-
-# SIFL (Alex) 
+# SIFL
 
 SIFL <- abond[abond$Espece == "SIFL",]
 SIFL
@@ -1068,62 +1073,122 @@ segments(x0 = 4, y0 = lower_ic_annee_SIFL,
          x1 = 4, y1 = upper_ic_annee_SIFL)
 
 
-#### irruption ####
-# formule : D = N-P / sigma(détrendés = écart type de la différence N-P)
+
+summary(lm_DUSA)
+summary(lm_SIFL)
+summary(lm_JABO)
+summary(lm_TAPI)
+
+summary(lm_DUSA_modif)
+
+#### irruption (dernière ouverture : 26/03/2026) ####
+
+# formule : D = N-P / sigma(détrendés = ecart type de la différence N-P)
 # DUSA 
-range(log(DUSA$abond_std +1))
+#range(log(DUSA$abond_std +1))
 # doit-on utiliser le log +1 ? Si oui aucune irruption pour DUSA
-lm_DUSA <- lm(log(abond_std+1)~Annee, data = DUSA)
-summary(lm_DUSA) # lm OK !
+
+#lm_DUSA <- lm(log(abond_std + 1) ~ Annee, data = DUSA)
+#summary(lm_DUSA) # lm OK !
+
 #prédiction modèle
-pred_DUSA<- predict(lm_DUSA, DUSA)
-pred_DUSA
-écart_DUSA<- log(DUSA$abond_std+1) - pred_DUSA
-écart_DUSA
-sd(écart_DUSA)
-deviation_DUSA<- écart_DUSA/sd(écart_DUSA)
+#pred_DUSA <- predict(lm_DUSA, DUSA)
+#pred_DUSA
+ecart_DUSA<- DUSA$abond_std - mean(DUSA$abond_std) #numerateur N-P
+ecart_DUSA
+
+
+# ecart_DUSA<- (DUSA$abond_std) - mean(DUSA$abond_std) # avec la moyenne
+
+sd(ecart_DUSA) # denominateur
+
+sd(DUSA$abond_std)/mean(DUSA$abond_std)
+
+deviation_DUSA<- ecart_DUSA/sd(ecart_DUSA) # D
 deviation_DUSA
 threshold_DUSA<-abs(min(deviation_DUSA))
 threshold_DUSA
+
 DUSA$irruption <- deviation_DUSA> threshold_DUSA
 DUSA$irruption
+print(DUSA[,c( "Annee", "irruption")], n=30)
+
 # si log pas d'année à cause de la valeur 24 anormalement faible :(
 # 3 valeurs si pas log
+
+# DUSA modifié (on ne garde que 2007 et après)
+
+DUSA_modif <- DUSA %>% 
+  filter(Annee >= 12)
+
+#range(log(DUSA_modif$abond_std +1))
+# doit-on utiliser le log +1 ? Si oui aucune irruption pour DUSA
+
+#lm_DUSA_modif <- lm(log(abond_std+1)~Annee, data = DUSA_modif)
+#summary(lm_DUSA_modif) # lm OK !
+
+#prédiction modèle
+#pred_DUSA_modif <- predict(lm_DUSA_modif, DUSA_modif)
+
+#ecart_DUSA_modif <- log(DUSA_modif$abond_std+1) - pred_DUSA_modif #numerateur N-P
+
+
+ecart_DUSA_modif <- (DUSA_modif$abond_std) - mean(DUSA_modif$abond_std)
+ecart_DUSA_modif
+
+sd(ecart_DUSA_modif) # denominateur
+deviation_DUSA_modif <- ecart_DUSA_modif/sd(ecart_DUSA_modif) # D
+
+
+threshold_DUSA_modif <-abs(min(deviation_DUSA_modif))
+threshold_DUSA_modif
+DUSA_modif$irruption <- deviation_DUSA_modif > threshold_DUSA_modif
+DUSA_modif$irruption
+print(DUSA_modif[,c( "Annee", "irruption")], n=30)
 
 
 # SIFL 
 range(log(SIFL$abond_std +1))
+
 # année 29 trop basse si log utilisé
-lm_SIFL <- lm((abond_std)~Annee, data = SIFL)
+lm_SIFL <- lm(log(abond_std + 1) ~ Annee, data = SIFL)
+
+
 summary(lm_SIFL) # pas significatif donc on ne peut pas utiliser lm comme prédicteur
 #pred_SIFL<- predict(lm_SIFL, SIFL)
 #pred_SIFL
-#écart_SIFL<- (SIFL$abond_std) - pred_SIFL
-écart_SIFL<- (SIFL$abond_std) - mean(SIFL$abond_std)
-écart_SIFL
-sd(écart_SIFL)
-deviation_SIFL<- écart_SIFL/sd(écart_SIFL)
+
+#ecart_SIFL<- (SIFL$abond_std) - pred_SIFL
+ecart_SIFL<- (SIFL$abond_std) - mean(SIFL$abond_std)
+ecart_SIFL
+sd(ecart_SIFL)
+deviation_SIFL<- ecart_SIFL/sd(ecart_SIFL)
 deviation_SIFL
 threshold_SIFL<-abs(min(deviation_SIFL))
 SIFL$irruption <- deviation_SIFL> threshold_SIFL
 SIFL$irruption
 print(SIFL[,c( "Annee", "irruption")], n=30)
 
+sd(SIFL$abond_std)/mean(SIFL$abond_std)
 
 # JABO 
 #vérifier le + à utiliser
-range(log(JABO$abond_std+2))
+
+range(log(JABO$abond_std+1))
+
 #lm
-lm_JABO <- lm((abond_std)~Annee, data = JABO)
+lm_JABO <- lm(log(abond_std + 1) ~ Annee, data = JABO)
 summary(lm_JABO)# pas significatif donc on ne peut pas utiliser lm comme prédicteur
+
 #valeurs prédites
-#pred_JABO<- predict(lm_JABO, JABO)
+pred_JABO<- predict(lm_JABO, JABO)
+
 # pred_JABO
-# écart_JABO<- (JABO$abond_std) - pred_JABO
-écart_JABO<- (JABO$abond_std) - mean(JABO$abond_std)
-écart_JABO
-sd(écart_JABO)
-deviation_JABO<- écart_JABO/sd(écart_JABO)
+# ecart_JABO<- (JABO$abond_std) - pred_JABO
+ecart_JABO<- (JABO$abond_std) - mean(JABO$abond_std)
+ecart_JABO
+sd(ecart_JABO)
+deviation_JABO<- ecart_JABO/sd(ecart_JABO)
 deviation_JABO
 threshold_JABO<-abs(min(deviation_JABO))
 threshold_JABO
@@ -1132,6 +1197,8 @@ JABO
 print(JABO[,c( "Annee", "irruption")], n=30)
 # 1 valeurs log +2 ; 4 sans log 
 
+sd(JABO$abond_std)/mean(JABO$abond_std)
+
 # TAPI 
 range(log(TAPI$abond_std))
 
@@ -1139,15 +1206,23 @@ lm_TAPI <- lm(log(abond_std)~Annee, data = TAPI)
 summary(lm_TAPI) # significatif : on peut utiliser lm"
 pred_TAPI<- predict(lm_TAPI, TAPI)
 pred_TAPI
-écart_TAPI<- (log(TAPI$abond_std)) - pred_TAPI
-écart_TAPI
-sd(écart_TAPI)
-deviation_TAPI<- écart_TAPI/sd(écart_TAPI)
+ecart_TAPI<- (log(TAPI$abond_std)) - pred_TAPI
+ecart_TAPI<- (TAPI$abond_std) - mean(TAPI$abond_std)
+
+ecart_TAPI
+sd(ecart_TAPI)
+deviation_TAPI<- ecart_TAPI/sd(ecart_TAPI)
 deviation_TAPI
-threshold_TAPI<-abs(min(deviation_SIFL))
+threshold_TAPI<-abs(min(deviation_TAPI))
 TAPI$irruption <- deviation_TAPI> threshold_TAPI
 TAPI$irruption
+print(TAPI[,c( "Annee", "irruption")], n=30)
+
+sd(TAPI$abond_std)/mean(TAPI$abond_std)
+
 # une seule année parce que sd est très élevé sinon utiliser log 
+
+
 
 
 # Calcul des irruptions ---------------------------------------------------
@@ -1164,7 +1239,7 @@ TAPI$irruption
 
 # N: c'est la moyenne pour une année (nous on a une valeur donc c'est ça)
 # P: c'est la valeur prédite à long terme d'une espèce à une année précise. Notre valeur prédite correspond au valeur prédite du modèle linéaire
-# Sigma: c'est l'écart-type du numérateur
+# Sigma: c'est l'ecart-type du numérateur
 
 # On prend la valeur la plus petite de D (exemple -2.1) en valeur absolue comme seuil (2.1). Si D d'une année dépasse ce seuil (ex: D = 3.4 en 2016), alors 2016 est une année irruptive. 
 
@@ -1172,7 +1247,7 @@ abond_irruption <- abond %>%
   group_by(Espece) %>% # Par espèce
   mutate( #On créé 6 nouvelles colonnes
     N = abond_std, #valeur de N (mean count)
-    P  = predict(lm(abond_std ~ Annee)), # valeur de P (valeur prédite)
+    P  = mean(abond_std), # valeur de P (valeur prédite)
     numerateur   = N-P, 
     sigma       = sd(numerateur),
     standardized_deviate           = numerateur / sigma,
@@ -1180,9 +1255,39 @@ abond_irruption <- abond %>%
     irruption   = standardized_deviate > seuil
   ) %>%
   ungroup()
+# BON CODE, IRRUPTION
 
 unique(abond_irruption$seuil) # Les 4 valeurs sont 1.4724033 pour DUSA 1.2248917 pour JABO 1.0243263 pour SIFL et 0.8864361 pour TAPI
 
 abond_irruption %>%
   filter(irruption == TRUE) %>%
   select(Espece, Annee, abond_std, standardized_deviate)
+
+str(DUSA)
+
+DUSA$irruption <- as.factor(DUSA$irruption)
+
+
+plot_dusa_tot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = DUSA$irruption))+
+  scale_color_manual(values = c("TRUE" = "green", "FALSE" = "orange"))+
+  geom_point(size = 3)+
+  geom_path(linewidth = 1, col = "orange")+
+  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_dusa_tot+
+  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)
+
+DUSA$irruption <- abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+
+abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+
+
+
+
+
+
+
+
