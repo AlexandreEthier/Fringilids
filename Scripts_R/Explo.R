@@ -149,6 +149,9 @@ library(AICcmodavg)
 
 #Adrien:
 
+abond <- read_excel("abond_clean.xlsx")
+bague <- read_excel("bague_clean.xlsx")
+
 #Alex:
 abond <- read_excel("C:/Users/alexe/Fringilids/Data/abond_clean.xlsx")
 bague <- read_excel("C:/Users/alexe/Fringilids/Data/bague_clean.xlsx")
@@ -1256,7 +1259,6 @@ abond_irruption <- abond %>%
   ) %>%
   ungroup()
 # BON CODE, IRRUPTION
-
 unique(abond_irruption$seuil) # Les 4 valeurs sont 1.4724033 pour DUSA 1.2248917 pour JABO 1.0243263 pour SIFL et 0.8864361 pour TAPI
 
 abond_irruption %>%
@@ -1265,29 +1267,141 @@ abond_irruption %>%
 
 str(DUSA)
 
+DUSA$irruption <- abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
 DUSA$irruption <- as.factor(DUSA$irruption)
 
-
-plot_dusa_tot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = DUSA$irruption))+
-  scale_color_manual(values = c("TRUE" = "green", "FALSE" = "orange"))+
-  geom_point(size = 3)+
-  geom_path(linewidth = 1, col = "orange")+
+plot_dusa_tot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "orange", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
   labs(title = "Abondance du Durbec des Sapins par heure d'observation",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
-plot_dusa_tot+
-  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)
+plot_dusa_tot
+  
+JABO$irruption <- abond_irruption$irruption[abond_irruption$Espece == "JABO"]
+abond_irruption$irruption[abond_irruption$Espece == "JABO"]
+JABO$irruption <- as.factor(JABO$irruption)
 
-DUSA$irruption <- abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+plot_JABO_tot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "#009929", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Jaseur boréal par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(JABO$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_JABO_tot
 
-abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+SIFL$irruption <- abond_irruption$irruption[abond_irruption$Espece == "SIFL"]
+abond_irruption$irruption[abond_irruption$Espece == "SIFL"]
+SIFL$irruption <- as.factor(SIFL$irruption)
+
+plot_SIFL_tot <- ggplot(SIFL, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "turquoise", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Sizerin flammé par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(SIFL$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_SIFL_tot
 
 
+TAPI$irruption <- abond_irruption$irruption[abond_irruption$Espece == "TAPI"]
+abond_irruption$irruption[abond_irruption$Espece == "TAPI"]
+TAPI$irruption <- as.factor(TAPI$irruption)
+
+plot_TAPI_tot <- ggplot(TAPI, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "violetred", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Tarin des pins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(TAPI$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+plot_TAPI_tot
+
+plot_grid(plot_dusa_tot, plot_JABO_tot, plot_SIFL_tot, plot_TAPI_tot)
 
 
+## graph déviation standard
+par(mfrow=c(2,2))
+range(abond_irruption$standardized_deviate[abond_irruption$Espece=="DUSA"])
+cols=c("black", "orange")
 
+col <- ifelse(abond_irruption$standardized_deviate[abond_irruption$Espece == "DUSA"] > 0.965,
+              cols[2],  # vrai ="orange"
+              cols[1]   # faux = "black"
+)
 
+deviate_dusa<-barplot( abond_irruption$standardized_deviate[abond_irruption$Espece=="DUSA"],
+        abond_irruption$Annee[abond_irruption$Espece=="DUSA"],
+        xlab= "Année", ylab= "Standard deviate", col= col, 
+        main= "Déviation standard du durbec des sapins")
+deviate_dusa<-deviate_dusa +abline(h= 0.96, col="red", lty=2)
+deviate_dusa
+#plot(abond_irruption$Annee[abond_irruption$Espece=="DUSA"], 
+#    abond_irruption$standardized_deviate[abond_irruption$Espece=="DUSA"],
+#   xlab= "Année", ylab= "Standard deviate", col= col, pch=20, cex=2 )
+#abline(h=0, col="red", lty=2)
+#abline(h= 0.96, col="#ff9800")
 
+range(abond_irruption$standardized_deviate[abond_irruption$Espece=="JABO"])
+cols=c("black", "darkgreen")
 
+col <- ifelse(abond_irruption$standardized_deviate[abond_irruption$Espece == "JABO"] > 1.053,
+              cols[2],  # vrai ="orange"
+              cols[1]   # faux = "black"
+)
+
+deviate_JABO<-barplot( abond_irruption$standardized_deviate[abond_irruption$Espece=="JABO"],
+                       abond_irruption$Annee[abond_irruption$Espece=="JABO"],
+                       xlab= "Année", ylab= "Standard deviate", col= col,
+                       main= "Déviation standard du jaseur boréal")
+deviate_JABO<-deviate_JABO +abline(h= 1.053, col="red", lty=2)
+deviate_JABO
+
+range(abond_irruption$standardized_deviate[abond_irruption$Espece=="SIFL"])
+cols=c("black", "turquoise")
+
+col <- ifelse(abond_irruption$standardized_deviate[abond_irruption$Espece == "SIFL"] > 0.495,
+              cols[2],  # vrai ="orange"
+              cols[1]   # faux = "black"
+)
+
+deviate_SIFL<-barplot( abond_irruption$standardized_deviate[abond_irruption$Espece=="SIFL"],
+                       abond_irruption$Annee[abond_irruption$Espece=="SIFL"],
+                       xlab= "Année", ylab= "Standard deviate", col= col,
+                       main= "Déviation standard du sizerin flammé")
+deviate_SIFL<-deviate_SIFL +abline(h= 0.495, col="red", lty=2)
+
+range(abond_irruption$standardized_deviate[abond_irruption$Espece=="TAPI"])
+cols=c("black", "violet")
+
+col <- ifelse(abond_irruption$standardized_deviate[abond_irruption$Espece == "TAPI"] > 0.525,
+              cols[2],  # vrai ="orange"
+              cols[1]   # faux = "black"
+)
+
+deviate_TAPI<-barplot( abond_irruption$standardized_deviate[abond_irruption$Espece=="TAPI"],
+                       abond_irruption$Annee[abond_irruption$Espece=="TAPI"],
+                       xlab= "Année", ylab= "Standard deviate", col= col,
+                       main= "Déviation standard du tarin des pins")
+deviate_TAPI<-deviate_TAPI +abline(h= 0.525, col="red", lty=2)
+
+dev.off()
