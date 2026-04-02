@@ -18,8 +18,8 @@ library(AICcmodavg)
 # IMPORTANT - SVP changez les virgules (,) en points (.) à même les deux fichiers Excel
 
 # Maxence
-#abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
-#bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
+abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
+bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
 
 # Alex: C:/Users/alexe/Fringilids/Data/Abondance.xlsx
 #       C:/Users/alexe/Fringilids/Data/Baguage.xlsx
@@ -1265,6 +1265,7 @@ abond_irruption %>%
   filter(irruption == TRUE) %>%
   select(Espece, Annee, abond_std, standardized_deviate)
 
+
 str(DUSA)
 
 DUSA$irruption <- abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
@@ -1405,3 +1406,60 @@ deviate_TAPI<-barplot( abond_irruption$standardized_deviate[abond_irruption$Espe
 deviate_TAPI<-deviate_TAPI +abline(h= 0.525, col="red", lty=2)
 
 dev.off()
+
+
+# Condition et proportion -------------------------------------------------
+
+abond_irruption <- abond_irruption %>%
+  select(-c(N, P, sigma, numerateur, seuil, standardized_deviate))
+
+# jointure de la proportion de jeunes
+
+abond_irruption <- abond_irruption %>%
+  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee")) %>% 
+  mutate(nb_total = nb_HY + nb_AHY) %>% 
+  filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
+
+# jointure avec abond_joint
+abond_irruption <- abond_irruption %>%
+  left_join(bague_joint, by = c("Espece" = "Abrv", "Annee" = "Annee")) %>% 
+  filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
+
+par(mfrow=c(2,2))
+cols=c("black", "orange")
+
+col <- ifelse(abond_irruption$irruption=="TRUE",
+              cols[2],  # vrai ="orange"
+              cols[1]   # faux = "black"
+)
+
+plot(abond_irruption$abond_std[abond_irruption$Espece=="TAPI"], 
+     abond_irruption$nb_total[abond_irruption$Espece=="TAPI"], 
+     ylab ="n bagué", xlab = "abond std.",main= "TAPI",
+     col=col)
+
+plot(abond_irruption$prop_jeunes[abond_irruption$Espece=="TAPI"], 
+     abond_irruption$moyenne_condition[abond_irruption$Espece=="TAPI"], 
+     ylab ="condition moyenne", xlab = "Proportion jeunes",main= "TAPI",
+     col=col)
+
+
+abond_irruption$prop_bague <- abond_irruption$nb_total/abond_irruption$abond
+
+
+plot(abond_irruption$prop_jeunes[abond_irruption$Espece=="SIFL"], 
+     abond_irruption$moyenne_condition[abond_irruption$Espece=="SIFL"], 
+     ylab ="condition moyenne", xlab = "Proportion jeunes",main= "SIFL",
+     col=col)
+
+plot(abond_irruption$prop_jeunes[abond_irruption$Espece=="TAPI"], 
+     abond_irruption$moyenne_condition[abond_irruption$Espece=="TAPI"], 
+     ylab ="condition moyenne", xlab = "Proportion jeunes",main= "TAPI",
+     col=col)
+
+plot(abond_irruption$prop_jeunes[abond_irruption$Espece=="TAPI"], 
+     abond_irruption$moyenne_condition[abond_irruption$Espece=="TAPI"], 
+     ylab ="condition moyenne", xlab = "Proportion jeunes",main= "TAPI",
+     col=col)
+plot_condition_proportion_TAPI
+

@@ -408,4 +408,19 @@ plot_grid(plot_condition_age_DUSA,
           plot_condition_age_JABO, ncol = 2)
 
 
+# condition proportion ----------------------------------------------------
+
+# À noter que pour DUSA, certaines années sont manquantes
+plot_condition_proportion_TAPI <- ggplot(abond_joint %>% filter(Espece == "TAPI"), aes(x = moyenne_condition, y = prop_jeunes))+
+  geom_point(size = 3)+
+  labs(title = "Évolution de la condition corporelle",
+       x = "Condition",
+       y = "Proportion de jeunes",
+       color = "Espèce")+
+  theme(axis.line.x = element_line(color = "black", linewidth = 0.5),
+        axis.line.y = element_line(color = "black", linewidth = 0.5),
+        panel.background = element_blank())
+plot_condition_proportion_TAPI
+
+
 
