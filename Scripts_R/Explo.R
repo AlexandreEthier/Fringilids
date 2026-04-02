@@ -21,125 +21,84 @@ library(AICcmodavg)
 abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
 bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
 
-# Alex: C:/Users/alexe/Fringilids/Data/Abondance.xlsx
-#       C:/Users/alexe/Fringilids/Data/Baguage.xlsx
-#setwd("C:/Users/alexe/Fringilids")
+#C:/Users/alexe/Fringilids/Data/Abondance.xlsx
+bague <- read_excel("C:/Users/alexe/Fringilids/Data/Baguage.xlsx")
 
-# Bérince:
-#
-
-# Adrien:
-
-#abond <- read_excel("Abondance.xlsx") %>% 
-#rename(Annee = "Année", 
-#       DUSA = "Durbec des sapins", 
-#       JABO = "Jaseur boréal", 
-#       SIFL = "Sizerin flammé",
-#       TAPI = "Tarin des pins")
-#bague <- read_excel("Baguage.xlsx") %>% 
-#  rename(Espece = "Espèce",
-#         Abrv = "Espèce (abréviation)",
-#         Age = "Âge",
-#         Annee = "Année")
-
-
-#abond <- abond %>% # Ajoutez votre propre chemin
-#  rename(DUSA = "Durbec des sapins", 
-#         JABO = "Jaseur boréal", 
-#         SIFL = "Sizerin flammé",
-#         TAPI = "Tarin des pins")
-
-#abond <- abond %>% 
-#  gather(abond, key = "Espece", DUSA:TAPI) %>%   # Dataframe en une seule colonne
-#  mutate(abond_std = abond/Effort)               # Ajout de l'abondance standardisée
-                                                 
-#abond$Annee <- as.integer(abond$Annee)
-#abond$Effort <- as.integer(abond$Effort)
-#abond$abond_std <- as.numeric(abond$abond_std)
-#abond$Espece <- as.factor(abond$Espece)
-
-#str(abond)
+summary(bague)
 
 
 
-# Manipulation jeu de données bague ---------------------------------------
+bague <- bague %>%  
+  rename(Espece = "Espèce",
+         Abrv = "Espèce (abréviation)",
+         Age = "Âge",
+         Annee = "Année")
+
+head(bague)
+
+str(bague)
+
+xtabs(~ bague$Age)
+
+xtabs(~Sexe, data = bague)
+
+bague$Age <- as.factor(bague$Age)
+bague$Sexe <- as.factor(bague$Sexe)
+bague$Aile <- as.numeric(bague$Aile)
+bague$Gras <- as.factor(bague$Gras)
+bague$Queue <- as.numeric(bague$Queue)
+bague$Masse <- as.numeric(bague$Masse)
+bague$Annee <- as.integer(bague$Annee)
 
 
+xtabs(~ Espece, data = bague)  #Standardiser les noms
 
-#bague <- bague %>%  
-#  rename(Espece = "Espèce",
-#         Abrv = "Espèce (abréviation)",
-#         Age = "Âge",
-#         Annee = "Année")
-
-#head(bague)
-
-#str(bague)
-
-#xtabs(~ bague$Age)
-
-#xtabs(~Sexe, data = bague)
-
-#bague$Age <- as.factor(bague$Age)
-#bague$Sexe <- as.factor(bague$Sexe)
-#bague$Aile <- as.numeric(bague$Aile)
-#bague$Gras <- as.factor(bague$Gras)
-#bague$Queue <- as.numeric(bague$Queue)
-#bague$Masse <- as.numeric(bague$Masse)
-#bague$Annee <- as.integer(bague$Annee)
-
-# Vérification des colonnes de la bd
-
-# Noms d'espèce
-#xtabs(~ Espece, data = bague) # Standardiser les noms
-
-#bague$Espece <- replace(bague$Espece, bague$Espece %in% "DURBEC DES SAPINS", "Durbec des sapins")
-#bague$Espece <- replace(bague$Espece, bague$Espece %in% "TARIN DES PINS", "Tarin des pins")
-#bague$Espece <- replace(bague$Espece,  bague$Espece %in% "SIZERIN FLAMMÉ", "Sizerin flammé")
+bague$Espece <- replace(bague$Espece, bague$Espece %in% "DURBEC DES SAPINS", "Durbec des sapins")
+bague$Espece <- replace(bague$Espece, bague$Espece %in% "TARIN DES PINS", "Tarin des pins")
+bague$Espece <- replace(bague$Espece,  bague$Espece %in% "SIZERIN FLAMMÉ", "Sizerin flammé")
 
 
 # Abréviation
-#xtabs(~ Abrv, data = bague) # Standardiser TAPI
+xtabs(~ Abrv, data = bague)  #Standardiser TAPI
 
-#bague$Abrv <- replace(bague$Abrv, bague$Abrv %in% "tapi", "TAPI")
+bague$Abrv <- replace(bague$Abrv, bague$Abrv %in% "tapi", "TAPI")
 
 
 # Âge
-#xtabs(~ Age, data = bague) # Pooler les âges (HY vs AHY)
+xtabs(~ Age, data = bague)  #Pooler les âges (HY vs AHY)
 
-#bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")  # Unknown
-#bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY") # Juv (Hatch year)
-#bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY") # Non-juv (After-Hatch Year)
+bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")   #Unknown
+bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY")  #Juv (Hatch year)
+bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY")  #Non-juv (After-Hatch Year)
 
-#levels(bague$Age) # Les catégories existent encore
-#bague$Age <- droplevels(bague$Age) # Clean-up des levels
+bague <- bague %>% 
+  filter(Age != "U")
 
 # Sexe
-#xtabs(~ Sexe, data = bague) # Standardiser sexe
+xtabs(~ Sexe, data = bague)  #Standardiser sexe
 
-#bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "u", "U") # Unknown
-#bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "f", "F") # Femelle
-#bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "m", "M") # Mâle
-
-#levels(bague$Sexe)
-#bague$Sexe <- droplevels(bague$Sexe)
-
+bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "u", "U")  #Unknown
+bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "f", "F")  #Femelle
+bague$Sexe <- replace(bague$Sexe, bague$Sexe %in% "m", "M")  #Mâle
 
 # Site
-#xtabs(~ Site, data = bague) # Exclusion des sites != "Dunes"
+xtabs(~ Site, data = bague)  #Exclusion des sites != "Dunes"
 
-#bague <- bague %>% 
-#  filter(Site == "Dunes") # Sélection des sites de capture aux Dunes de Tadoussac
+bague <- bague %>% 
+  filter(Site == "Dunes")  #Sélection des sites de capture aux Dunes de Tadoussac
 
+ #Manipulation df
 
-# Manipulation df
+bague <- bague %>% 
+  select(-Préfixe, -Suffixe, -Site, - Municipalité, -Queue, - Gras, -Date, -Espece, -Sexe) %>%  # Retrait des colonnes non nécessaires
+  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%   #Retrait des années avant 2007
+  mutate(Condition = (Aile/Masse))                        #Indice de condition standardisé
 
-#bague <- bague %>% 
-#  select(-Préfixe, -Suffixe, -Site, - Municipalité) %>%  # Retrait des colonnes non nécessaires
-#  filter(Aile != "NA") %>%                               # Retrait des données manquantes pour "Aile"
-#  filter(Masse != "NA") %>%                              # Retrait des données manquantes pour "Masse"
-#  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%  # Retrait des années avant 2007
-#  mutate(Condition = (Aile/Masse))                       # Indice de condition standardisé
+bague <- bague %>% 
+  filter(Age != "U") %>% 
+  rename(Espece = "Abrv")
+
+#write_xlsx(bague, "bague_clean.xlsx")
 
 
 
@@ -205,8 +164,7 @@ JABO$Annee <- as.integer(JABO$Annee)
 # Calcul des proportions pour chaque espèce -------------------------------
 
 props_all <- bague %>%
-  filter(Age != "U") %>%    # retire U du jeu de données
-  group_by(Abrv, Annee) %>% # par Abrv et Annee
+  group_by(Espece, Annee) %>% # par Abrv et Annee
   summarise(
     nb_HY = sum(Age == "HY"), # somme des jeunes
     nb_AHY = sum(Age == "AHY"), # somme des adultes
@@ -1342,6 +1300,7 @@ plot_grid(plot_dusa_tot, plot_JABO_tot, plot_SIFL_tot, plot_TAPI_tot)
 
 ## graph déviation standard
 par(mfrow=c(2,2))
+
 range(abond_irruption$standardized_deviate[abond_irruption$Espece=="DUSA"])
 cols=c("black", "orange")
 
@@ -1413,10 +1372,15 @@ dev.off()
 abond_irruption <- abond_irruption %>%
   select(-c(N, P, sigma, numerateur, seuil, standardized_deviate))
 
+abond_irruption <- abond_irruption %>%
+  left_join(abond_joint, by = c("Espece", "Annee")) %>% 
+  filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
+
+
 # jointure de la proportion de jeunes
 
 abond_irruption <- abond_irruption %>%
-  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee")) %>% 
+  left_join(props_all, by = c("Espece" = "Espece", "Annee" = "Annee")) %>% 
   mutate(nb_total = nb_HY + nb_AHY) %>% 
   filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
 
@@ -1462,4 +1426,30 @@ plot(abond_irruption$prop_jeunes[abond_irruption$Espece=="TAPI"],
      ylab ="condition moyenne", xlab = "Proportion jeunes",main= "TAPI",
      col=col)
 plot_condition_proportion_TAPI
+
+
+range(abond_irruption$nb_total, na.omit = TRUE)
+
+xtabs(nb_total ~ Espece + Annee, data = abond_irruption)
+
+xtabs(irruption ~ Espece + Annee ,data = abond_irruption)
+
+prop_tab <- xtabs(prop_bague ~ Espece + Annee ,data = abond_irruption)
+
+round(prop_tab, 3)
+
+
+
+bague_clean
+
+
+which(is.na(bague_clean$Condition))
+
+summary(bague)
+
+
+
+
+
+
 
