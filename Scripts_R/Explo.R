@@ -176,7 +176,7 @@ props_all
 
 # Jointure avec abond
 abond_joint <- abond %>%
-  left_join(props_all, by = c("Espece" = "Abrv", "Annee" = "Annee")) %>% 
+  left_join(props_all, by = c("Espece" = "Espece", "Annee" = "Annee")) %>% 
   mutate(nb_total = nb_HY + nb_AHY) %>% 
   filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
 
