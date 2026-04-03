@@ -1,0 +1,32 @@
+---
+title: "SUIVI MIGRATOIRE ET TENDANCE DES POPULATIONS DE FRINGILLIDÉS AUX DUNES DE TADOUSSAC"
+author: "Maxence Poirier-Joanette, Adrien Badet, Alexandre Éthier, Bérince Hounsouvo"
+format: revealjs
+editor: visual
+---
+
+install(")
+## Hypothèses scientifiques
+
+
+## Hypothèses
+
+1) Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi
+    a) Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) évolue dans le temps ?
+    b) Comment évolue la condition corporelle des différentes classes au cours du temps ?
+2) Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
+    a) Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
+    b) Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+
+## Dipositif présenté sur R
+
+
+
+## Manipulation des données
+
+
+
+## Analyse pour les tendances temporelles
+
+
+## Résultats
