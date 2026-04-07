@@ -7,7 +7,7 @@ format:
     slide-number: true
     background-color: "#000000"
     # Attention aux noms ci-dessous :
-    mainfont: "Computer Modern" 
+    mainfont: "Computer Modern"  
     mainfontcolor: "#FFFFFF"
     headingcolor: "#FFD700" 
     fontsize: "20pt"
@@ -86,8 +86,231 @@ abond_joint <- abond %>%
   filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
 ```
 
-## Manipulation des données{style="color: yellow;"}
 
-## Analyse pour les tendances temporelles{style="color: yellow;"}
+## [Données brutes de l'abondance]{style="color: yellow;"}
 
-## Résultats{style="color: yellow;"}
+```{r}
+#| echo: true
+library(ggplot2)
+library(cowplot)
+
+
+small_theme <- theme_classic(base_size = 8) +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 0.8, size = 6),
+    axis.text.y = element_text(size = 6),
+    axis.title = element_text(size = 7),
+    plot.title = element_text(size = 8),
+    plot.margin = margin(2, 2, 2, 2)
+  )
+
+# abondance DUSA
+plot_DUSA_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+
+  labs(title = "Durbec des Sapins",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+# abondance SIFL
+
+plot_SIFL_tot <- ggplot(abond[abond$Espece=="SIFL",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_path(linewidth = 1, col = "turquoise3")+
+  labs(title = "Sizerin flammé",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+# abondance JABO
+
+plot_JABO_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "darkgreen")+
+  geom_path(linewidth = 1, col = "chartreuse4")+
+  labs(title = "Jaseur boréal",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+#abondance TAPI
+
+plot_TAPI_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_std, group =1))+
+  geom_point(size = 3, col = "violetred4")+
+  geom_path(linewidth = 1, col = "violetred3")+
+  labs(title = "Tarin des pins",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+```
+
+## [Visualisation brutes]{style="color: yellow;"}
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+plot_grid(
+  plot_DUSA_tot,
+  plot_JABO_tot,
+  plot_SIFL_tot,
+  plot_TAPI_tot,
+  ncol = 2,
+  align = "hv"
+)
+```
+
+## [Données brutes condition]{style="color: yellow;"}
+
+```{r}
+
+```
+
+
+## [Irruption]{style="color: yellow;"}
+```{r}
+#| echo: true
+abond_irruption <- abond %>%
+  group_by(Espece) %>% # Par espèce
+  mutate( #On créé 6 nouvelles colonnes
+    N = abond_std, #valeur de N (mean count)
+    P  = mean(abond_std), # valeur de P (valeur prédite)
+    numerateur   = N-P, 
+    sigma       = sd(numerateur),
+    standardized_deviate           = numerateur / sigma,
+    seuil = abs(min(standardized_deviate)),
+    irruption   = standardized_deviate > seuil
+  ) %>%
+  ungroup()
+```
+
+![Légende de l'image](Lamontagne.png)
+
+
+## [Code pour irruption]{style="color: yellow;"}
+```{r}
+#| echo: true
+
+# Importer jeu de données pour chaque espèce
+DUSA <- abond %>% 
+  filter(Espece == "DUSA")
+
+DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
+DUSA$Annee <- as.integer(DUSA$Annee)
+
+
+# TAPI (Tarin des Pins)
+TAPI <- abond %>% 
+  filter(Espece == "TAPI")
+
+TAPI$Annee <- as.factor(as.numeric(TAPI$Annee))
+TAPI$Annee <- as.integer(TAPI$Annee)
+
+# SIFL (Sizerin flammé)
+SIFL <- abond %>% 
+  filter(Espece == "SIFL")
+
+SIFL$Annee <- as.factor(as.numeric(SIFL$Annee))
+SIFL$Annee <- as.integer(SIFL$Annee)
+
+# JABO (Jaseur Boréal)
+JABO <- abond %>% 
+  filter(Espece == "JABO")
+
+JABO$Annee <- as.factor(as.numeric(JABO$Annee))
+JABO$Annee <- as.integer(JABO$Annee)
+
+```
+
+## [Code pour irruption]{style="color: yellow;"}
+```{r}
+#| echo: true
+# DUSA
+DUSA$irruption <- abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+abond_irruption$irruption[abond_irruption$Espece == "DUSA"]
+DUSA$irruption <- as.factor(DUSA$irruption)
+
+plot_DUSA_irruption <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "orange", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+#JABO  
+JABO$irruption <- abond_irruption$irruption[abond_irruption$Espece == "JABO"]
+#abond_irruption$irruption[abond_irruption$Espece == "JABO"]
+JABO$irruption <- as.factor(JABO$irruption)
+
+plot_JABO_irruption <- ggplot(JABO, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "#009929", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Jaseur boréal par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(JABO$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+
+# SIFL
+SIFL$irruption <- abond_irruption$irruption[abond_irruption$Espece == "SIFL"]
+#abond_irruption$irruption[abond_irruption$Espece == "SIFL"]
+SIFL$irruption <- as.factor(SIFL$irruption)
+
+plot_SIFL_irruption <- ggplot(SIFL, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "turquoise", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Sizerin flammé par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(SIFL$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+
+# TAPI
+TAPI$irruption <- abond_irruption$irruption[abond_irruption$Espece == "TAPI"]
+#abond_irruption$irruption[abond_irruption$Espece == "TAPI"]
+TAPI$irruption <- as.factor(TAPI$irruption)
+
+plot_TAPI_irruption <- ggplot(TAPI, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("TRUE" = "violetred", "FALSE" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance du Tarin des pins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(TAPI$abond_std), col = "red", lty = 2)+
+  scale_x_continuous(labels=c('1995', '2005', '2015', '2025'))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+```
+
+## [Visualisation pour irruption]{style="color: yellow;"}
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+plot_grid(plot_DUSA_irruption, 
+          plot_JABO_irruption, 
+          plot_SIFL_irruption, 
+          plot_TAPI_irruption,
+            ncol = 2,
+          align = "hv")
+```
+
+## [Analyse pour les tendances temporelles]{style="color: yellow;"}
+
+## [Résultats]{style="color: yellow;"}
