@@ -1,0 +1,50 @@
+
+model{
+
+# Intercept par espèce 
+  for (s in 1:n_espece) {
+    alpha[s] ~ dnorm(0, 0.001)  
+  } 
+  
+##priors for betas on probability
+beta.irruption ~ dnorm(0, 0.001) 
+ 
+##priors for alpha and beta parameters of beta distribution
+kappa ~ dgamma(1, 0.1)
+ 
+##likelihood
+for(i in 1:N) {
+    ##linear predictor
+    lmu[i] <- alpha[espece_id[i]] + beta.irruption * irruption[i]
+    mu[i] <- exp(lmu[i])/(1+exp(lmu[i]))
+    
+    # Reparamétrisation Beta via mu et kappa
+    a[i] <- mu[i] * kappa
+    b[i] <- (1 - mu[i]) * kappa
+    
+    # Prior hiéarchique sur la proprotion anuelle
+     p[i] ~ dbeta(a[i], b[i])
+     
+     # Vraisemblance binomiale
+     nb_HY[i] ~ dbin(p[i], nb_total[i])
+
+}
+  
+  for (s in 1:n_espece) {
+
+    # Proportion prédite par espèce
+    lmu.non.irr[s] <- alpha[s] + beta.irruption * 0
+    lmu.irr[s]     <- alpha[s] + beta.irruption * 1
+
+    mu.non.irr[s] <- exp(lmu.non.irr[s]) / (1 + exp(lmu.non.irr[s]))
+    mu.irr[s]     <- exp(lmu.irr[s])     / (1 + exp(lmu.irr[s]))
+
+    # Différence irruption vs non-irruption par espèce
+    delta[s] <- mu.irr[s] - mu.non.irr[s]
+  }
+
+  # Effet global moyen sur toutes les espèces
+  delta.global <- mean(delta[])
+
+}
+
