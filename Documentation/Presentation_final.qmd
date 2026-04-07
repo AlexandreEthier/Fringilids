@@ -1,32 +1,93 @@
 ---
 title: "SUIVI MIGRATOIRE ET TENDANCE DES POPULATIONS DE FRINGILLIDÉS AUX DUNES DE TADOUSSAC"
 author: "Maxence Poirier-Joanette, Adrien Badet, Alexandre Éthier, Bérince Hounsouvo"
-format: revealjs
+format: 
+  revealjs:
+    theme: dark
+    slide-number: true
+    background-color: "#000000"
+    # Attention aux noms ci-dessous :
+    mainfont: "Computer Modern" 
+    mainfontcolor: "#FFFFFF"
+    headingcolor: "#FFD700" 
+    fontsize: "20pt"
 editor: visual
 ---
 
-install(")
-## Hypothèses scientifiques
+## [Hypothèses]{style="color: yellow;"}
+
+1)  Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi
+    a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) évolue dans le temps ?
+    b)  Comment évolue la condition corporelle des différentes classes au cours du temps ?
+2)  Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
+    a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
+    b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+
+## [Dipositif présenté sur R]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+
+library(readxl)
+library(dplyr)
+
+abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
+bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
+
+bague <- bague %>%  
+  rename(Espece = "Espèce",
+         Abrv = "Espèce (abréviation)",
+         Age = "Âge",
+         Annee = "Année")
+
+# Classe les âges
+bague$Age <- replace(bague$Age, bague$Age %in% c("Local", "S"), "U")   #Unknown
+bague$Age <- replace(bague$Age, bague$Age %in% "hy", "HY")  #Juv (Hatch year)
+bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY")  #Non-juv (After-Hatch Year)
+
+# Retire les U
+bague <- bague %>% 
+  filter(Age != "U")
 
 
-## Hypothèses
+#Manipulation df
+bague <- bague %>% 
+  select(-Préfixe, -Suffixe, -Site, - Municipalité, -Queue, - Gras, -Date, -Espece, -Sexe) %>%  # Retrait des colonnes non nécessaires
+  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%   #Retrait des années avant 2007
+  mutate(Condition = (Aile/Masse))                        #Indice de condition standardisé
 
-1) Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi
-    a) Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) évolue dans le temps ?
-    b) Comment évolue la condition corporelle des différentes classes au cours du temps ?
-2) Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
-    a) Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
-    b) Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+bague <- bague %>% 
+  filter(Age != "U") %>% 
+  rename(Espece = "Abrv")
 
-## Dipositif présenté sur R
+```
 
+## [Dipositif présenté sur R]{style="color: yellow;"}
 
+```{r}
+#| echo: true
 
-## Manipulation des données
+abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.xlsx")
+bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.xlsx")
 
+props_all <- bague %>%
+  group_by(Espece, Annee) %>% # par Abrv et Annee
+  summarise(
+    nb_HY = sum(Age == "HY"), # somme des jeunes
+    nb_AHY = sum(Age == "AHY"), # somme des adultes
+    prop_jeunes = nb_HY / (nb_HY + nb_AHY), #proportion de jeunes
+    .groups = "drop"
+  )
 
+# Jointure avec abond
+abond_joint <- abond %>%
+  left_join(props_all, by = c("Espece" = "Espece", "Annee" = "Annee")) %>% 
+  mutate(nb_total = nb_HY + nb_AHY) %>% 
+  filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
+```
 
-## Analyse pour les tendances temporelles
+## Manipulation des données{style="color: yellow;"}
 
+## Analyse pour les tendances temporelles{style="color: yellow;"}
 
-## Résultats
+## Résultats{style="color: yellow;"}
