@@ -214,8 +214,8 @@ abond_joint <- abond_joint %>%
 # Visualisation graphique de l'abondance des 4 espèces en fonction des années
 
 plot_ab <- ggplot(abond, aes(x = Annee, y = abond, group = Espece, color = Espece))+
-  geom_point()+
-  geom_line()+
+  geom_point(size = 3)+
+  geom_line(linewidth = 1.5)+
   labs(title = "Abondance des espèces cibles par année",
        x = "Année",
        y = "N. d'oiseaux",
@@ -325,7 +325,7 @@ abond_DUSA <- abond[abond$Espece == "DUSA", ]
 lm_DUSA <- lm(abond_std ~ Annee, data = abond_DUSA)
 
 # Condition
-bague_DUSA <- bague[bague$Espece == "Durbec des sapins",] # Ne garde que DUSA
+bague_DUSA <- bague[bague$Espece == "DUSA",] # Ne garde que DUSA
 bague_DUSA <- bague_DUSA[bague_DUSA$Age != "U",] # Ne garde que les individus âgés
 
 bague_DUSA <- bague_DUSA %>% # Regroupement des oiseaux bagués/année
@@ -368,6 +368,30 @@ plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group 
 
 print(plot_condition_age_DUSA)
 
+# différence entre les condition des jeunes et des adultes
+t.test(bague_DUSA$Condition[bague_DUSA$Age=="HY"], bague_DUSA$Condition[bague_DUSA$Age=="AHY"], alternative = "two.sided")
+
+
+# Liste des années uniques
+annees <- unique(bague_DUSA$Annee)
+
+# Boucle sur chaque année
+for (annee in annees) {
+  # Sous-ensemble des données pour l'année en cours
+  data_annee <- bague_DUSA[bague_DUSA$Annee == annee, ]
+  
+  # Sous-ensembles HY et AHY
+  condition_HY <- data_annee$Condition[data_annee$Age == "HY"]
+  condition_AHY <- data_annee$Condition[data_annee$Age == "AHY"]
+  
+  # Test t si les deux groupes ont au moins un individu
+  if (length(condition_HY) > 0 && length(condition_AHY) > 0) {
+    result <- t.test(condition_HY, condition_AHY, alternative = "two.sided")
+    cat("\nAnnée :", annee, "\n")
+    print(result)
+  } 
+}
+## 2016 ; 2018 ; 2020 : années où les adultes avaient une condition meilleures que les jeunes
 
 # JABO (Bérince)
 
@@ -396,7 +420,7 @@ JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
 JABO_log
 
 # Condition
-bague_JABO <- bague[bague$Espece == "Jaseur boréal",] # Ne garde que JABO
+bague_JABO <- bague[bague$Espece == "JABO",] # Ne garde que JABO
 bague_JABO <- bague_JABO[bague_JABO$Age != "U",] # Ne garde que les individus âgés
 
 bague_JABO <- bague_JABO %>% # Regroupement des oiseaux bagués/année
@@ -437,6 +461,31 @@ plot_condition_age_JABO<-ggplot(bague_JABO, aes(x = Annee, y = Condition, group 
 print(plot_condition_age_JABO)
 
 
+# pas différence entre les condition des jeunes et des adultes
+t.test(bague_JABO$Condition[bague_JABO$Age=="HY"], bague_JABO$Condition[bague_JABO$Age=="AHY"], alternative = "two.sided")
+
+
+# Liste des années uniques
+annees <- unique(bague_JABO$Annee)
+
+# Boucle sur chaque année
+for (annee in annees) {
+  # Sous-ensemble des données pour l'année en cours
+  data_annee <- bague_JABO[bague_JABO$Annee == annee, ]
+  
+  # Sous-ensembles HY et AHY
+  condition_HY <- data_annee$Condition[data_annee$Age == "HY"]
+  condition_AHY <- data_annee$Condition[data_annee$Age == "AHY"]
+  
+  # Test t si les deux groupes ont au moins un individu
+  if (length(condition_HY) > 0 && length(condition_AHY) > 0) {
+    result <- t.test(condition_HY, condition_AHY, alternative = "two.sided")
+    cat("\nAnnée :", annee, "\n")
+    print(result)
+  } 
+}
+## 2016 ; 2023 : années où les adultes avaient une condition meilleures que les jeunes
+
 # SIFL
 
 SIFL <- abond[abond$Espece == "SIFL",]
@@ -446,7 +495,7 @@ SIFL <- SIFL %>%
   group_by(Annee) %>% 
   filter(between(Annee, 2007, 2025))
 
-bague_SIFL <- bague[bague$Espece == "Sizerin flammé",] # Ne garde que SIFL
+bague_SIFL <- bague[bague$Espece == "SIFL",] # Ne garde que SIFL
 bague_SIFL <- bague_SIFL[bague_SIFL$Age != "U",] # Ne garde que les individus âgés
 
 bague_SIFL <- bague_SIFL %>% # Regroupement des oiseaux bagués/année
@@ -504,6 +553,31 @@ plot_condition_age_SIFL<-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group 
   theme_classic() 
 print(plot_condition_age_SIFL)
 
+# différence entre les condition des jeunes et des adultes
+t.test(bague_SIFL$Condition[bague_SIFL$Age=="HY"], bague_SIFL$Condition[bague_SIFL$Age=="AHY"], alternative = "two.sided")
+
+
+# Liste des années uniques
+annees <- unique(bague_SIFL$Annee)
+
+# Boucle sur chaque année
+for (annee in annees) {
+  # Sous-ensemble des données pour l'année en cours
+  data_annee <- bague_SIFL[bague_SIFL$Annee == annee, ]
+  
+  # Sous-ensembles HY et AHY
+  condition_HY <- data_annee$Condition[data_annee$Age == "HY"]
+  condition_AHY <- data_annee$Condition[data_annee$Age == "AHY"]
+  
+  # Test t si les deux groupes ont au moins un individu
+  if (length(condition_HY) > 0 && length(condition_AHY) > 0) {
+    result <- t.test(condition_HY, condition_AHY, alternative = "two.sided")
+    cat("\nAnnée :", annee, "\n")
+    print(result)
+  } 
+}
+## 2014 ; 2016 ; 2018 : années où les adultes avaient une condition meilleures que les jeunes
+
 
 # TAPI (Maxence) 
 
@@ -538,7 +612,7 @@ summary(lm_TAPI)
 #stat_cor(method = "pearson")+
   
 # Condition
-bague_TAPI <- bague[bague$Espece == "Tarin des pins",] # Ne garde que TAPI
+bague_TAPI <- bague[bague$Espece == "TAPI",] # Ne garde que TAPI
 bague_TAPI <- bague_TAPI[bague_TAPI$Age != "U",] # Ne garde que les individus âgés
 
 bague_TAPI <- bague_TAPI %>% # Regroupement des oiseaux bagués/année
@@ -579,6 +653,31 @@ plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group 
   theme_classic() 
 print(plot_condition_age_TAPI)
 
+# différence entre les condition des jeunes et des adultes
+t.test(bague_TAPI$Condition[bague_TAPI$Age=="HY"], bague_TAPI$Condition[bague_TAPI$Age=="AHY"], alternative = "two.sided")
+
+
+# Liste des années uniques
+annees <- unique(bague_TAPI$Annee)
+
+# Boucle sur chaque année
+for (annee in annees) {
+  # Sous-ensemble des données pour l'année en cours
+  data_annee <- bague_TAPI[bague_TAPI$Annee == annee, ]
+  
+  # Sous-ensembles HY et AHY
+  condition_HY <- data_annee$Condition[data_annee$Age == "HY"]
+  condition_AHY <- data_annee$Condition[data_annee$Age == "AHY"]
+  
+  # Test t si les deux groupes ont au moins un individu
+  if (length(condition_HY) > 0 && length(condition_AHY) > 0) {
+    result <- t.test(condition_HY, condition_AHY, alternative = "two.sided")
+    cat("\nAnnée :", annee, "\n")
+    print(result)
+  } 
+}
+## 2020 ; 2021 : années où les adultes avaient une condition meilleures que les jeunes
+
 #Voir si la condition physique des différentes classes est associée à l'abondance standardisé
 
 # Avoir les données d'abondance avec condition
@@ -614,7 +713,7 @@ print(plot_condition_age_TAPI)
 
 abond_modif_SIFL <- log(SIFL$abond_std + 1)
 abond_modif_SIFL
-
+SIFL
 lm_SIFL <- lm(log(abond_std) ~ Annee, data = SIFL)
 
 summary(lm_SIFL)
@@ -637,12 +736,12 @@ lower_ic_SIFL <- SIFL_int - (1.96 * SIFL_sd[1])
 lower_ic_SIFL
 
 upper_ic_annee_SIFL <- SIFL_annee + (1.96 * SIFL_sd[2])
-upper_ic_annee_SIFL
+exp(upper_ic_annee_SIFL)
 lower_ic_annee_SIFL <- SIFL_annee - (1.96 * SIFL_sd[2])
-lower_ic_annee_SIFL
+exp(lower_ic_annee_SIFL)
 
 plot(exp(SIFL_annee),
-     ylim = c(0.95, 1.15))
+     ylim = c(0.80, 1.25))
 abline(h = 1, lty = 2, col = "red")
 segments(x0 = 1, y0 = exp(lower_ic_annee_SIFL),
          x1 = 1, y1 = exp(upper_ic_annee_SIFL))
@@ -692,7 +791,7 @@ SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()
 SIFL_log <- SIFL_log+
-  annotate(geom ="text",x = 2000, y = 5, label ="y = 2.35 + 0.025x")
+  annotate(geom ="text",x = 2009, y = 6, label ="y = 2.35 + 0.025x")
 
 SIFL_log 
 
@@ -710,6 +809,7 @@ plot(lm_TAPI)
 dev.off()
 
 TAPI_int <- lm_TAPI$coefficients["(Intercept)"]
+TAPI_int
 TAPI_annee <- lm_TAPI$coefficients["Annee"]
 TAPI_annee
 TAPI_sd <- coef(summary(lm_TAPI))[, "Std. Error"]
@@ -728,12 +828,13 @@ upper_ic_annee_TAPI
 lower_ic_annee_TAPI <- TAPI_annee - (1.96 * TAPI_sd[2])
 lower_ic_annee_TAPI
 
+
+
 plot(exp(TAPI_annee),
-     ylim = c(0.95, 1.15))
+     ylim = c(0.80, 1.25))
 abline(h = 1, lty = 2, col = "red")
 segments(x0 = 1, y0 = exp(lower_ic_annee_TAPI),
          x1 = 1, y1 = exp(upper_ic_annee_TAPI))
-
 
 n_sim <- 5000
 TAPI_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
@@ -780,7 +881,7 @@ TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group =1))+
 TAPI_log <- TAPI_log+
   annotate(geom ="text",x = 5, y = 5, label ="y = 1.66 + 0.067x")
 
-
+print(TAPI_log)
 
 # DUSA --------------------------------------------------------------------
 
@@ -816,7 +917,7 @@ lower_ic_annee_DUSA <- DUSA_annee - (1.96 * DUSA_sd[2])
 lower_ic_annee_DUSA
 
 plot(exp(DUSA_annee),
-     ylim = c(0.95, 1.15))
+     ylim = c(0.80, 1.25))
 abline(h = 1, lty = 2, col = "red")
 segments(x0 = 1, y0 = exp(lower_ic_annee_DUSA),
          x1 = 1, y1 = exp(upper_ic_annee_DUSA))
@@ -884,7 +985,8 @@ DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group =1))+
   theme_classic()
 DUSA_log <- DUSA_log+
   annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
-  
+
+print(DUSA_log)
 
 # JABO
 
@@ -919,7 +1021,7 @@ lower_ic_annee_JABO <- JABO_annee - (1.96 * JABO_sd[2])
 lower_ic_annee_JABO
 
 plot(exp(JABO_annee),
-     ylim = c(0.95, 1.15))
+     ylim = c(0.80, 1.25))
 abline(h = 1, lty = 2, col = "red")
 segments(x0 = 1, y0 = exp(lower_ic_annee_JABO),
          x1 = 1, y1 = exp(upper_ic_annee_JABO))
@@ -960,6 +1062,18 @@ exp(JABO_annee) # 1,015 oiseau de plus/heure/année
 exp(JABO_int) 
 
 
+JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
+  geom_point(size = 3, col = "forestgreen")+
+  geom_line()+
+  geom_abline(intercept = coef(lm_JABO)[1], slope = coef(lm_JABO)[2], color = "red")+
+  labs(title = "Abondance du Durbec des Sapins par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+JABO_log <- JABO_log+
+  annotate(geom ="text",x = 5, y = 3.5, label ="y = 1.18 + 0.015x")
+
+print(JABO_log)
 
 # Analyse -----------------------------------------------------------------
 
@@ -983,17 +1097,6 @@ plot_grid(plot_condition_age_DUSA,
           plot_condition_age_JABO, ncol = 2)
 
 
-# GRAPHIQUE
-JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group =1))+
-  geom_point(size = 3, col = "darkgreen")+
-  geom_line()+
-  geom_abline(intercept = coef(lm_JABO)[1], slope = coef(lm_JABO)[2], color = "red")+
-  labs(title = "Abondance du Jaseur Boréal par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  theme_classic()
-JABO_log <- JABO_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 1.19 + 0.015x")
 
 
 # Mettre les "prédictions" en un seul graphique
@@ -1012,12 +1115,13 @@ tab_comp <- data.frame(c(DUSA_int, JABO_int, TAPI_int, SIFL_int),
 
 rownames(tab_comp) <- c("DUSA", "JABO", "TAPI", "SIFL")
 colnames(tab_comp) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
+tab_comp
 
 axex <- 1:4
 
-plot(tab_comp$annee, data = tab_comp,
+plot(tab_comp$annee,
      xaxt = "n",
-     ylim = c(-0.1, 0.15),
+     ylim = c(-0.2, 0.25),
      ylab = "log estimé de beta",
      xlab = "Espèces",
      main = "Estimés de log beta avec IC 95%")
@@ -1040,6 +1144,85 @@ summary(lm_JABO)
 summary(lm_TAPI)
 
 summary(lm_DUSA_modif)
+
+#### tendance long terme condition ####
+
+lm_SIFL <- lm(Condition ~ Annee, data = bague_SIFL)
+
+summary(lm_SIFL)
+
+par(mfrow = c(2,2))
+plot(lm_SIFL)
+
+SIFL_int <- lm_SIFL$coefficients["(Intercept)"]
+SIFL_annee <- lm_SIFL$coefficients["Annee"]
+SIFL_annee
+SIFL_sd <- coef(summary(lm_SIFL))[, "Std. Error"]
+SIFL_sd
+
+summary(lm_SIFL)
+
+
+# Intercepte
+upper_ic_SIFL <- SIFL_int + (1.96 * SIFL_sd[1])
+lower_ic_SIFL <- SIFL_int - (1.96 * SIFL_sd[1])
+lower_ic_SIFL
+
+upper_ic_annee_SIFL <- SIFL_annee + (1.96 * SIFL_sd[2])
+upper_ic_annee_SIFL
+lower_ic_annee_SIFL <- SIFL_annee - (1.96 * SIFL_sd[2])
+lower_ic_annee_SIFL
+
+plot(exp(SIFL_annee),
+     ylim = c(0.80, 1.25))
+abline(h = 1, lty = 2, col = "red")
+segments(x0 = 1, y0 = exp(lower_ic_annee_SIFL),
+         x1 = 1, y1 = exp(upper_ic_annee_SIFL))
+
+n_sim <- 5000
+SIFL_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
+SIFL_sim <- bague_SIFL[, c("Annee")]
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  SIFL_sim$condition <- sample(x = bague_SIFL$Condition, replace = FALSE)
+  
+  lm_SIFL_rand <- lm(condition ~ Annee, data = SIFL_sim)
+  
+  SIFL_output[i,1] <- coef(lm_SIFL_rand)[1] # Beta intercepte (abond_std)
+  SIFL_output[i,2] <- coef(lm_SIFL_rand)[2] # Beta année
+  
+}
+
+hist(SIFL_output[,1])
+hist(SIFL_output[,2])
+abline(v =(coef(lm_SIFL)[2]), lty = 2, col= "red")
+
+
+pbeta_annee <- sum(SIFL_output[, 2] >= coef(lm_SIFL)[2])/n_sim
+pbeta_annee # = significativement différent de 0
+
+summary(lm_SIFL)
+
+
+# GRAPHIQUE
+
+SIFL_log <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = 1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_abline(intercept = coef(lm_SIFL)[1], slope = coef(lm_SIFL)[2], color = "red")+
+  labs(title = "Abondance du Sizerin Flammé par heure d'observation",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()
+SIFL_log <- SIFL_log+
+  annotate(geom ="text",x = 2008, y = 7, label ="y = -27.14 + 0.01x")
+
+SIFL_log ### la condition change de 0.01 par année
+
 
 #### irruption (dernière ouverture : 26/03/2026) ####
 
