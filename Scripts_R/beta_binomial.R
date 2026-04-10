@@ -3,8 +3,6 @@
 
 # Librarie ----------------------------------------------------------------
 
-
-
 library(cowplot)
 library(readxl)
 library(dplyr)
@@ -47,6 +45,8 @@ str(df_final)
 
 df_clean <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Scripts_R/df_final.xlsx")
 
+df_clean <- read_excel("C:/Users/alexe/Fringilids/Scripts_R/df_final.xlsx")
+df_clean<-read_excel("df_final.xlsx")
 #df_clean %>%
 #  group_by(Espece) %>%
 #  summarise(across(where(is.numeric), mean, na.rm = TRUE))
@@ -66,7 +66,10 @@ df_clean <- df_clean[!is.na(df_clean$nb_total), ]
 nrow(df_clean)
 sum(is.na(df_clean$nb_total))  
 
+str(df_clean)
 
+df_clean$irruption <- as.factor(as.numeric(df_clean$irruption))
+df_clean$irruption<- as.numeric(df_clean$irruption)
 
 # Modèle ------------------------------------------------------------------
 
@@ -84,9 +87,78 @@ sum(is.na(df_clean$nb_total))
 
 # JAGS --------------------------------------------------------------------
 
-# Revoir les valeurs de dnorm et dgamma
+# Revoir les valeurs de dnorm et dgammamodel_jeu
+# glm(prop_jeunes ~ Irruption, family = binomial, weigths = nb_total, data= df_clean)
+model_jeune <- "
+ model{
+ 
+ ##priors for betas on probability
+ beta0 ~ dnorm(0, 0.1) #reduce variance for betas because dnorm(0, 0.01) too wide
+ beta.irru ~ dnorm(0, 0.1)
+ 
+ ##priors for alpha and beta parameters of beta distribution
+ theta ~ dunif(0.0, 20) #move away from 0
+ 
+ ##likelihood
+ for(i in 1:nobs) {
+ 
+    ##########################################
+    ##likelihood specified as compound beta and binomial (slicer stuck at values at infinite density - due to low values of alpha and beta)
+    ##linear predictor
+    logit(mu[i]) <- beta0 + beta.irru * Irruption[i] 
+ 
+ 
+    ##prob drawn from beta distribution
+    prob[i] ~ dbeta(mu[i] * theta, (1 - mu[i]) * theta) T(0.001, 0.999) #truncate to avoid 0 and 1
+    
+    ##observed data drawn from binomial
+    NombreJeunes[i] ~ dbin(prob[i], nb_total[i])
+    ##########################################	
+ 
+ }
+ 
+ ##derived parameters
+ #alpha <- theta - beta
+ #beta <- theta - alpha
+ }
+"
+writeLines(model_jeune, con= "model_jeune.txt")
 
-model_string <- "
+jagsData<- list(Prop_Jeunes= df_clean$prop_jeunes, 
+                nb_total = df_clean$nb_total,
+                Irruption = df_clean$irruption,
+                nobs = nrow(df_clean))
+
+# valeurs initiales
+initsFun <- function(){
+  list(beta0 = rnorm(1),
+       beta.irru = rnorm(1), 
+       theta= runif(1, 0.01,10))
+}
+
+params<- c("beta0", "beta.irru","mu", "theta", "prob", "PropJeunes")
+
+out.test<- jags(data = jagsData, 
+                inits = initsFun, 
+                parameters.to.save = params, 
+                n.chains = 5, 
+                n.iter = 10000,
+                n.burnin = 2000, 
+                n.thin = 5, 
+                model= "model_jeune.txt")
+summary(out.test)
+out.sum<- out.test$summary[c("beta0", "beta.irru", "theta"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
+out.sum # pas d'effet de l'irruption mais on n'a pas fait les diagnostics
+## 
+
+?rbinom
+
+plot(density(rbinom(50, 100, 0.5)))
+
+
+
+model_strings <- "
+
 model{
 
 # Intercept par espèce 
@@ -94,15 +166,18 @@ model{
     alpha[s] ~ dnorm(0, 0.001)  
   } 
   
-## prior pour beta
-beta.irruption ~ dnorm(0, 0.001) 
+# prior pour beta
+
+  beta.irruption ~ dnorm(0, 0.001) 
  
-## priors for alpha and beta parameters of beta distribution
-theta ~ dgamma(1, 0.1) # ça peut être unif, gamma (à décider). C'est le paramètre de précision
+# priors for alpha and beta parameters of beta distribution
+  
+  theta ~ dgamma(1, 0.1) # ça peut être unif, gamma (à décider). C'est le paramètre de précision
  
-##likelihood
-for(i in 1:N) {
-    ##linear predictor (portion binomial du modèle)
+#likelihood
+
+  for(i in 1:N) {
+# linear predictor (portion binomial du modèle)
     lmu[i] <- alpha[espece_id[i]] + beta.irruption * irruption[i]
     mu[i] <- exp(lmu[i])/(1+exp(lmu[i])) 
     

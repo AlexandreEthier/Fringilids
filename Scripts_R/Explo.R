@@ -381,7 +381,6 @@ plot_jabo_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_s
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 plot_jabo_tot
 
-#<<<<<<< HEAD
 
 JABO$Annee <- as.factor(as.numeric(JABO$Annee))
 JABO$Annee <- as.integer(JABO$Annee)
@@ -1186,6 +1185,15 @@ sd(TAPI$abond_std)/mean(TAPI$abond_std)
 
 
 
+
+
+
+
+
+
+
+
+
 # Calcul des irruptions ---------------------------------------------------
 
 #Article de Widck et al. (2023)
@@ -1222,6 +1230,7 @@ unique(abond_irruption$seuil) # Les 4 valeurs sont 1.4724033 pour DUSA 1.2248917
 abond_irruption %>%
   filter(irruption == TRUE) %>%
   select(Espece, Annee, abond_std, standardized_deviate)
+
 
 
 str(DUSA)
@@ -1367,6 +1376,9 @@ deviate_TAPI<-deviate_TAPI +abline(h= 0.525, col="red", lty=2)
 dev.off()
 
 
+
+
+
 # Condition et proportion -------------------------------------------------
 
 abond_irruption <- abond_irruption %>%
@@ -1440,12 +1452,77 @@ round(prop_tab, 3)
 
 
 
-bague_clean
+
+# DUSA
+
+irr <- abond_irruption[, c(1,3, 12)]
+irr
+
+abond_joint <- abond_joint %>% 
+  left_join(irr, by = c("Annee", "Espece"))
+
+DUSA <- abond_joint[1:19,]
+irr_DUSA <- DUSA[, c(1,8,9, 10)]
+
+# remove na
+
+irr_DUSA <- na.omit(irr_DUSA)
 
 
-which(is.na(bague_clean$Condition))
+boxplot(prop_jeunes ~ irruption.x, data = irr_DUSA)
 
-summary(bague)
+range(irr_DUSA$prop_jeunes)
+
+
+glm(prop_jeunes ~ irruption.x, data = irr_DUSA)
+
+plot(prop_jeunes ~ nb_total, data = irr_DUSA)
+
+
+# JABO
+
+irr_jabo <- abond_joint[20:38,]
+irr_jabo <- irr_jabo[, c(1,5,8,9,10)]
+
+mod_jabo <- lm(abond_std ~ prop_jeunes, data = irr_jabo)
+
+summary(mod_jabo)
+
+plot(abond_std ~ prop_jeunes, data = irr_jabo)
+
+plot(prop_jeunes ~ nb_total, data = irr_jabo)
+
+dusanonirr
+
+
+?weighted.mean
+
+dusairr <- irr_DUSA[irr_DUSA$irruption.x == "TRUE",]
+dusanonirr <- irr_DUSA[irr_DUSA$irruption.x == "FALSE",]
+
+wirr <- weighted.mean(dusairr$prop_jeunes, dusairr$nb_total)
+wnonirr <- weighted.mean(dusanonirr$prop_jeunes, dusanonirr$nb_total)
+
+t.test(dusairr, dusanonirr)
+ 
+
+mod_dusa <- glm(prop_jeunes ~ Annee + irruption.x, data = irr_DUSA, family = "binomial", weight = nb_std)
+
+summary(mod_dusa)
+
+par(mfrow = c(2,2))
+plot(mod_dusa)
+
+moy_ndusa <- mean(irr_DUSA$nb_total)
+moy_ndusa
+sd_ndusa <- sd(irr_DUSA$nb_total)
+
+irr_DUSA$nb_std <- (irr_DUSA$nb_total - moy_ndusa)/sd_ndusa
+
+irr_DUSA$nb_std <- inverse(irr_DUSA$nb_total)
+
+
+
 
 
 
