@@ -1124,7 +1124,7 @@ plot(tab_comp$annee,
      ylim = c(-0.2, 0.25),
      ylab = "log estimé de beta",
      xlab = "Espèces",
-     main = "Estimés de log beta avec IC 95%")
+     main = "Estimés de log beta avec IC 95% : abondance")
 abline(h = 0, lty = 2, col = "red")
 axis(side = 1, at = axex, labels = c("DUSA", "JABO", "TAPI", "SIFL"))
 segments(x0 = 1, y0 = lower_ic_annee_DUSA,
@@ -1146,46 +1146,37 @@ summary(lm_TAPI)
 summary(lm_DUSA_modif)
 
 #### tendance long terme condition ####
-## SIFL
-bague_SIFL$Annee<-as.numeric(as.factor(bague_SIFL$Annee))
-lm_SIFL_cond <- lm(Condition ~ Annee, data = bague_SIFL) 
-# la régression n'explique rien = simulation peut pertinente
 
-summary(lm_SIFL_cond)
+bague_moyenne$Espece<-as.factor(bague_moyenne$Espece)
+
+## JABO
+bague_moyenne_JABO <-bague_moyenne[bague_moyenne$Espece== "JABO",]
+lm_JABO_cond <- lm(Condition_moyenne ~ Annee, data = bague_moyenne_JABO) 
+summary(lm_JABO_cond)
+# la régression n'explique rien = simulation peu pertinente
 
 par(mfrow = c(2,2))
-plot(lm_SIFL_cond)
+plot(lm_JABO_cond)
 dev.off()
 
-SIFL_int_cond <- lm_SIFL_cond$coefficients["(Intercept)"]
-SIFL_int_cond
-SIFL_annee_cond <- lm_SIFL_cond$coefficients["Annee"]
-SIFL_annee_cond
-SIFL_sd_cond <- coef(summary(lm_SIFL_cond))[, "Std. Error"]
-SIFL_sd_cond
+# GRAPHIQUE
+JABO_cond <- ggplot(bague_moyenne_JABO, aes(x = Annee, y = Condition_moyenne, group = 1))+
+  geom_point(size = 3, col = "forestgreen")+
+  geom_line(col= "forestgreen")+
+  geom_abline(intercept = coef(lm_JABO_cond)[1], slope = coef(lm_JABO_cond)[2], color = "red")+
+  labs(title = "Condition moyenne du Jaseur boréal par année",
+       x = "Année",
+       y = "Condition")+
+  theme_classic()
+JABO_cond <- JABO_cond+
+  annotate(geom ="text",x = 2010, y = 2.35, label ="p = 0.83  R² = -0.08")
+JABO_cond ### la condition change de 0.02 par année
 
 
-
-# Intercepte
-upper_ic_SIFL_cond <- SIFL_int_cond + (1.96 * SIFL_sd_cond[1])
-upper_ic_SIFL_cond
-lower_ic_SIFL_cond <- SIFL_int_cond - (1.96 * SIFL_sd_cond[1])
-lower_ic_SIFL_cond
-
-upper_ic_annee_SIFL_cond <- SIFL_annee_cond + (1.96 * SIFL_sd_cond[2])
-upper_ic_annee_SIFL_cond
-lower_ic_annee_SIFL_cond <- SIFL_annee_cond - (1.96 * SIFL_sd_cond[2])
-lower_ic_annee_SIFL_cond
-
-plot(exp(SIFL_annee_cond),
-     ylim = c(0.95, 1.1))
-abline(h = 1, lty = 2, col = "red")
-segments(x0 = 1, y0 = exp(lower_ic_annee_SIFL_cond),
-         x1 = 1, y1 = exp(upper_ic_annee_SIFL_cond))
-
+# simulation
 n_sim <- 5000
-SIFL_output_cond <- matrix(data = NA, nrow = n_sim, ncol = 2)
-SIFL_sim_cond <- bague_SIFL[, c("Annee")]
+JABO_output_cond <- matrix(data = NA, nrow = n_sim, ncol = 2)
+JABO_sim_cond <- bague_moyenne_JABO[, c("Annee")]
 
 set.seed(1234)
 
@@ -1193,81 +1184,74 @@ for(i in 1:n_sim){
   
   cat("iter = ", i, "\n")
   
-  SIFL_sim_cond$condition <- sample(x = bague_SIFL$Condition, replace = FALSE)
+  JABO_sim_cond$condition <- sample(x = bague_moyenne_JABO$Condition_moyenne, replace = FALSE)
   
-  lm_SIFL_rand_cond <- lm(condition ~ Annee, data = SIFL_sim_cond)
+  lm_JABO_rand_cond <- lm(condition ~ Annee, data = JABO_sim_cond)
   
-  SIFL_output_cond[i,1] <- coef(lm_SIFL_rand_cond)[1] # Beta intercepte (abond_std)
-  SIFL_output_cond[i,2] <- coef(lm_SIFL_rand_cond)[2] # Beta année
+  JABO_output_cond[i,1] <- coef(lm_JABO_rand_cond)[1] # Beta intercepte (abond_std)
+  JABO_output_cond[i,2] <- coef(lm_JABO_rand_cond)[2] # Beta année
   
 }
-SIFL_output_cond
-summary(lm_SIFL_rand_cond)
-summary(lm_SIFL_cond)
-hist(SIFL_output_cond[,1])
-hist(SIFL_output_cond[,2])
-abline(v =(coef(lm_SIFL_cond)[2]), lty = 2, col= "red")
+JABO_output_cond
+summary(lm_JABO_rand_cond)
+summary(lm_JABO_cond)
+hist(JABO_output_cond[,1])
+abline(v =(coef(lm_JABO_cond)[1]), lty = 2, col= "red")
 
-pbeta_annee <- sum(SIFL_output_cond[, 2] >= coef(lm_SIFL_cond)[2])/n_sim
-pbeta_annee # = significativement différent de 0
+hist(JABO_output_cond[,2])
+abline(v =(coef(lm_JABO_cond)[2]), lty = 2, col= "red")
 
+pbeta_annee <- sum(JABO_output_cond[, 2] >= coef(lm_JABO_cond)[2])/n_sim
+pbeta_annee # 0.574
 
+# graph coef
+JABO_int_cond <- lm_JABO_cond$coefficients["(Intercept)"]
+JABO_annee_cond <- lm_JABO_cond$coefficients["Annee"]
+JABO_annee_cond
+JABO_sd_cond <- coef(summary(lm_JABO_cond))[, "Std. Error"]
+JABO_sd_cond
 
+# Intercepte
+upper_ic_annee_JABO_cond <- JABO_annee_cond + (1.96 * JABO_sd_cond[2])
+upper_ic_annee_JABO_cond
+lower_ic_annee_JABO_cond <- JABO_annee_cond - (1.96 * JABO_sd_cond[2])
+lower_ic_annee_JABO_cond
 
-# GRAPHIQUE
+plot((JABO_annee_cond),
+     ylim = c(0.015,-0.015))
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_JABO_cond),
+         x1 = 1, y1 = (upper_ic_annee_JABO_cond))
 
-SIFL_cond <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = 1))+
-  geom_point(size = 3, col = "turquoise4")+
-  geom_abline(intercept = coef(lm_SIFL_cond)[1], slope = coef(lm_SIFL_cond)[2], color = "red")+
-  labs(title = "Abondance du Sizerin Flammé par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  scale_x_continuous(breaks=c(5,10,15),labels=c('2011', '2016', '2021'))+
-  theme_classic()
-SIFL_cond <- SIFL_cond+
-  annotate(geom ="text",x = 8, y = 8, label ="y = 5.52 + 0.02x  R² = 0.02")
-SIFL_cond ### la condition change de 0.02 par année
 
 ## DUSA
-bague_DUSA$Annee<-as.numeric(as.factor(bague_DUSA$Annee))
-lm_DUSA_cond <- lm(Condition ~ Annee, data = bague_DUSA) 
-# la régression n'explique rien = simulation peut pertinente
-
+bague_moyenne_DUSA <-bague_moyenne[bague_moyenne$Espece== "DUSA",]
+lm_DUSA_cond <- lm(Condition_moyenne ~ Annee, data = bague_moyenne_DUSA) 
 summary(lm_DUSA_cond)
+# la régression n'explique rien = simulation peu pertinente
 
 par(mfrow = c(2,2))
 plot(lm_DUSA_cond)
 dev.off()
 
-DUSA_int_cond <- lm_DUSA_cond$coefficients["(Intercept)"]
-DUSA_int_cond
-DUSA_annee_cond <- lm_DUSA_cond$coefficients["Annee"]
-DUSA_annee_cond
-DUSA_sd_cond <- coef(summary(lm_DUSA_cond))[, "Std. Error"]
-DUSA_sd_cond
+# GRAPHIQUE
+DUSA_cond <- ggplot(bague_moyenne_DUSA, aes(x = Annee, y = Condition_moyenne, group = 1))+
+  geom_point(size = 3, col = "orange")+
+  geom_line(col= "orange")+
+  geom_abline(intercept = coef(lm_DUSA_cond)[1], slope = coef(lm_DUSA_cond)[2], color = "red")+
+  labs(title = "Condition moyenne du Durbec des sapins par année",
+       x = "Année",
+       y = "Condition")+
+  theme_classic()
+DUSA_cond <- DUSA_cond+
+  annotate(geom ="text",x = 2010, y = 2.15, label ="p = 0.26  R² = 0.02")
+DUSA_cond ### la condition change de 0.02 par année
 
 
-
-# Intercepte
-upper_ic_DUSA_cond <- DUSA_int_cond + (1.96 * DUSA_sd_cond[1])
-upper_ic_DUSA_cond
-lower_ic_DUSA_cond <- DUSA_int_cond - (1.96 * DUSA_sd_cond[1])
-lower_ic_DUSA_cond
-
-upper_ic_annee_DUSA_cond <- DUSA_annee_cond + (1.96 * DUSA_sd_cond[2])
-upper_ic_annee_DUSA_cond
-lower_ic_annee_DUSA_cond <- DUSA_annee_cond - (1.96 * DUSA_sd_cond[2])
-lower_ic_annee_DUSA_cond
-
-plot(exp(DUSA_annee_cond),
-     ylim = c(0.95, 1.1))
-abline(h = 1, lty = 2, col = "red")
-segments(x0 = 1, y0 = exp(lower_ic_annee_DUSA_cond),
-         x1 = 1, y1 = exp(upper_ic_annee_DUSA_cond))
-
+# simulation
 n_sim <- 5000
 DUSA_output_cond <- matrix(data = NA, nrow = n_sim, ncol = 2)
-DUSA_sim_cond <- bague_DUSA[, c("Annee")]
+DUSA_sim_cond <- bague_moyenne_DUSA[, c("Annee")]
 
 set.seed(1234)
 
@@ -1275,7 +1259,7 @@ for(i in 1:n_sim){
   
   cat("iter = ", i, "\n")
   
-  DUSA_sim_cond$condition <- sample(x = bague_DUSA$Condition, replace = FALSE)
+  DUSA_sim_cond$condition <- sample(x = bague_moyenne_DUSA$Condition_moyenne, replace = FALSE)
   
   lm_DUSA_rand_cond <- lm(condition ~ Annee, data = DUSA_sim_cond)
   
@@ -1291,55 +1275,203 @@ hist(DUSA_output_cond[,2])
 abline(v =(coef(lm_DUSA_cond)[2]), lty = 2, col= "red")
 
 pbeta_annee <- sum(DUSA_output_cond[, 2] >= coef(lm_DUSA_cond)[2])/n_sim
-pbeta_annee # = significativement différent de 0
+pbeta_annee # 0.133
 
-# GRAPHIQUE
+# graph coef
+DUSA_int_cond <- lm_DUSA_cond$coefficients["(Intercept)"]
+DUSA_annee_cond <- lm_DUSA_cond$coefficients["Annee"]
+DUSA_annee_cond
+DUSA_sd_cond <- coef(summary(lm_DUSA_cond))[, "Std. Error"]
+DUSA_sd_cond
 
-DUSA_cond <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = 1))+
-  geom_point(size = 3, col = "orange")+
-  geom_abline(intercept = coef(lm_DUSA_cond)[1], slope = coef(lm_DUSA_cond)[2], color = "red")+
-  labs(title = "Abondance du Durbec des sapins par heure d'observation",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  scale_x_continuous(breaks=c(5,10,15),labels=c('2011', '2016', '2021'))+
-  theme_classic()
-DUSA_cond <- DUSA_cond+
-  annotate(geom ="text",x = 10, y = 3, label ="y = 1.97 + 0.003x")
+# Intercepte
+upper_ic_annee_DUSA_cond <- DUSA_annee_cond + (1.96 * DUSA_sd_cond[2])
+upper_ic_annee_DUSA_cond
+lower_ic_annee_DUSA_cond <- DUSA_annee_cond - (1.96 * DUSA_sd_cond[2])
+lower_ic_annee_DUSA_cond
 
-DUSA_cond ### la condition change de 0.003 par année
+plot((DUSA_annee_cond),
+     ylim = c(0.015,-0.015))
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_DUSA_cond),
+         x1 = 1, y1 = (upper_ic_annee_DUSA_cond))
 
-bague_moyenne$Espece<-as.factor(bague_moyenne$Espece)
-## JABO
-bague_JABO$Annee<-as.numeric(as.factor(bague_JABO$Annee))
 
-bague_moyenne_JABO <-bague_moyenne[bague_moyenne$Espece== "JABO",]
-lm_JABO_cond <- lm(Condition_moyenne ~ Annee, data = bague_moyenne_JABO) 
-summary(lm_JABO_cond)
+## SIFL
+bague_moyenne_SIFL <-bague_moyenne[bague_moyenne$Espece== "SIFL",]
+lm_SIFL_cond <- lm(Condition_moyenne ~ Annee, data = bague_moyenne_SIFL) 
+summary(lm_SIFL_cond)
 # la régression n'explique rien = simulation peu pertinente
 
 par(mfrow = c(2,2))
-plot(lm_JABO_cond)
+plot(lm_SIFL_cond)
 dev.off()
 
+# GRAPHIQUE
+SIFL_cond <- ggplot(bague_moyenne_SIFL, aes(x = Annee, y = Condition_moyenne, group = 1))+
+  geom_point(size = 3, col = "turquoise")+
+  geom_line(col= "turquoise")+
+  geom_abline(intercept = coef(lm_SIFL_cond)[1], slope = coef(lm_SIFL_cond)[2], color = "red")+
+  labs(title = "Moyenne de la condition du Sizerin flammé par année",
+       x = "Année",
+       y = "Condition")+
+  theme_classic()
+SIFL_cond <- SIFL_cond+
+  annotate(geom ="text",x = 2010, y = 6.0, label ="p = 0.50  R² = -0.03")
+SIFL_cond ### la condition change de 0.02 par année
+
+
+# simulation
+n_sim <- 5000
+SIFL_output_cond <- matrix(data = NA, nrow = n_sim, ncol = 2)
+SIFL_sim_cond <- bague_moyenne_SIFL[, c("Annee")]
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  SIFL_sim_cond$condition <- sample(x = bague_moyenne_SIFL$Condition_moyenne, replace = FALSE)
+  
+  lm_SIFL_rand_cond <- lm(condition ~ Annee, data = SIFL_sim_cond)
+  
+  SIFL_output_cond[i,1] <- coef(lm_SIFL_rand_cond)[1] # Beta intercepte (abond_std)
+  SIFL_output_cond[i,2] <- coef(lm_SIFL_rand_cond)[2] # Beta année
+  
+}
+SIFL_output_cond
+summary(lm_SIFL_rand_cond)
+summary(lm_SIFL_cond)
+hist(SIFL_output_cond[,1])
+abline(v =(coef(lm_SIFL_cond)[1]), lty = 2, col= "red")
+
+hist(SIFL_output_cond[,2])
+abline(v =(coef(lm_SIFL_cond)[2]), lty = 2, col= "red")
+
+pbeta_annee <- sum(SIFL_output_cond[, 2] >= coef(lm_SIFL_cond)[2])/n_sim
+pbeta_annee # 0.252
+
+# graph coef
+SIFL_int_cond <- lm_SIFL_cond$coefficients["(Intercept)"]
+SIFL_annee_cond <- lm_SIFL_cond$coefficients["Annee"]
+SIFL_annee_cond
+SIFL_sd_cond <- coef(summary(lm_SIFL_cond))[, "Std. Error"]
+SIFL_sd_cond
+
+# Intercepte
+upper_ic_annee_SIFL_cond <- SIFL_annee_cond + (1.96 * SIFL_sd_cond[2])
+upper_ic_annee_SIFL_cond
+lower_ic_annee_SIFL_cond <- SIFL_annee_cond - (1.96 * SIFL_sd_cond[2])
+lower_ic_annee_SIFL_cond
+
+plot((SIFL_annee_cond),
+     ylim = c(-0.02,0.02))
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_SIFL_cond),
+         x1 = 1, y1 = (upper_ic_annee_SIFL_cond))
+
+## TAPI
+bague_moyenne_TAPI <-bague_moyenne[bague_moyenne$Espece== "TAPI",]
+lm_TAPI_cond <- lm(Condition_moyenne ~ Annee, data = bague_moyenne_TAPI) 
+summary(lm_TAPI_cond)
+# la régression n'explique rien = simulation peu pertinente
+
+par(mfrow = c(2,2))
+plot(lm_TAPI_cond)
+dev.off()
 
 # GRAPHIQUE
-
-JABO_cond <- ggplot(bague_moyenne_JABO, aes(x = Annee, y = Condition_moyenne, group = 1))+
-  geom_point(size = 3, col = "forestgreen")+
-  geom_line(col= "forestgreen")+
-  geom_abline(intercept = coef(lm_JABO_cond)[1], slope = coef(lm_JABO_cond)[2], color = "red")+
-  labs(title = "Condition du Jaseur boréal par heure d'observation",
+TAPI_cond <- ggplot(bague_moyenne_TAPI, aes(x = Annee, y = Condition_moyenne, group = 1))+
+  geom_point(size = 3, col = "violetred")+
+  geom_line(col= "violetred")+
+  geom_abline(intercept = coef(lm_TAPI_cond)[1], slope = coef(lm_TAPI_cond)[2], color = "red")+
+  labs(title = "Condition moyenne du Tarin des pins par année",
        x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
+       y = "Condition")+
   theme_classic()
-JABO_cond <- JABO_cond+
-  annotate(geom ="text",x = 2010, y = 2.4, label ="R² = -0.08")
-JABO_cond ### la condition change de 0.02 par année
+TAPI_cond <- TAPI_cond+
+  annotate(geom ="text",x = 2010, y = 5.8, label ="p = 0.23  R² = 0.03")
+TAPI_cond ### la condition change de 0.02 par année
 
+# simulation
+n_sim <- 5000
+TAPI_output_cond <- matrix(data = NA, nrow = n_sim, ncol = 2)
+TAPI_sim_cond <- bague_moyenne_TAPI[, c("Annee")]
 
+set.seed(1234)
 
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  TAPI_sim_cond$condition <- sample(x = bague_moyenne_TAPI$Condition_moyenne, replace = FALSE)
+  
+  lm_TAPI_rand_cond <- lm(condition ~ Annee, data = TAPI_sim_cond)
+  
+  TAPI_output_cond[i,1] <- coef(lm_TAPI_rand_cond)[1] # Beta intercepte (abond_std)
+  TAPI_output_cond[i,2] <- coef(lm_TAPI_rand_cond)[2] # Beta année
+  
+}
+TAPI_output_cond
+summary(lm_TAPI_rand_cond)
+summary(lm_TAPI_cond)
+hist(TAPI_output_cond[,1])
+abline(v =(coef(lm_TAPI_cond)[1]), lty = 2, col= "red")
 
+hist(TAPI_output_cond[,2])
+abline(v =(coef(lm_TAPI_cond)[2]), lty = 2, col= "red")
 
+pbeta_annee <- sum(TAPI_output_cond[, 2] >= coef(lm_TAPI_cond)[2])/n_sim
+pbeta_annee # 0.12
+
+# graph coef
+TAPI_int_cond <- lm_TAPI_cond$coefficients["(Intercept)"]
+TAPI_annee_cond <- lm_TAPI_cond$coefficients["Annee"]
+TAPI_annee_cond
+TAPI_sd_cond <- coef(summary(lm_TAPI_cond))[, "Std. Error"]
+TAPI_sd_cond
+
+# Intercepte
+upper_ic_annee_TAPI_cond <- TAPI_annee_cond + (1.96 * TAPI_sd_cond[2])
+upper_ic_annee_TAPI_cond
+lower_ic_annee_TAPI_cond <- TAPI_annee_cond - (1.96 * TAPI_sd_cond[2])
+lower_ic_annee_TAPI_cond
+
+plot((TAPI_annee_cond),
+     ylim = c(-0.02,0.02))
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_TAPI_cond),
+         x1 = 1, y1 = (upper_ic_annee_TAPI_cond))
+
+### regrouper les graphique
+plot_grid(DUSA_cond, JABO_cond, SIFL_cond, TAPI_cond )
+
+tab_comp_cond <- data.frame(c(DUSA_int_cond, JABO_int_cond, TAPI_int_cond, SIFL_int_cond),
+                       c(DUSA_annee_cond, JABO_annee_cond, TAPI_annee_cond, SIFL_annee_cond),
+                       c(lower_ic_annee_DUSA_cond, lower_ic_annee_JABO_cond, lower_ic_annee_TAPI_cond, lower_ic_annee_SIFL_cond),
+                       c(upper_ic_annee_DUSA_cond, upper_ic_annee_JABO_cond, upper_ic_annee_TAPI_cond, upper_ic_annee_SIFL_cond))
+
+axex<- 1:4
+rownames(tab_comp_cond) <- c("DUSA", "JABO", "TAPI", "SIFL")
+colnames(tab_comp_cond) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
+tab_comp_cond
+plot(tab_comp_cond$annee,
+     xaxt = "n",
+     ylim = c(-0.02, 0.02),
+     ylab = "log estimé de beta",
+     xlab = "Espèces",
+     main = "Estimés de log beta avec IC 95% : condition")
+abline(h = 0, lty = 2, col = "red")
+axis(side = 1, at = axex, labels = c("DUSA", "JABO", "TAPI", "SIFL"))
+segments(x0 = 1, y0 = lower_ic_annee_DUSA_cond,
+         x1 = 1, y1 = upper_ic_annee_DUSA_cond)
+segments(x0 = 2, y0 = lower_ic_annee_JABO_cond,
+         x1 = 2, y1 = upper_ic_annee_JABO_cond)
+segments(x0 = 3, y0 = lower_ic_annee_TAPI_cond,
+         x1 = 3, y1 = upper_ic_annee_TAPI_cond)
+segments(x0 = 4, y0 = lower_ic_annee_SIFL_cond,
+         x1 = 4, y1 = upper_ic_annee_SIFL_cond)
 
 
 #### irruption (dernière ouverture : 26/03/2026) ####
