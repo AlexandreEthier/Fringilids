@@ -1,61 +1,84 @@
-### RÉPOSITOIRE GIT *FRINGILIDS*
+### PROJET FRINGILIDÉS
+Présenté dans le cadre du cours *Modèles hiérarchiques et inférence bayésienne pour les sciences naturelles FOR-7044*\
+Université Laval
 
-##### Contacts
-Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
-Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
+Badet, Adrien - adrien.badet.1@ulaval.ca\
+Ethier, Alexandre - alexandre.ethier.1@ulaval.ca\
+Hounsovo, Bérince - berince-setchegnon-romeo.hounsouvo.1@ulaval.ca\
+Poirier-Joanette , Maxence - maxence.poirier-joanette.1@ulaval.ca
 
-##### Tâches
-Maxence : Tarin\
-Adrien : Durbec\
-Bérince : Jaseur\
-Alex : Sizerin
-
-standardiser les abondances par l'effort d'observation
-checker abondance en fonction des classes ou proportion des classes
-checker si l'effort de baguage est constant dans le temps
-condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleur est la condition et inversement
-- - - 
-#### MARCHE À SUIVRE
-*Ne pas oublier d'avoir fait le lien entre R et Git. Vous devez travailler sur le projet Fringilids.Rproj*
-
-*S'assurer de changer les virgules (",") en point (".") dans les fichiers Excel car R ne les reconnaît pas*
-
-*Formatage des bases de données dans le "header" du script R - IMPORTANT de faire rouler ces lignes de code pour chaque personne*
-
-##### Actions à réaliser dans le terminal
-
- Pour changer de directory, il faut utiliser la commande `cd "/path"`\
- Utiliser la fonction `ls` pour lister l'ensemble des fichiers dans le directory
-
- Ces étapes sont réalisées dans le repo clôné\
- Cloner le répo Git actuel dans un dossier voulu -> `git clone "https://github.com/AlexandreEthier/Fringilids"`
- 
-  1- Mise-à-jour de la version commune -> `git pull`\
-  2- Pour commencer à suivre un fichier -> `git add Nom_du_fichier.ext`\
-  3- Voir l'état du directory -> `git status`\
-  4- Faire un commit -> `git commit -m "Un message de commit"`\
-  5- Envoyer le commit en ligne -> `git push`
-
- Les modifications devraient apparaître en ligne
-- - - 
-#### DOCUMENTATION
-##### Ressources oiseaux
-- Pyle, P. 1997. Identification Guide to North American Birds, Part 1, Slate Creek Press, Bolinas, California, 732 p.
-- Tarin des pins - TAPI (*Spinus pinus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)
-- Durbec des sapins - DUSA (*Pinicola enucleator*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)
-- Sizerin flammé - SIFL (*Acanthis flammea*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)
-- Jaseur boréal - JABO (*Bombycilla garrulus*) > [LIEN BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)
-
-##### Ressources Git
-- HappyGitwithR -> Lien utile pour faire le pont entre Git et R + toutes les commandes Git
-[HappyGitwithR](https://happygitwithr.com/git-commands)
-- Git help -> Documentation git
-[Git help](https://git-scm.com/book/en/v2/Getting-Started-Getting-Help)
+--- 
 
 
-#### Définition irruption 
-<img width="537" height="402" alt="image" src="https://github.com/user-attachments/assets/d3eaba0c-3e1a-4059-8be7-cf5b34e3ae49" />
 
+
+
+### STRUCTURE
+```bash
+C:.
+├───Data
+│   └───OG
+├───Documentation
+│   ├───DOCU
+│   └───PRES_FINALE
+│       └───Presentation_final_files
+├───gitignore
+└───Scripts_R
+```
+
+##### Data
+
+```bash
++---Data
+|   |   .RData
+|   |   .Rhistory
+|   |   abond_clean.xlsx
+|   |   bague_clean.xlsx
+|   |
+|   \---OG
+|           Abondance.xlsx
+|           Baguage.xlsx
+```
+Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, transmises par l'OOT. 
+
+`Abondance.xlsx`
+
+`Baguage.xlsx`
+
+##### Documentation
+
+```bash
++---Documentation
+|   |   .DS_Store
+|   |   REFERENCES
+|   |
+|   +---DOCU
+|   |       Protocole_Baguage_Passereaux_Automne_Tadoussac_2025.pdf
+|   |       Protocole_Visuel_Total_Automne_Tadoussac_2025.pdf
+|   |       Questions_fringilids.pptx
+|   |
+|   \---PRES_FINALE
+|       |   Presentation_final.html
+|       |   Presentation_final.log
+|       |   Presentation_final.qmd
+|       |   Presentation_final.tex
+|       |
+|       \---Presentation_final_files
+```
+##### Scripts R (à changer)
+
+```bash
+\---Scripts_R
+        .RData
+        .Rhistory
+        Bague_explo.r
+        beta_binom.txt
+        beta_binomial.R
+        df_final.xlsx
+        Explo.R
+        model_jeune.txt
+        Proportion_jeunes.r
+```
 
 ### Les tâches à accomplir en date du 24 mars 2026 (1 mois avant la présentation)
 
@@ -92,15 +115,9 @@ condition physique = Longueur Aile / masse # plus le chiffre est faible, meilleu
 - `abond_irruption`: Calcul pour définir les années irruptives pour chaque espèce
 
 
-###Comportement 
-
-- Si on prend la moyenne de DUSA de abond_std, on a des pics
-- Jusitifcation d'exclure predict(lm())
-   a) Certaines espèces aucune irruption à cause d'année extrêment basse
-   b) Article de Montagne utilise cette méthode
-
-
-  
+##### Contacts
+Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
+Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
    
   
  
