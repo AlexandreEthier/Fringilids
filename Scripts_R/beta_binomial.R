@@ -354,3 +354,30 @@ legend("topright",
        legend = c("Zéro", "Delta global"),
        col    = c("red", "blue"),
        lty    = 2)
+
+
+# GLMM  -------------------------------------------------------------------
+install.packages("glmmTMB", type = "source", dependencies = TRUE)
+library(glmmTMB)
+
+fit <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption + Espece,
+               family   = betabinomial(link = "logit"),
+               data     = df_clean)
+summary(fit)
+
+df_clean_DUSA <- df_clean %>% 
+  filter(Espece == "DUSA")
+
+fit_DUSA <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption,
+               family   = betabinomial(link = "logit"),
+               data     = df_clean_DUSA)
+
+summary(fit_DUSA)
+
+library(DHARMa) 
+install.packages("DHARMa")
+simOut <- simulateResiduals(fit_DUSA, n = 500)
+##quantile-quantile plot of  observed residuals vs residuals from simulations
+plot(simOut) 
+plotQQunif(simOut) #QQ plot based on uniform distribution
+plotResiduals(simOut)

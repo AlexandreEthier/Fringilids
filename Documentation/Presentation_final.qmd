@@ -1,18 +1,31 @@
 ---
-title: "SUIVI MIGRATOIRE ET TENDANCE DES POPULATIONS DE FRINGILLIDÉS AUX DUNES DE TADOUSSAC"
+title: "Suivi migratoire et tendance des populations de fringilidés aux dunes de tadoussac"
 author: "Maxence Poirier-Joanette, Adrien Badet, Alexandre Éthier, Bérince Hounsouvo"
 format: 
   revealjs:
-    theme: dark
+    theme: black
     slide-number: true
     background-color: "#000000"
-    # Attention aux noms ci-dessous :
-    mainfont: "Computer Modern"  
-    mainfontcolor: "#FFFFFF"
+    mainfont: "sans-serif"  
+    mainfontcolor: "#FFD700"
     headingcolor: "#FFD700" 
     fontsize: "20pt"
 editor: visual
 ---
+
+## 
+
+::: {layout-nrow=2}
+
+![Durbec des sapins](Durbec.jpg){height=280px fig-align="center"}
+
+![Jaseur boréal](Jaseur.jpg){height=280px fig-align="center"}
+
+![Sizerin flammée](Sizerin.jpg){height=280px fig-align="center"}
+
+![Tarin des pins](Tarin.jpg){height=280px fig-align="center"}
+
+:::
 
 ## [Hypothèses]{style="color: yellow;"}
 
@@ -22,17 +35,23 @@ editor: visual
 2)  Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
     a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
     b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+    
+## [Jeu de données brutes]{style="color: yellow;"}
+
+```{r}
+library(readxl)
+abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
+str(abond)
+bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
+str(bague)
+```
 
 ## [Dipositif présenté sur R]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
 
-library(readxl)
 library(dplyr)
-
-abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
-bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
 
 bague <- bague %>%  
   rename(Espece = "Espèce",
@@ -47,18 +66,14 @@ bague$Age <- replace(bague$Age, bague$Age %in% c("SY", "ASY", "ahy"), "AHY")  #N
 
 # Retire les U
 bague <- bague %>% 
-  filter(Age != "U")
-
-
-#Manipulation df
-bague <- bague %>% 
-  select(-Préfixe, -Suffixe, -Site, - Municipalité, -Queue, - Gras, -Date, -Espece, -Sexe) %>%  # Retrait des colonnes non nécessaires
-  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%   #Retrait des années avant 2007
-  mutate(Condition = (Aile/Masse))                        #Indice de condition standardisé
-
-bague <- bague %>% 
   filter(Age != "U") %>% 
   rename(Espece = "Abrv")
+
+#Retirer les colonnes inutiles
+bague <- bague %>% 
+  select(-Préfixe, -Suffixe, -Site, - Municipalité, -Queue, - Gras, -Date, -Espece, -Sexe) %>%  
+  filter(!Annee %in% c(1997,1998, 1999, 2000, 2006))%>%   #Retrait des années avant 2007
+  mutate(Condition = (Aile/Masse))                        #Indice de condition standardisé
 
 ```
 
@@ -70,6 +85,7 @@ bague <- bague %>%
 abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.xlsx")
 bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.xlsx")
 
+# Calcul pour la proportion de jeune
 props_all <- bague %>%
   group_by(Espece, Annee) %>% # par Abrv et Annee
   summarise(
@@ -79,21 +95,122 @@ props_all <- bague %>%
     .groups = "drop"
   )
 
-# Jointure avec abond
+# Données abondance + les proportions de jeunes
 abond_joint <- abond %>%
   left_join(props_all, by = c("Espece" = "Espece", "Annee" = "Annee")) %>% 
   mutate(nb_total = nb_HY + nb_AHY) %>% 
   filter(!Annee %in% c(1996,1997,1998, 1999, 2000,2001,2002,2003,2004,2005, 2006))
 ```
 
-## [Données brutes de l'abondance]{style="color: yellow;"}
+## [Code pour visualisation de l'abondance]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
 library(ggplot2)
 library(cowplot)
 
+small_theme <- theme_classic(base_size = 8) +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 0.8, size = 6),
+    axis.text.y = element_text(size = 6),
+    axis.title = element_text(size = 7),
+    plot.title = element_text(size = 8),
+    plot.margin = margin(2, 2, 2, 2)
+  )
 
+#condition DUSA
+plot_DUSA_tot_con <- ggplot(df_clean[df_clean$Espece=="DUSA",], aes(x = Annee, y = Condition_moyenne, group =1))+
+  geom_point(size = 3, col = "darkorange1")+
+  geom_path(linewidth = 1, col = "orange")+
+  geom_errorbar(aes(ymin = Condition_moyenne - Condition_sd, ymax = Condition_moyenne + Condition_sd), width = 0.2) + 
+  geom_text(aes(label = nb_total), vjust = -3, size = 3) +
+  labs(title = "Durbec des Sapins",
+       x = "Année",
+       y = "Condition moyenne") +
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+plot_DUSA_tot_con
+  
+#conidition SIFL
+
+plot_SIFL_tot_con <- ggplot(df_clean[df_clean$Espece=="SIFL",], aes(x = Annee, y = df_clean_std, group =1))+
+  geom_point(size = 3, col = "turquoise4")+
+  geom_path(linewidth = 1, col = "turquoise3")+
+  labs(title = "Sizerin flammé",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+#condition JABO
+
+plot_JABO_tot_con <- ggplot(df_clean[df_clean$Espece=="JABO",], aes(x = Annee, y = df_clean_std, group =1))+
+  geom_point(size = 3, col = "darkgreen")+
+  geom_path(linewidth = 1, col = "chartreuse4")+
+  labs(title = "Jaseur boréal",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+
+#condition TAPI
+
+plot_TAPI_tot_con <- ggplot(df_clean[df_clean$Espece=="TAPI",], aes(x = Annee, y = df_clean_std, group =1))+
+  geom_point(size = 3, col = "violetred4")+
+  geom_path(linewidth = 1, col = "violetred3")+
+  labs(title = "Tarin des pins",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+```
+
+
+```{r}
+plot_DUSA_tot_con <- ggplot(df_clean[df_clean$Espece == "DUSA", ],
+                            aes(x = Annee, y = Condition_moyenne, group = 1)) +
+  
+  geom_point(size = 3, col = "darkorange1") +
+  geom_path(linewidth = 1, col = "orange") +
+  geom_errorbar(aes(ymin = Condition_moyenne - Condition_sd,
+                    ymax = Condition_moyenne + Condition_sd),
+                width = 0.2) +
+  
+  # Nombre total AU DESSUS des barres d'erreur
+  geom_text(aes(y     = Condition_moyenne + Condition_sd,
+                label = paste0("HY:", nb_HY, "\nAHY:", nb_AHY)),
+            vjust = -0.5,
+            size  = 2.5) +
+  
+  labs(title = "Durbec des Sapins",
+       x     = "Année",
+       y     = "Condition moyenne") +
+  theme_classic() +
+  theme(axis.text.x = element_text(size  = 10,
+                                   angle = 45,
+                                   vjust = 0.8))
+plot_DUSA_tot_con
+```
+
+## [Visualisation abondance]{style="color: yellow;"}
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+plot_grid(
+  plot_DUSA_tot_con,
+  plot_JABO_tot_con,
+  plot_SIFL_tot_con,
+  plot_TAPI_tot_con,
+  ncol = 2,
+  align = "hv"
+)
+```
+
+## [Données brutes condition]{style="color: yellow;"}
+
+```{r}
 small_theme <- theme_classic(base_size = 8) +
   theme(
     axis.text.x = element_text(angle = 45, vjust = 0.8, size = 6),
@@ -145,27 +262,6 @@ plot_TAPI_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_s
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
-```
-
-## [Visualisation brutes]{style="color: yellow;"}
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
-plot_grid(
-  plot_DUSA_tot,
-  plot_JABO_tot,
-  plot_SIFL_tot,
-  plot_TAPI_tot,
-  ncol = 2,
-  align = "hv"
-)
-```
-
-## [Données brutes condition]{style="color: yellow;"}
-
-```{r}
-
 ```
 
 ## [Irruption]{style="color: yellow;"}
@@ -312,6 +408,7 @@ plot_grid(plot_DUSA_irruption,
             ncol = 2,
           align = "hv")
 ```
+
 ## [Caracétrisation des irruptions]{style="color: yellow;"}
 
 ```{r}
@@ -775,6 +872,7 @@ colnames(tab_comp) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
 ```
 
 ## [Figure de l'analyse pour les tendances temporelles avec randomisation]{style="color: yellow;"}
+
 ```{r}
 #| fig-width: 10
 #| fig-height: 6
@@ -798,5 +896,9 @@ segments(x0 = 4, y0 = lower_ic_annee_SIFL,
          x1 = 4, y1 = upper_ic_annee_SIFL)
 ```
 
-
 ## [Résultats]{style="color: yellow;"}
+
+```{r}
+
+```
+
