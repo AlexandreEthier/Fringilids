@@ -1477,8 +1477,8 @@ segments(x0 = 4, y0 = lower_ic_annee_SIFL_cond,
 
 ## JABO
 prop_JABO <-abond_joint[abond_joint$Espece== "JABO",c(1,3,8,9)]
-prop_JABO<- prop_JABO[prop_JABO$nb_total>10] # ex pour filter avec seuil
-lm_JABO_prop <- lm(prop_jeunes ~ Annee, data = prop_JABO) 
+#prop_JABO<- prop_JABO[prop_JABO$nb_total>10] # ex pour filter avec seuil
+lm_JABO_prop <- lm(prop_jeunes ~ Annee, weight = nb_total, data = prop_JABO) 
 summary(lm_JABO_prop)
 # la régression n'explique rien 
 
@@ -1554,7 +1554,7 @@ segments(x0 = 1, y0 = (lower_ic_annee_JABO_prop),
 ## DUSA
 prop_DUSA <-abond_joint[abond_joint$Espece== "DUSA",c(1,3,8,9)]
 prop_DUSA<- prop_DUSA[prop_DUSA$nb_total>10,] # ex pour filter avec seuil
-lm_DUSA_prop <- lm(prop_jeunes ~ Annee, data = prop_DUSA) 
+lm_DUSA_prop <- lm(prop_jeunes ~ Annee, weight = nb_total, data = prop_DUSA) 
 summary(lm_DUSA_prop)
 # la régression n'explique rien 
 
@@ -1629,8 +1629,8 @@ segments(x0 = 1, y0 = (lower_ic_annee_DUSA_prop),
 
 ## SIFL # significatif !!
 prop_SIFL <-abond_joint[abond_joint$Espece== "SIFL",c(1,3,8,9)]
-prop_SIFL<- prop_SIFL[prop_SIFL$nb_total>10,] # ex pour filter avec seuil
-lm_SIFL_prop <- lm(prop_jeunes ~ Annee, data = prop_SIFL) 
+#prop_SIFL<- prop_SIFL[prop_SIFL$nb_total>10,] # ex pour filter avec seuil
+lm_SIFL_prop <- lm(prop_jeunes ~ Annee, weight = nb_total, data = prop_SIFL) 
 summary(lm_SIFL_prop)
 # la régression n'explique rien 
 
@@ -1706,8 +1706,8 @@ segments(x0 = 1, y0 = (lower_ic_annee_SIFL_prop),
 
 ## TAPI
 prop_TAPI <-abond_joint[abond_joint$Espece== "TAPI",c(1,3,8,9)]
-prop_TAPI<- prop_TAPI[prop_TAPI$nb_total>10,] # ex pour filter avec seuil
-lm_TAPI_prop <- lm(prop_jeunes ~ Annee, data = prop_TAPI) 
+#prop_TAPI<- prop_TAPI[prop_TAPI$nb_total>10,] # ex pour filter avec seuil
+lm_TAPI_prop <- lm(prop_jeunes ~ Annee, weight= nb_total, data = prop_TAPI) 
 summary(lm_TAPI_prop)
 # la régression n'explique rien 
 
