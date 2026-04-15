@@ -82,6 +82,23 @@ DUSA_plot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = irruption))+
 DUSA_plot
 
 
+# DEVIATE BARPLOTS
+
+range(DUSA_Di)
+
+cols <- c("black", "orange")
+DUSA_col <- ifelse(DUSA_Di > 0.965, cols[2],
+                                    cols[1])
+
+DUSA_Diplot <- barplot(DUSA_Di, DUSA$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = DUSA_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 0.965, col = "red", lty = 2)
+
+
+
 ##### JABO
 
 JABO_Ni <- JABO$abond_std
@@ -113,6 +130,22 @@ JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = irruption))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 JABO_plot
+
+
+# DEVIATE BARPLOTS
+
+range(JABO_Di)
+
+cols <- c("black", "#009929")
+JABO_col <- ifelse(JABO_Di > 1.053, cols[2],
+                   cols[1])
+
+JABO_Diplot <- barplot(JABO_Di, JABO$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = JABO_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 1.053, col = "red", lty = 2)
 
 
 ##### SIFL
@@ -147,6 +180,21 @@ SIFL_plot <- ggplot(SIFL, aes(x = Annee, y = abond_std, color = irruption))+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 SIFL_plot
 
+# DEVIATE BARPLOT
+
+range(SIFL_Di)
+
+cols <- c("black", "turquoise")
+SIFL_col <- ifelse(SIFL_Di > 0.495, cols[2],
+                   cols[1])
+
+SIFL_Diplot <- barplot(SIFL_Di, SIFL$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = SIFL_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 0.495, col = "red", lty = 2)
+
 
 ##### TAPI
 
@@ -179,6 +227,23 @@ TAPI_plot <- ggplot(TAPI, aes(x = Annee, y = abond_std, color = irruption))+
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 TAPI_plot
+
+
+# DEVIATE BARPLOT
+
+range(TAPI_Di)
+
+cols <- c("black", "violetred")
+TAPI_col <- ifelse(TAPI_Di > 0.525, cols[2],
+                   cols[1])
+
+TAPI_Diplot <- barplot(TAPI_Di, TAPI$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = TAPI_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 0.525, col = "red", lty = 2)
+
 
 
 
