@@ -64,6 +64,16 @@ Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, t
 `SIFL.csv`
 `TAPI.csv`
 
+`DUSA_irr.R`
+`JABO_irr.R`
+`SIFL_irr.R`
+`TAPI_irr.R`
+
+`DUSA_output.R`
+`JABO_output.R`
+`SIFL_output.R`
+`TAPI_output.R`
+
 
 ##### Documentation
 
@@ -122,12 +132,14 @@ $$
 
 où $D_{ij}$ correspond à l'écart standardisé de l'espèce i à l'année t, $N_{it}$ correspond au décompte moyen de l'espèce i à l'année t, $P_{it}$ correspond à la valeur prédite de la tendance à long-terme de l'espèce i à l'année t et $\sigma_{i}$ correspond à l'écart-type de toutes les années sans tendance pour l'espèce i.
 
-Output d'un objet R `irruption.r` : Vecteur binaire où 1 est `TRUE` pour une irruption
+Output d'un objet R pour chaque espèce : Vecteur binaire où 1 est `TRUE` pour une irruption
 
 
 ##### `tendance.R`
 
 Script R utilisé pour évaluer les tendances à long-terme de l'abondance de fringilidés qui transitent aux Dunes de Tadoussac. Nous avons aussi évalué la tendance de la condition physique et la démographie des espèces d'intérêts.
+
+OUTPUT DE LA RANDOMISATION (Voir data.R)
 
 ##### `carac_irr.R`
 
@@ -141,46 +153,12 @@ Script R qui permet de caractériser les années irruptives et non-irruptives. O
 3- Tendance long-terme sur abondance, proportion jeunes et condition (+ randomisation)/
 4- JAGS -> On cherche à caractériser les années d'irruption
 
-`df_final` <- abond_irruption
-`abond_joint` <- Même chose qu'`abond_irruption`
+À checker (15/04/2026):
 
+- Condition des espèces (Explo.R)
+- Checker si, pour tendance temporelle, le lm est le LOG ou LOG + 1 de l'abondance standardisée....
+- Sauvegarde output de la randomisation en objet.R?
 
-
-
-
-### Les tâches à accomplir en date du 24 mars 2026 (1 mois avant la présentation)
-
-1) Comment évoluent la population de fringilidés boréaux (4 espèces) dans le temps (1996-2025); tendances temporelles sur 30 ans de suivi
-  a) Est-ce que la proportion de jeunes de l'année évolue dans le temps: On a réalisé des graphiques et des lm pour regarder les valeurs de p mais rien de plus.
-  b) Comment évolue la condition corporelle des différentes classes au cours du temps: On a réalisé des graphiques pour regarder les tendances mais rien de plus
-
-2) Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
-  a) Est-ce que la proportion de jeunes de l'année (indice de succès reproducteur) est corrélée avec l'abondance anuelle:
-  b) Est-ce que la condition corporelle est corrélée à l'abondance annuelle
-
-
-#### GLOSSAIRE
-
-- `abond`: Dataframe du jeu de données d'abondance original nettoyé, à partir d'un fichier Excel
-- `bague`: Dataframe du jeu de données de baguage original nettoyé, à partir d'un fichier Excel
-
-- `DUSA`: Données d'abondance pour le Durbec des sapins
-- `TAPI`: Données d'abondance pour le Tarin des pins
-- `SIFL`: Données d'abondance pour le Sizerin flammé
-- `JABO`: Données d'abondance pour le Jaseur boréal
-
-- `props_all`: Propotion de jeunes pour les quatre espèces en un seul dataframe
-- `abond_joint`: Jointure de `abond` + `props_all` pour avoir l'abondance et la proportion bagué + le nombre d'oiseux bagués + condition_moyenne + sd + se
-- `abond_joint`: Bague + jeu de données résumé par année des conditions
-- `bague_moyenne`: Résumé par année de la condition des oiseaux avec moyenne, sd, se (à éviter)
-- `bague_DUSA`: Données de baguage pour le Durbec des sapins
-- `bague_TAPI`: Données de baguage pour le Tarin des pins
-- `bague_SIFL`: Données de baguage pour le Sizerin flammé
-- `bague_JABO`: Données de baguage pour le Jaseur boréal
-
-- `DUSA_modif`: Données annuelles de baguages de 2007 à 2025 et le calcul d'irruption
-
-- `abond_irruption`: Calcul pour définir les années irruptives pour chaque espèce
 
 
 ##### Contacts
