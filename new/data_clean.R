@@ -165,6 +165,17 @@ DUSA$cond_moy_HY[12:length(DUSA$cond_moy_HY)] <- round(DUSA_cond_HY$cond_moy, 3)
 DUSA$cond_moy_AHY[12:length(DUSA$cond_moy_AHY)] <- round(DUSA_cond_AHY$cond_moy, 3)
 
 
+# Load vecteur irruption
+
+load("DUSA_irr.R")
+
+DUSA$irruption <- NA
+
+DUSA$irruption[12:length(DUSA$irruption)] <- DUSA_irr
+
+DUSA$irruption <- ifelse(DUSA$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
+DUSA$irruption <- as.factor(as.numeric(DUSA$irruption))
+
 # csv object in wd
 # write.csv(DUSA, "DUSA.csv")
 
@@ -242,6 +253,17 @@ JABO$prop_HY <- round(JABO$nb_HY/JABO$nb_tot, 3)
 
 JABO$cond_moy_HY[12:length(JABO$cond_moy_HY)] <- round(JABO_cond_HY$cond_moy, 3)
 JABO$cond_moy_AHY[12:length(JABO$cond_moy_AHY)] <- round(JABO_cond_AHY$cond_moy, 3)
+
+# Load vecteur irruption
+
+load("JABO_irr.R")
+
+JABO$irruption <- NA
+
+JABO$irruption[12:length(JABO$irruption)] <- JABO_irr
+
+JABO$irruption <- ifelse(JABO$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
+JABO$irruption <- as.factor(as.numeric(JABO$irruption))
 
 
 # csv object in wd
@@ -322,6 +344,16 @@ SIFL$prop_HY <- round(SIFL$nb_HY/SIFL$nb_tot, 3)
 SIFL$cond_moy_HY[12:length(SIFL$cond_moy_HY)] <- round(SIFL_cond_HY$cond_moy, 3)
 SIFL$cond_moy_AHY[12:length(SIFL$cond_moy_AHY)] <- round(SIFL_cond_AHY$cond_moy, 3)
 
+# Load vecteur irruption
+load("SIFL_irr.R")
+
+SIFL$irruption <- NA
+
+SIFL$irruption[12:length(SIFL$irruption)] <- SIFL_irr
+
+SIFL$irruption <- ifelse(SIFL$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
+SIFL$irruption <- as.factor(as.numeric(SIFL$irruption))
+
 # csv object in wd
 # write.csv(SIFL, "SIFL.csv")
 
@@ -400,18 +432,18 @@ TAPI$prop_HY <- round(TAPI$nb_HY/TAPI$nb_tot, 3)
 TAPI$cond_moy_HY[12:length(TAPI$cond_moy_HY)] <- round(TAPI_cond_HY$cond_moy, 3)
 TAPI$cond_moy_AHY[12:length(TAPI$cond_moy_AHY)] <- round(TAPI_cond_AHY$cond_moy, 3)
 
+# Load vecteur irruption
+load("TAPI_irr.R")
+
+TAPI$irruption <- NA
+
+TAPI$irruption[12:length(TAPI$irruption)] <- TAPI_irr
+
+TAPI$irruption <- ifelse(TAPI$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
+TAPI$irruption <- as.factor(as.numeric(TAPI$irruption))
 
 # csv object in wd
 # write.csv(TAPI, "TAPI.csv")
-
-
-
-
-
-# Faire du VECTEUR IFELSE_IRR (1,0) un objet.R
-# Load object.R in data_clean.R
-# cbind(IFELSE_IRR)
-# write.csv in wd
 
 
 
