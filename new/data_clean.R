@@ -161,12 +161,12 @@ DUSA$nb_AHY[12:length(DUSA$nb_AHY)] <- DUSA_AHY$nb_AHY
 DUSA$nb_tot <- round(DUSA$nb_HY + DUSA$nb_AHY, 3)
 DUSA$prop_HY <- round(DUSA$nb_HY/DUSA$nb_tot, 3)
 
-DUSA$cond_moy_HY[12:length(DUSA$cond_moy_HY)] <- round(cond_HY$cond_moy, 3)
-DUSA$cond_moy_AHY[12:length(DUSA$cond_moy_AHY)] <- round(cond_AHY$cond_moy, 3)
+DUSA$cond_moy_HY[12:length(DUSA$cond_moy_HY)] <- round(DUSA_cond_HY$cond_moy, 3)
+DUSA$cond_moy_AHY[12:length(DUSA$cond_moy_AHY)] <- round(DUSA_cond_AHY$cond_moy, 3)
 
 
 # csv object in wd
-#write.csv(DUSA, "DUSA.csv"
+# write.csv(DUSA, "DUSA.csv")
 
 
 # JABO
@@ -240,12 +240,12 @@ JABO$nb_AHY[12:length(JABO$nb_AHY)] <- JABO_AHY$nb_AHY
 JABO$nb_tot <- round(JABO$nb_HY + JABO$nb_AHY, 3)
 JABO$prop_HY <- round(JABO$nb_HY/JABO$nb_tot, 3)
 
-JABO$cond_moy_HY[12:length(JABO$cond_moy_HY)] <- round(cond_HY$cond_moy, 3)
-JABO$cond_moy_AHY[12:length(JABO$cond_moy_AHY)] <- round(cond_AHY$cond_moy, 3)
+JABO$cond_moy_HY[12:length(JABO$cond_moy_HY)] <- round(JABO_cond_HY$cond_moy, 3)
+JABO$cond_moy_AHY[12:length(JABO$cond_moy_AHY)] <- round(JABO_cond_AHY$cond_moy, 3)
 
 
 # csv object in wd
-#write.csv(JABO, "JABO.csv")
+# write.csv(JABO, "JABO.csv")
 
 
 # SIFL
@@ -319,8 +319,8 @@ SIFL$nb_AHY[12:length(SIFL$nb_AHY)] <- SIFL_AHY$nb_AHY
 SIFL$nb_tot <- round(SIFL$nb_HY + SIFL$nb_AHY, 3)
 SIFL$prop_HY <- round(SIFL$nb_HY/SIFL$nb_tot, 3)
 
-SIFL$cond_moy_HY[12:length(SIFL$cond_moy_HY)] <- round(cond_HY$cond_moy, 3)
-SIFL$cond_moy_AHY[12:length(SIFL$cond_moy_AHY)] <- round(cond_AHY$cond_moy, 3)
+SIFL$cond_moy_HY[12:length(SIFL$cond_moy_HY)] <- round(SIFL_cond_HY$cond_moy, 3)
+SIFL$cond_moy_AHY[12:length(SIFL$cond_moy_AHY)] <- round(SIFL_cond_AHY$cond_moy, 3)
 
 # csv object in wd
 # write.csv(SIFL, "SIFL.csv")
@@ -397,8 +397,8 @@ TAPI$nb_AHY[12:length(TAPI$nb_AHY)] <- TAPI_AHY$nb_AHY
 TAPI$nb_tot <- round(TAPI$nb_HY + TAPI$nb_AHY, 3)
 TAPI$prop_HY <- round(TAPI$nb_HY/TAPI$nb_tot, 3)
 
-TAPI$cond_moy_HY[12:length(TAPI$cond_moy_HY)] <- round(cond_HY$cond_moy, 3)
-TAPI$cond_moy_AHY[12:length(TAPI$cond_moy_AHY)] <- round(cond_AHY$cond_moy, 3)
+TAPI$cond_moy_HY[12:length(TAPI$cond_moy_HY)] <- round(TAPI_cond_HY$cond_moy, 3)
+TAPI$cond_moy_AHY[12:length(TAPI$cond_moy_AHY)] <- round(TAPI_cond_AHY$cond_moy, 3)
 
 
 # csv object in wd
