@@ -53,13 +53,13 @@ C:.
 |           Abondance.xlsx
 |           Baguage.xlsx
 ```
-Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, transmises par l'OOT. 
+Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, transmises par l'OOT. Voir [data_clean.R](#data-clean)
 
-`abond_clean.csv`
+`abond_clean.csv` : csv des données d'abondances de 30 ans, pour les 4 espèces.
 
-`bague_clean.csv` : CSV des données de baguage traitées.
+`bague_clean.csv` : csv des données de baguage traitées.
 
-`DUSA.csv`
+`DUSA.csv` : 
 `JABO.csv`
 `SIFL.csv`
 `TAPI.csv`
@@ -100,8 +100,8 @@ Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, t
         model_jeune.txt
         Proportion_jeunes.r
 ```
-
-##### [`data_clean.R`]
+<a name="data-clean"></a>
+##### `data_clean.R`
 
 Script R qui traite et nettoie les jeux de données originaux `abond.xlsx` et `bague.xlsx`. Une fois traitées, les données ont été sauvegardées en objet `R` et `.csv`. Voici les transformations:
 
@@ -121,6 +121,9 @@ D_{i}t = \frac{N_{it} - P_{it}}{\sigma_{i}}
 $$
 
 où $D_{ij}$ correspond à l'écart standardisé de l'espèce i à l'année t, $N_{it}$ correspond au décompte moyen de l'espèce i à l'année t, $P_{it}$ correspond à la valeur prédite de la tendance à long-terme de l'espèce i à l'année t et $\sigma_{i}$ correspond à l'écart-type de toutes les années sans tendance pour l'espèce i.
+
+Output d'un objet R `irruption.r` : Vecteur binaire où 1 est `TRUE` pour une irruption
+
 
 ##### `tendance.R`
 
