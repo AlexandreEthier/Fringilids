@@ -1,11 +1,16 @@
 ### PROJET FRINGILIDÉS
 Présenté dans le cadre du cours *Modèles hiérarchiques et inférence bayésienne pour les sciences naturelles FOR-7044*\
-Université Laval
+Université Laval\
+Avril 2026
 
+###### CONTACTS
 Badet, Adrien - adrien.badet.1@ulaval.ca\
 Ethier, Alexandre - alexandre.ethier.1@ulaval.ca\
 Hounsovo, Bérince - berince-setchegnon-romeo.hounsouvo.1@ulaval.ca\
 Poirier-Joanette , Maxence - maxence.poirier-joanette.1@ulaval.ca
+
+Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
+Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
 
 --- 
 
@@ -13,18 +18,21 @@ Ce projet est réalisé dans le cadre du cours *Modèles hiérarchiques et infé
 Il a pour but de caractériser les phénomèmes "irruptifs" chez quatre (4) espèces ciblées, soit:
 
 - Durbec des sapins (*Pinicola enucleator*) [BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pingro/cur/introduction)
-- Tarin des pins (*Spinus pinus*) [BIRDS OF THE WOELD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)
-- Sizerin flammé (*Acanthis flammea spp.*) [BIRDS OF TH WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)
+- Tarin des pins (*Spinus pinus*) [BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/pinsis/cur/introduction)
+- Sizerin flammé (*Acanthis flammea spp.*) [BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/redpol1/cur/introduction)
 - Jaseur boréal (*Bombycilla garrulus*) [BIRDS OF THE WORLD](https://birdsoftheworld-org.acces.bibl.ulaval.ca/bow/species/bohwax/cur/introduction)
 
-Les «irruptions» sont définies par le déplacement semi-périodique d'un grand nombre d'individus d'une population en dehors de leur aire habituelle. Ce phénomène est influencé par les conditions climatiques et environnementales et dépend des processus démographiques de la population et de la disponibilité en ressources sur les sites habituels (Widick et al., 2022).\
+##### QUESTIONS DE RECHERCHE
 
-HYPOTHÈSES
+1. **Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi ?**
 
-L'Observatoire d'Oiseaux de Tadoussac, fondée en 1996, est un organisme qui étudie la migration des oiseaux 
+    a) Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) évolue dans le temps ?\
+    b) Comment évolue la condition corporelle des différentes classes au cours du temps ?
 
+2. **Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?**
 
-
+    a) Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?\
+    b) Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
 
 
 ### STRUCTURE
@@ -53,26 +61,36 @@ C:.
 |           Abondance.xlsx
 |           Baguage.xlsx
 ```
-Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, transmises par l'OOT. Voir [data_clean.R](#data-clean)
+Les fichiers `Abondance.xlsx` et `Baguage.xlsx` dans le dossier `OG` constituent les données originales, transmises par l'OOT.
 
-`abond_clean.csv` : csv des données d'abondances de 30 ans, pour les 4 espèces.
+Voir [data_clean.R](#data-clean)
 
-`bague_clean.csv` : csv des données de baguage traitées.
+`abond_clean.csv` : .csv des données d'abondances de 30 ans, pour les quatre espèces d'intétrêt. \
+`bague_clean.csv` : .csv des données de baguage depuis 2007 pour les quatre espèces d'intérêt, traitées. 
 
-`DUSA.csv` : 
-`JABO.csv`
-`SIFL.csv`
-`TAPI.csv`
+`DUSA.csv` : .csv qui regroupe toutes les variables d'intérêt pour le Durbec des sapins (1996-2025) \
+`JABO.csv` : .csv qui regroupe toutes les variables d'intérêt pour le Jaseur boréal (1996-2025) \
+`SIFL.csv` : .csv qui regroupe toutes les variables d'intérêt pour le Sizerin flammé (1996-2025) \
+`TAPI.csv` : .csv qui regroupe toutes les variables d'intérêt pour le Tarin des pins (1996-2025) 
 
-`DUSA_irr.R`
-`JABO_irr.R`
-`SIFL_irr.R`
-`TAPI_irr.R`
+Voir [irruption.R](#irruption)
 
-`DUSA_output.R`
-`JABO_output.R`
-`SIFL_output.R`
-`TAPI_output.R`
+`DUSA_irr.R` : Vecteur R binaire qui représente les années d'irruption pour le Durbec des sapins (0 = non-irruption, 1 = irruption) (2007-2025) \
+`JABO_irr.R` : Vecteur R binaire qui représente les années d'irruption pour le Jaseur boréal (0 = non-irruption, 1 = irruption) (2007-2025) \
+`SIFL_irr.R` : Vecteur R binaire qui représente les années d'irruption pour le Sizerin flammé (0 = non-irruption, 1 = irruption) (2007-2025) \
+`TAPI_irr.R` : Vecteur R binaire qui représente les années d'irruption pour le Tarin des pins (0 = non-irruption, 1 = irruption) (2007-2025) 
+
+Voir [tendance.R](#tendance)
+
+`DUSA_output.R` : Matrice R de l'output d'une boucle de randomisation du log de l'abondance standardisée selon l'année pour le Durbec des sapins (1996-2025) \
+`JABO_output.R` : Matrice R de l'output d'une boucle de randomisation du log de l'abondance standardisée selon l'année pour le Jaseur boréal (1996-2025) \
+`SIFL_output.R` : Matrice R de l'output d'une boucle de randomisation du log de l'abondance standardisée selon l'année pour le Sizerin flammé (1996-2025) \
+`TAPI_output.R` : Matrice R de l'output d'une boucle de randomisation du log de l'abondance standardisée selon l'année pour le Tarin des pins (1996-2025) 
+
+Voir [carac_irr.R](#carac)
+
+MODEL_jags.txt pour chaque espèce
+
 
 
 ##### Documentation
@@ -95,6 +113,13 @@ Les fichiers `.xlsx` dans le dossier `OG` constituent les données originales, t
 |       |
 |       \---Presentation_final_files
 ```
+
+
+
+
+
+
+
 
 ##### Scripts R (à changer avec folder "new")
 
@@ -122,6 +147,7 @@ Script R qui traite et nettoie les jeux de données originaux `abond.xlsx` et `b
 
 Un jeu de données par espèce a été sauvegardé en objet R (`DUSA`, `JABO`, `SIFL` et `TAPI`) pour faciliter les analyses intraspécifiques. 
 
+<a name="irruption"></a>
 ##### `irruption.R`
 
 Script R qui défini les années irruptives pour les quatre espèces cibles. Les irruptions ont été définies selon l'équation suivante (Widick et al., 2023):
@@ -134,13 +160,15 @@ où $D_{ij}$ correspond à l'écart standardisé de l'espèce i à l'année t, $
 
 Output d'un objet R pour chaque espèce : Vecteur binaire où 1 est `TRUE` pour une irruption
 
-
+<a name="tendance"></a>
 ##### `tendance.R`
 
 Script R utilisé pour évaluer les tendances à long-terme de l'abondance de fringilidés qui transitent aux Dunes de Tadoussac. Nous avons aussi évalué la tendance de la condition physique et la démographie des espèces d'intérêts.
 
 OUTPUT DE LA RANDOMISATION (Voir data.R)
 
+
+<a name="carac"></a>
 ##### `carac_irr.R`
 
 Script R qui permet de caractériser les années irruptives et non-irruptives. On s'intéresse entre autres à l'âge des individus bagués et inférer à la population globale. On modélise, avec `JAGS`, un modèle mixte suivant une distribution beta binomiale. 
@@ -160,10 +188,6 @@ Script R qui permet de caractériser les années irruptives et non-irruptives. O
 - Sauvegarde output de la randomisation en objet.R?
 
 
-
-##### Contacts
-Alexandre Terrigeol, direction OOT: <direction.oot@explosnature.ca>\
-Jean-François Therrien, direction scientifique OOT: <direction.sci.oot@explosnature.ca>
    
   
  
