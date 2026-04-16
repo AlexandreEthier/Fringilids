@@ -91,6 +91,16 @@ Voir [carac_irr.R](#carac)
 
 MODEL_jags.txt pour chaque espèce
 
+`mod_HY_DUSA.txt` : Fichier `.txt` du modèle `JAGS` pour la proportion des jeunes Durbec des sapins (2007-2025)\
+`mod_HY_JABO.txt` : Fichier `.txt` du modèle `JAGS` pour la proportion des jeunes Jaseur boréal (2007-2025)\
+`mod_HY_SIFL.txt` : Fichier `.txt` du modèle `JAGS` pour la proportion des jeunes Sizerin flammé (2007-2025)\
+`mod_HY_TAPI.txt` : Fichier `.txt` du modèle `JAGS` pour la proportion des jeunes Tarin des pins (2007-2025)
+
+`DUSA_out_jags.R` : Output de la simulation JAGS pour la proportion des jeunes Durbec des sapins (2007-2025)\
+`JABO_out_jags.R` : Output de la simulation JAGS pour la proportion des jeunes Jaseur boréal (2007-2025)\
+`SIFL_out_jags.R` : Output de la simulation JAGS pour la proportion des jeunes Sizerin flammé (2007-2025)\
+`TAPI_out_jags.R` : Output de la simulation JAGS pour la proportion des jeunes Tarin des pins (2007-2025)\
+
 
 
 ##### Documentation
@@ -174,18 +184,6 @@ OUTPUT DE LA RANDOMISATION (Voir data.R)
 Script R qui permet de caractériser les années irruptives et non-irruptives. On s'intéresse entre autres à l'âge des individus bagués et inférer à la population globale. On modélise, avec `JAGS`, un modèle mixte suivant une distribution beta binomiale. 
 
 
-
-
-1- Script R pour clean DF -> output csv avec le data_clean/
-2- Définition irruption dans les scripts + années/
-3- Tendance long-terme sur abondance, proportion jeunes et condition (+ randomisation)/
-4- JAGS -> On cherche à caractériser les années d'irruption
-
-À checker (15/04/2026):
-
-- Condition des espèces (Explo.R)
-- Checker si, pour tendance temporelle, le lm est le LOG ou LOG + 1 de l'abondance standardisée....
-- Sauvegarde output de la randomisation en objet.R?
 
 
    
