@@ -104,7 +104,7 @@ DUSA_lowerIC_annee <- DUSA_annee - (1.96 * DUSA_sd[2])
 plot(exp(DUSA_annee),
      ylim = c(0.80, 1.25))
 abline(h = 1, lty = 2, col = "red")
-segments(x0 = 1, y0 = exp(DUSA_loweric_annee),
+segments(x0 = 1, y0 = exp(DUSA_lowerIC_annee),
          x1 = 1, y1 = exp(DUSA_upperIC_annee))
 
 # Test de randomisation afin d'obtenir des prédictions de lm
@@ -156,6 +156,7 @@ DUSA_log <- ggplot(DUSA, aes(x = Annee, y = log(abond_std), group = 1))+
   labs(title = "Abondance du Durbec des Sapins par heure d'observation",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
+  scale_x_continuous(seq(1,30,10), labels = c("1995", "2005", "2015", "2025"))+
   theme_classic()
 DUSA_log <- DUSA_log+
   annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
@@ -195,7 +196,7 @@ JABO_lowerIC_annee <- JABO_annee - (1.96 * JABO_sd[2])
 plot(exp(JABO_annee),
      ylim = c(0.80, 1.25))
 abline(h = 1, lty = 2, col = "red")
-segments(x0 = 1, y0 = exp(JABO_loweric_annee),
+segments(x0 = 1, y0 = exp(JABO_lowerIC_annee),
          x1 = 1, y1 = exp(JABO_upperIC_annee))
 
 
@@ -247,9 +248,10 @@ JABO_log <- ggplot(JABO, aes(x = Annee, y = log(abond_std), group = 1))+
   labs(title = "Abondance du Jaseur boréal par heure d'observation",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
+ scale_x_continuous(seq(1,30,10), labels = c("1995", "2005", "2015", "2025"))+
   theme_classic()
 JABO_log <- JABO_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
+  annotate(geom ="text",x = 5, y = 5, label ="y = 0.01 + 0.036x")
 JABO_log
 
 
@@ -332,15 +334,16 @@ SIFL_pred <- predict.lm(lm_SIFL)
 # Représentation graphique
 
 SIFL_log <- ggplot(SIFL, aes(x = Annee, y = log(abond_std), group = 1))+
-  geom_point(size = 3, col = "forestgreen")+
+  geom_point(size = 3, col = "turquoise")+
   geom_line()+
   geom_abline(intercept = coef(lm_SIFL)[1], slope = coef(lm_SIFL)[2], color = "red")+
   labs(title = "Abondance du Sizerin flammé par heure d'observation",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
+  scale_x_continuous(seq(1,30,10), labels = c("1995", "2005", "2015", "2025"))+
   theme_classic()
 SIFL_log <- SIFL_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
+  annotate(geom ="text",x = 5, y = 5, label ="y = 2.352 + 0.03x")
 SIFL_log
 
 
@@ -423,15 +426,16 @@ TAPI_pred <- predict.lm(lm_TAPI)
 # Représentation graphique
 
 TAPI_log <- ggplot(TAPI, aes(x = Annee, y = log(abond_std), group = 1))+
-  geom_point(size = 3, col = "forestgreen")+
+  geom_point(size = 3, col = "violetred")+
   geom_line()+
   geom_abline(intercept = coef(lm_TAPI)[1], slope = coef(lm_TAPI)[2], color = "red")+
   labs(title = "Abondance du Tarin des pins par heure d'observation",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
+  scale_x_continuous(seq(1,30,10), labels = c("1995", "2005", "2015", "2025"))+
   theme_classic()
 TAPI_log <- TAPI_log+
-  annotate(geom ="text",x = 5, y = 5, label ="y = 1.11 + 0.05x")
+  annotate(geom ="text",x = 5, y = 5, label ="y = 1.668 + 0.07x")
 TAPI_log
 
 
@@ -444,8 +448,8 @@ plot_grid(DUSA_log,
           SIFL_log,
           TAPI_log, ncol = 2)
 
-tab_comp <- data.frame(c(DUSA_int, JABO_int, TAPI_int, SIFL_int),
-                       c(DUSA_annee, JABO_annee, TAPI_annee, SIFL_annee),
+tab_comp <- data.frame(c(DUSA_int, JABO_int, SIFL_int, TAPI_int),
+                       c(DUSA_annee, JABO_annee, SIFL_annee, TAPI_annee),
                        c(DUSA_lowerIC_annee, JABO_lowerIC_annee, SIFL_lowerIC_annee, TAPI_lowerIC_annee),
                        c(DUSA_upperIC_annee, JABO_upperIC_annee, SIFL_upperIC_annee, TAPI_upperIC_annee))
 
@@ -463,15 +467,15 @@ plot(tab_comp$annee,
      xlab = "Espèces",
      main = "Estimés de log beta avec IC 95% : abondance")
 abline(h = 0, lty = 2, col = "red")
-axis(side = 1, at = axex, labels = c("DUSA", "JABO", "TAPI", "SIFL"))
+axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
 segments(x0 = 1, y0 = DUSA_lowerIC_annee,
          x1 = 1, y1 = DUSA_upperIC_annee)
 segments(x0 = 2, y0 = JABO_lowerIC_annee,
          x1 = 2, y1 = JABO_upperIC_annee)
-segments(x0 = 3, y0 = TAPI_lowerIC_annee,
-         x1 = 3, y1 = TAPI_upperIC_annee)
-segments(x0 = 4, y0 = SIFL_lowerIC_annee,
-         x1 = 4, y1 = SIFL_upperIC_annee)
+segments(x0 = 3, y0 = SIFL_lowerIC_annee,
+         x1 = 3, y1 = SIFL_upperIC_annee)
+segments(x0 = 4, y0 = TAPI_lowerIC_annee,
+         x1 = 4, y1 = TAPI_upperIC_annee)
 
 
 
@@ -480,9 +484,9 @@ segments(x0 = 4, y0 = SIFL_lowerIC_annee,
 # Tendance de la proportion ne se font qu'à partir de 2007 car NA avant...
 # Est-ce qu'on souhaite quand même évaluer la condition et la prop. dans le temps ou seulement carac. irr
 
+# BOXPLOT + ANALYSE simulation
 
-
-
+# Prop. graph pour proportion 
 
 
 
