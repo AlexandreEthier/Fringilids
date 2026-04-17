@@ -2,9 +2,11 @@
 
 library(readxl)
 library(cowplot)
+library(ggplot2)
+library(scales)
 
 
-# Chargement des répertoires de travail -----------------------------------
+# Chargeggplot2# Chargement des répertoires de travail -----------------------------------
 
 setwd("C:/Users/alexe/Fringilids/Data") # Alex
 
@@ -20,10 +22,10 @@ TAPI <- read.csv("TAPI.csv", header = TRUE)
 
 # Filtrer tout avant 2007
 
-#DUSA <- DUSA[DUSA$Annee >= "2007",]
-#JABO <- JABO[JABO$Annee >= "2007",]
-#SIFL <- SIFL[SIFL$Annee >= "2007",]
-#TAPI <- TAPI[TAPI$Annee >= "2007",]
+DUSA <- DUSA[DUSA$Annee >= "2007",]
+JABO <- JABO[JABO$Annee >= "2007",]
+SIFL <- SIFL[SIFL$Annee >= "2007",]
+TAPI <- TAPI[TAPI$Annee >= "2007",]
 
 DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
 DUSA$Annee <- as.integer(DUSA$Annee)
@@ -481,21 +483,321 @@ segments(x0 = 4, y0 = TAPI_lowerIC_annee,
 
 # Tendance temporelle condition ------------------------------------------------------
 
+bague <- read.csv("bague_clean.csv", header = TRUE)
+bague$Condition <- bague$Aile/bague$Masse
+bague_DUSA <- bague[bague$Espece == "DUSA",] # Ne garde que DUSA
+bague_JABO <- bague[bague$Espece == "JABO",] # Ne garde que JABO
+bague_SIFL <- bague[bague$Espece == "SIFL",] # Ne garde que SIFL
+bague_TAPI <- bague[bague$Espece == "TAPI",] # Ne garde que TAPI
+
+#### DUSA
+# condition âge confondu
+plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "darkorange1") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du durbec des sapins selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_DUSA) # pas de différence selon les années
+
+# condition par âge 
+plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkorange3",
+      "HY" = "orange" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du durbec des sapins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+print(plot_condition_age_DUSA) # pas de différence selon les classes d'âge
+
+#### JABO
+# condition âge confondu
+plot_condition_JABO <- ggplot(bague_JABO, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "darkgreen") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du jaseur boréal selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_JABO)
+
+# condition par âge 
+plot_condition_age_JABO<-ggplot(bague_JABO, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkgreen",
+      "HY" = "green" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du jaseur boréal par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+print(plot_condition_age_JABO)
+
+
+#### SIFL
+# condition âge confondu
+plot_condition_SIFL <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "turquoise4") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du sizerin flammé selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_SIFL) # pas de différence selon les années
+
+# condition par âge 
+plot_condition_age_SIFL<-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkblue",
+      "HY" = "turquoise3" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du durbec des sapins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+print(plot_condition_age_SIFL) # pas de différence selon les classes d'âge
+
+
+#### TAPI
+# condition âge confondu
+plot_condition_TAPI <- ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "violetred1") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du tarin des pins selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+print(plot_condition_TAPI) # pas de différence selon les années
+
+# condition par âge 
+plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "violetred4",
+      "HY" = "violet" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du tarin des pins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+print(plot_condition_age_TAPI) # pas de différence selon les classes d'âge
+
+
+
+
 # Tendance de la proportion ne se font qu'à partir de 2007 car NA avant...
 # Est-ce qu'on souhaite quand même évaluer la condition et la prop. dans le temps ou seulement carac. irr
 
 # BOXPLOT + ANALYSE simulation
 
+
+
+# Proportion jeunes -------------------------------------------------------
+
+# plot proportion
+DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "darkorange") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de durbec des sapins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(DUSA_prop)
+
+JABO_prop<-ggplot(data = JABO, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "forestgreen") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de jaseur boréal par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(JABO_prop)
+
+SIFL_prop<-ggplot(data = SIFL, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "turquoise4") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de sizerin flammé par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(SIFL_prop)
+
+TAPI_prop<-ggplot(data = TAPI, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "violetred") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de tarin des pins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(TAPI_prop)
+
+plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
+
 # Prop. graph pour proportion 
+#### DUSA
+lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
+summary(lm_DUSA_prop)
+
+par(mfrow = c(2,2))
+plot(lm_DUSA_prop)
+dev.off()
+
+# graph coef
+DUSA_int_prop <- lm_DUSA_prop$coefficients["(Intercept)"]
+DUSA_annee_prop <- lm_DUSA_prop$coefficients["Annee"]
+DUSA_sd_prop <- coef(summary(lm_DUSA_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_DUSA_prop <- DUSA_annee_prop + (1.96 * DUSA_sd_prop[2])
+lower_ic_annee_DUSA_prop <- DUSA_annee_prop - (1.96 * DUSA_sd_prop[2])
+
+plot((DUSA_annee_prop),
+     ylim = c(-0.040,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de DUSA")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_DUSA_prop),
+         x1 = 1, y1 = (upper_ic_annee_DUSA_prop))
+
+#### JABO
+lm_JABO_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = JABO)
+
+par(mfrow = c(2,2))
+plot(lm_JABO_prop)
+dev.off()
+
+summary(lm_JABO_prop) # vérification par simulation ?
+
+# graph coef
+JABO_int_prop <- lm_JABO_prop$coefficients["(Intercept)"]
+JABO_annee_prop <- lm_JABO_prop$coefficients["Annee"]
+JABO_sd_prop <- coef(summary(lm_JABO_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_JABO_prop <- JABO_annee_prop + (1.96 * JABO_sd_prop[2])
+lower_ic_annee_JABO_prop <- JABO_annee_prop - (1.96 * JABO_sd_prop[2])
+
+plot((JABO_annee_prop),
+     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de JABO")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_JABO_prop),
+         x1 = 1, y1 = (upper_ic_annee_JABO_prop))
 
 
+#### SIFL
+lm_SIFL_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = SIFL)
+
+par(mfrow = c(2,2))
+plot(lm_SIFL_prop)
+dev.off()
+
+summary(lm_SIFL_prop) # vérification par simulation ?
+
+# graph coef
+SIFL_int_prop <- lm_SIFL_prop$coefficients["(Intercept)"]
+SIFL_annee_prop <- lm_SIFL_prop$coefficients["Annee"]
+SIFL_sd_prop <- coef(summary(lm_SIFL_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_SIFL_prop <- SIFL_annee_prop + (1.96 * SIFL_sd_prop[2])
+lower_ic_annee_SIFL_prop <- SIFL_annee_prop - (1.96 * SIFL_sd_prop[2])
+
+plot((SIFL_annee_prop),
+     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de SIFL")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_SIFL_prop),
+         x1 = 1, y1 = (upper_ic_annee_SIFL_prop))
+
+#### TAPI
+lm_TAPI_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = TAPI)
+
+par(mfrow = c(2,2))
+plot(lm_TAPI_prop)
+dev.off()
+
+summary(lm_TAPI_prop) # vérification par simulation ?
+
+# graph coef
+TAPI_int_prop <- lm_TAPI_prop$coefficients["(Intercept)"]
+TAPI_annee_prop <- lm_TAPI_prop$coefficients["Annee"]
+TAPI_sd_prop <- coef(summary(lm_TAPI_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_TAPI_prop <- TAPI_annee_prop + (1.96 * TAPI_sd_prop[2])
+lower_ic_annee_TAPI_prop <- TAPI_annee_prop - (1.96 * TAPI_sd_prop[2])
+
+plot((TAPI_annee_prop),
+     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de TAPI")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_TAPI_prop),
+         x1 = 1, y1 = (upper_ic_annee_TAPI_prop))
 
 
+tab_comp_prop <- data.frame(c(DUSA_int_prop, JABO_int_prop,  SIFL_int_prop,TAPI_int_prop),
+                            c(DUSA_annee_prop, JABO_annee_prop,  SIFL_annee_prop, TAPI_annee_prop),
+                            c(lower_ic_annee_DUSA_prop, lower_ic_annee_JABO_prop, lower_ic_annee_SIFL_prop, lower_ic_annee_TAPI_prop),
+                            c(upper_ic_annee_DUSA_prop, upper_ic_annee_JABO_prop, upper_ic_annee_SIFL_prop, upper_ic_annee_TAPI_prop))
 
-
-
-
-
+axex<- 1:4
+rownames(tab_comp_prop) <- c("DUSA", "JABO", "SIFL", "TAPI")
+colnames(tab_comp_prop) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
+tab_comp_prop
+plot(tab_comp_prop$annee,
+     xaxt = "n",
+     ylim = c(-0.05, 0.03),
+     ylab = "log estimé de beta",
+     xlab = "Espèces",
+     main = "Estimés de log beta avec IC 95% : proportion jeunes par espèce")
+abline(h = 0, lty = 2, col = "red")
+axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
+segments(x0 = 1, y0 = lower_ic_annee_DUSA_prop,
+         x1 = 1, y1 = upper_ic_annee_DUSA_prop)
+segments(x0 = 2, y0 = lower_ic_annee_JABO_prop,
+         x1 = 2, y1 = upper_ic_annee_JABO_prop)
+segments(x0 = 3, y0 = lower_ic_annee_SIFL_prop,
+         x1 = 3, y1 = upper_ic_annee_SIFL_prop)
+segments(x0 = 4, y0 = lower_ic_annee_TAPI_prop,
+         x1 = 4, y1 = upper_ic_annee_TAPI_prop)
 
 
 
