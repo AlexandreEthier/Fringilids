@@ -1,9 +1,9 @@
 ---
-title: "Suivi migratoire et tendance des populations de fringilidés aux dunes de tadoussac"
+title: "Suivi migratoire et tendance des populations de fringilidés aux dunes de Tadoussac"
+subtitle: "en collaboration avec l'Observatoire d'oiseaux de Tadoussac"
 author: "Maxence Poirier-Joanette, Adrien Badet, Alexandre Éthier, Bérince Hounsouvo"
 format: 
   revealjs:
-    footer: "Collaboration avec l'Observation d'oiseaux de Tadoussac"
     theme: black
     transition: slide
     slide-number: true
@@ -11,6 +11,8 @@ format:
     mainfontcolor: "#FFD700"
     headingcolor: "#FFD700" 
     fontsize: "20pt"
+title-slide-attributes:
+  data-footer: "Collaboration avec l'Observatoire d'oiseaux de Tadoussac"
 editor: visual
 ---
 
@@ -26,6 +28,8 @@ editor: visual
 ![Tarin des pins](Tarin.jpg){height="280px" fig-align="center"}
 :::
 
+Source: Oiseaux du Québec
+
 ## [Hypothèses]{style="color: yellow;"}
 
 1)  Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi
@@ -37,20 +41,24 @@ editor: visual
 
 ## [Jeu de données brutes]{style="color: yellow;"}
 
-:::: columns
+::::: columns
 ::: {.column width="50%"}
 ```{r}
+#| echo: true
 library(readxl)
 abond <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Abondance.xlsx")
 str(abond)
 ```
+:::
 
+::: {.column width="50%"}
 ```{r}
+#| echo: true
 bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
 str(bague)
 ```
 :::
-::::
+:::::
 
 ## [Manipulation de abond]{style="color: yellow;"}
 
@@ -76,7 +84,7 @@ str(abond)
 
 ```
 
-## [Manipulation de bague]{style="color: yellow;"}
+## [Bague pour chaque espèce]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -212,17 +220,17 @@ str(DUSA)
 str(bague_DUSA)
 ```
 
-## Objectif 1
+## [Objectif #1]{style="color: yellow;"}
 
-1)  Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi
-    a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) évolue dans le temps ?
-    b)  Comment évolue la condition corporelle des différentes classes au cours du temps ?
+Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi
+    a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) évolue dans le temps?
+    b)  Comment évolue la condition corporelle des différentes classes au cours du temps?
 
 . . .
 
 Modèle linéaire suivi d'une randomisation
 
-## Visualisation des données brutes
+## [Code pour la visualisation des données brutes]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -232,47 +240,51 @@ abond <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Dat
 plot_DUSA_tot <- ggplot(abond[abond$Espece=="DUSA",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkorange1")+
   geom_path(linewidth = 1, col = "orange")+
-  labs(title = "Durbec des Sapins",
+  labs(title = "Abondance standardisé du Durbec des Sapins dans le temps",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+        plot.title = element_text(size = 10))
 
 # abondance SIFL
 
 plot_SIFL_tot <- ggplot(abond[abond$Espece=="SIFL",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "turquoise4")+
   geom_path(linewidth = 1, col = "turquoise3")+
-  labs(title = "Sizerin flammé",
+  labs(title = "Abondance standardisé du Sizerin flammé dans le temps",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+        plot.title = element_text(size = 10))
 
 # abondance JABO
 
 plot_JABO_tot <- ggplot(abond[abond$Espece=="JABO",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "darkgreen")+
   geom_path(linewidth = 1, col = "chartreuse4")+
-  labs(title = "Jaseur boréal",
+  labs(title = "Abondance standardisé du Jaseur Boréal dans le temps",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+        plot.title = element_text(size = 10))
 
 #abondance TAPI
 
 plot_TAPI_tot <- ggplot(abond[abond$Espece=="TAPI",], aes(x = Annee, y = abond_std, group =1))+
   geom_point(size = 3, col = "violetred4")+
   geom_path(linewidth = 1, col = "violetred3")+
-  labs(title = "Tarin des pins",
+  labs(title = "Abondance standaridsé du Tarin des pins dans le temps",
        x = "Année",
        y = expression("N. individus recensés *" ~ heure^{-1}))+
   theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+        plot.title = element_text(size = 10))
 ```
 
-## 
+## [Visualisation des données brutes]{style="color: yellow;"} 
 
 ```{r}
 #| fig-width: 10
@@ -287,7 +299,7 @@ plot_grid(
   align = "hv")
 ```
 
-## Randomisation
+## [Importe jeu de données pour randomisation]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -310,7 +322,7 @@ TAPI$Annee <- as.factor(as.numeric(TAPI$Annee))
 TAPI$Annee <- as.integer(TAPI$Annee)
 ```
 
-## Modèle linéaire DUSA
+## [Modèle linéaire DUSA]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -320,7 +332,7 @@ summary(lm_DUSA)
 
 ```
 
-##
+## [Vérification des suppositions du modèle]{style="color: yellow;"}
 
 ```{r}
 # Vérification des suppositions du modèle
@@ -328,7 +340,7 @@ par(mfrow = c(2,2))
 plot(lm_DUSA) # OK
 ```
 
-## Modèle linéaire JABO
+## [Modèle linéaire JABO]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -336,7 +348,7 @@ lm_JABO <- lm(log(abond_std) ~ Annee, data = JABO)
 summary(lm_JABO)
 ```
 
-##
+## [Vérification des suppositions du modèle]{style="color: yellow;"}
 
 ```{r}
 # Vérification des suppositions du modèle
@@ -344,19 +356,22 @@ par(mfrow = c(2,2))
 plot(lm_JABO) # OK
 ```
 
-## Modèle linéaire SIFL
+## [Modèle linéaire SIFL]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
 lm_SIFL <- lm(log(abond_std) ~ Annee, data = SIFL)
 summary(lm_SIFL)
+```
 
-# Vérification des suppositions du modèle
+## [Vérification des suppositions du modèle]{style="color: yellow;"}
+
+```{r}
 par(mfrow = c(2,2))
 plot(lm_SIFL) # OK
 ```
 
-## Modèle linéaire TAPI
+## [Modèle linéaire TAPI]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -365,7 +380,7 @@ summary(lm_TAPI)
 
 ```
 
-## 
+## [Vérification des suppositions du modèle]{style="color: yellow;"}
 
 ```{r}
 # Vérification des suppositions du modèle
@@ -373,39 +388,41 @@ par(mfrow = c(2,2))
 plot(lm_TAPI) # OK
 ```
 
-## Randomisation
+## [Code pour la randomisation]{style="color: yellow;"}
 
 ```{r}
+#| echo: true
+#| eval: false
 # Test de randomisation afin d'obtenir des prédictions de lm
 
 # Paramètres randomisation
 
-#n_sim <- 5000
+n_sim <- 5000
 
-#DUSA_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
-#DUSA_sim <- DUSA[, "Annee"]
-#DUSA_sim <- as.data.frame(DUSA_sim)
-#DUSA_sim <- rename(DUSA_sim, Annee = "DUSA_sim")
+DUSA_output <- matrix(data = NA, nrow = n_sim, ncol = 2)
+DUSA_sim <- DUSA[, "Annee"]
+DUSA_sim <- as.data.frame(DUSA_sim)
+DUSA_sim <- rename(DUSA_sim, Annee = "DUSA_sim")
 
 
-#set.seed(0088)
+set.seed(0088)
 
 # BOUCLE DE RANDOMISATION
-# for(i in 1:n_sim){
+ for(i in 1:n_sim){
 
-#cat("iter = ", i, "\n")
+cat("iter = ", i, "\n")
 
-#DUSA_sim$abond_std <- sample(x = DUSA$abond_std, replace = FALSE)
+DUSA_sim$abond_std <- sample(x = DUSA$abond_std, replace = FALSE)
 
-#lm_DUSA_rand <- lm(log(abond_std) ~ Annee, data = DUSA_sim)
+lm_DUSA_rand <- lm(log(abond_std) ~ Annee, data = DUSA_sim)
 
-#DUSA_output[i, 1] <- coef(lm_DUSA_rand)[1] # Beta intercepte (abond_std)
-#DUSA_output[i, 2] <- coef(lm_DUSA_rand)[2] # Beta année
-#}
-
+DUSA_output[i, 1] <- coef(lm_DUSA_rand)[1] # Beta intercepte (abond_std)
+DUSA_output[i, 2] <- coef(lm_DUSA_rand)[2] # Beta année
+}
 ```
 
-## Histogramme
+## [Histogramme]{style="color: yellow;"}
+
 ```{r}
 # save(DUSA_output, file = "DUSA_output.R")
 load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_output.R")
@@ -417,7 +434,7 @@ load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL_output
 load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI_output.R")
 
 
-par(mfrow = c(2, 2))  # 2 lignes, 2 colonnes
+par(mfrow = c(2, 2))
 
 # DUSA
 hist(DUSA_output[,2])
@@ -437,7 +454,7 @@ abline(v = coef(lm_TAPI)[2], lty = 2, col = "red")
 
 ```
 
-##Histogramme des 4 espèces
+## [Code pour IC à 95%]{style="color: yellow;"}
 
 ```{r}
 #DUSA
@@ -509,9 +526,8 @@ TAPI_upperIC_annee <- TAPI_annee + (1.96 * TAPI_sd[2])
 TAPI_lowerIC_annee <- TAPI_annee - (1.96 * TAPI_sd[2])
 ```
 
-
 ```{r}
-
+#| echo: true
 tab_comp <- data.frame(c(DUSA_int, JABO_int, SIFL_int, TAPI_int),
                        c(DUSA_annee, JABO_annee, SIFL_annee, TAPI_annee),
                        c(DUSA_lowerIC_annee, JABO_lowerIC_annee, SIFL_lowerIC_annee, TAPI_lowerIC_annee),
@@ -522,7 +538,35 @@ rownames(tab_comp) <- c("DUSA", "JABO", "SIFL", "TAPI")
 colnames(tab_comp) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
 tab_comp
 ```
-##
+
+## [Code pour la figure des IC à 95%]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+axex <- 1:4
+
+plot(tab_comp$annee,
+     xaxt = "n",
+     ylim = c(-0.2, 0.25),
+     ylab = "log estimé de beta",
+     xlab = "Espèces",
+     main = "Estimés de log beta avec IC 95% : abondance")
+abline(h = 0, lty = 2, col = "red")
+axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
+segments(x0 = 1, y0 = DUSA_lowerIC_annee,
+         x1 = 1, y1 = DUSA_upperIC_annee)
+segments(x0 = 2, y0 = JABO_lowerIC_annee,
+         x1 = 2, y1 = JABO_upperIC_annee)
+segments(x0 = 3, y0 = SIFL_lowerIC_annee,
+         x1 = 3, y1 = SIFL_upperIC_annee)
+segments(x0 = 4, y0 = TAPI_lowerIC_annee,
+         x1 = 4, y1 = TAPI_upperIC_annee)
+```
+
+## [Figure pour IC à 95% pour l'abondance]{style="color: yellow;"}
+
 ```{r}
 axex <- 1:4
 
@@ -542,5 +586,763 @@ segments(x0 = 3, y0 = SIFL_lowerIC_annee,
          x1 = 3, y1 = SIFL_upperIC_annee)
 segments(x0 = 4, y0 = TAPI_lowerIC_annee,
          x1 = 4, y1 = TAPI_upperIC_annee)
+```
+
+## [Code pour la visualisation de la condition dans le temps]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+#| eval: false
+bague <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.csv", header = TRUE)
+bague$Condition <- bague$Aile/bague$Masse
+bague_DUSA <- bague[bague$Espece == "DUSA",] # Ne garde que DUSA
+bague_JABO <- bague[bague$Espece == "JABO",] # Ne garde que JABO
+bague_SIFL <- bague[bague$Espece == "SIFL",] # Ne garde que SIFL
+bague_TAPI <- bague[bague$Espece == "TAPI",] # Ne garde que TAPI
+
+#### DUSA
+# condition âge confondu
+plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "darkorange1") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du durbec des sapins selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+
+# condition par âge 
+plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkorange3",
+      "HY" = "orange" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du durbec des sapins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#Importe jeu de données
+bague <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.csv", header = TRUE)
+bague$Condition <- bague$Aile/bague$Masse
+bague_DUSA <- bague[bague$Espece == "DUSA",] # Ne garde que DUSA
+bague_JABO <- bague[bague$Espece == "JABO",] # Ne garde que JABO
+bague_SIFL <- bague[bague$Espece == "SIFL",] # Ne garde que SIFL
+bague_TAPI <- bague[bague$Espece == "TAPI",] # Ne garde que TAPI
+
+#### DUSA
+# condition âge confondu
+plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "darkorange1") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du durbec des sapins selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+
+# condition par âge 
+plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkorange3",
+      "HY" = "orange" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du durbec des sapins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+
+#### JABO
+# condition âge confondu
+plot_condition_JABO <- ggplot(bague_JABO, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "darkgreen") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du jaseur boréal selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+
+# condition par âge 
+plot_condition_age_JABO<-ggplot(bague_JABO, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkgreen",
+      "HY" = "green" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du jaseur boréal par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+
+
+
+#### SIFL
+# condition âge confondu
+plot_condition_SIFL <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "turquoise4") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du sizerin flammé selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+
+
+# condition par âge 
+plot_condition_age_SIFL<-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "darkblue",
+      "HY" = "turquoise3" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du durbec des sapins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+
+
+
+#### TAPI
+# condition âge confondu
+plot_condition_TAPI <- ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = Annee)) +
+  geom_boxplot(fill = "violetred1") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition du tarin des pins selon les années",
+       x = "Année",
+       y = "Condition") +
+  theme(
+    axis.line.x = element_line(color = "black", linewidth = 0.5),
+    axis.line.y = element_line(color = "black", linewidth = 0.5),
+    panel.background = element_blank()
+  )
+
+# condition par âge 
+plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+  geom_boxplot(aes(fill = Age))+
+  scale_fill_manual(
+    values = c(
+      "AHY" = "violetred4",
+      "HY" = "violet" 
+    ))+
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  labs(title = "Condition des classes du tarin des pins par année",
+       x = "Année",
+       y = "Condition") +
+  theme_classic() 
+```
+
+## [Visualisation de la condition par âge dans le temps]{style="color: yellow;"}
+
+```{r}
+plot_grid(plot_condition_age_DUSA, plot_condition_age_JABO, plot_condition_age_SIFL, plot_condition_age_TAPI)
+```
+
+## [Visualisation pour la visualisation de la condition dans le temps]{style="color: yellow;"}
+
+```{r}
+plot_grid(plot_condition_DUSA, plot_condition_JABO, plot_condition_SIFL, plot_condition_TAPI)
+```
+
+## [Code pour la visualisation de la proportion dans le temps]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+#| eval: false
+library(scales) # objet percent
+DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "darkorange") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de durbec des sapins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+```
+
+```{r}
+#| echo: false
+#| eval: TRUE
+DUSA <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
+JABO <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO.csv", header = TRUE)
+SIFL <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL.csv", header = TRUE)
+TAPI <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI.csv", header = TRUE)
+
+DUSA <- DUSA[DUSA$Annee >= "2007",]
+JABO <- JABO[JABO$Annee >= "2007",]
+SIFL <- SIFL[SIFL$Annee >= "2007",]
+TAPI <- TAPI[TAPI$Annee >= "2007",]
+
+library(scales) # objet percent
+
+DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "darkorange") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de durbec des sapins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic() +
+  theme(plot.title = element_text(size = 10))
+
+
+JABO_prop<-ggplot(data = JABO, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "forestgreen") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de jaseur boréal par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic() +
+  theme(plot.title = element_text(size = 10))
+
+
+SIFL_prop<-ggplot(data = SIFL, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "turquoise4") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de sizerin flammé par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic() +
+  theme(plot.title = element_text(size = 10))
+
+
+TAPI_prop<-ggplot(data = TAPI, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "violetred") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de tarin des pins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic() +
+  theme(plot.title = element_text(size = 10))
+
+```
+
+## [Figure pour la visualisation de la proportion dans le temps]{style="color: yellow;"}
+
+```{r}
+plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
+```
+
+## [Objectif #2]{style="color: yellow;"}
+
+Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
+    a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
+    b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+
+. . .
+
+Régression bêta-binomiale à l'aide de JAGS
+
+## [Définir une irruption]{style="color: yellow;"}
+
+::: {.callout-tip title ="Irruption"}
+
+Une irruption d'oiseaux est un mouvement migratoire irrégulier et massif d'espèces (souvent boréales) vers des régions plus méridionales, déclenché par une pénurie soudaine de nourriture (graines, petits rongeurs) sur leurs lieux de reproduction. Contrairement à la migration saisonnière, l'irruption est imprévisible.
+
+![Source: Alexi Hobbs](irruption.webp){height="280px"}
+
+:::
+
+. . .
+
+Il faut donc déterminer nos années irruptives de façon objective
+
+## [Formule pour définir une irruption]{style="color: yellow;"}
+
+![LaMontagne & Boutin 2009](Lamontagne.png)
+
+## [Importe le jeu de données]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+
+DUSA <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv")
+JABO <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO.csv")
+SIFL <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL.csv")
+TAPI <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI.csv")
+
+# Filtrer tout avant 2007
+
+DUSA <- DUSA[DUSA$Annee >= "2007",]
+JABO <- JABO[JABO$Annee >= "2007",]
+SIFL <- SIFL[SIFL$Annee >= "2007",]
+TAPI <- TAPI[TAPI$Annee >= "2007",]
+
+DUSA$irruption <- as.factor(DUSA$irruption)
+JABO$irruption <- as.factor(JABO$irruption)
+SIFL$irruption <- as.factor(SIFL$irruption)
+TAPI$irruption <- as.factor(TAPI$irruption)
+```
+
+## [Code pour définir une irruption]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+
+# Extraction param. équation
+
+DUSA_Ni <- DUSA$abond_std
+DUSA_P <- mean(DUSA$abond_std)
+
+DUSA_Nipi <- DUSA_Ni - DUSA_P # Numérateur
+
+DUSA_sigma <- sd(DUSA_Nipi) # Sigma
+
+DUSA_Di <- DUSA_Nipi/DUSA_sigma # Standard deviate
+
+DUSA_seuil <- abs(min(DUSA_Di)) # Seuil fixé pour irruption
+
+DUSA_irr <- DUSA_Di > DUSA_seuil # Vecteur logique TRUE or FALSE pour irruption
+```
+
+![LaMontagne & Boutin 2009](Lamontagne.png)
+
+## [Code pour les figures]{style="color: yellow;"}
+
+```{r}
+#| echo: true
+#| eval: false
+# Représentation graphique pour JABO
+JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("1" = "#009929", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Abondance standardisée annuelle du Jaseur boréal pour les années irruptives VS non-irruptives",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(JABO$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
+JABO_plot
+
+
+# DEVIATE BARPLOTS pour JABO
+
+range(JABO_Di)
+
+cols <- c("black", "#009929")
+JABO_col <- ifelse(JABO_Di > 1.053, cols[2],
+                   cols[1])
+
+JABO_Diplot <- barplot(JABO_Di, JABO$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = JABO_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 1.053, col = "red", lty = 2)
+```
+
+```{r}
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+##### SIFL
+
+SIFL_Ni <- SIFL$abond_std
+SIFL_P <- mean(SIFL$abond_std)
+
+SIFL_Nipi <- SIFL_Ni - SIFL_P # Numérateur
+
+SIFL_sigma <- sd(SIFL_Nipi) # Sigma
+
+SIFL_Di <- SIFL_Nipi/SIFL_sigma # Standard deviate
+
+SIFL_seuil <- abs(min(SIFL_Di)) # Seuil fixé pour irruption
+
+SIFL_irr <- SIFL_Di > SIFL_seuil # Vecteur logique TRUE or FALSE pour irruption
+
+# Save object to load in data_clean.R
+# save(SIFL_irr, file = "SIFL_irr.R")
+
+# Représentation graphique
+
+SIFL_plot <- ggplot(SIFL, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("1" = "turquoise", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Années irruptives VS non-irruptives pour SIFL",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(SIFL$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+        plot.title = element_text(size =10))
+#SIFL_plot
+
+##### TAPI
+
+TAPI_Ni <- TAPI$abond_std
+TAPI_P <- mean(TAPI$abond_std)
+
+TAPI_Nipi <- TAPI_Ni - TAPI_P # Numérateur
+
+TAPI_sigma <- sd(TAPI_Nipi) # Sigma
+
+TAPI_Di <- TAPI_Nipi/TAPI_sigma # Standard deviate
+
+TAPI_seuil <- abs(min(TAPI_Di)) # Seuil fixé pour irruption
+
+TAPI_irr <- TAPI_Di > TAPI_seuil # Vecteur logique TRUE or FALSE pour irruption
+
+# Save object to load in data_clean.R
+# save(TAPI_irr, file = "TAPI_irr.R")
+
+# Représentation graphique
+
+TAPI_plot <- ggplot(TAPI, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("1" = "violetred", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "#a7a7a7")+
+  labs(title = "Années irruptives VS non-irruptives pour TAPI",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(TAPI$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+          plot.title = element_text(size =10))
+#TAPI_plot
+
+##### DUSA
+
+DUSA_plot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c( "1" = "orange", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "gray")+
+  labs(title = "Années irruptives VS non-irruptives pour DUSA",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+          plot.title = element_text(size =10))
+#DUSA_plot
+
+
+#### JABO
+
+JABO_Ni <- JABO$abond_std
+JABO_P <- mean(JABO$abond_std)
+
+JABO_Nipi <- JABO_Ni - JABO_P # Numérateur
+
+JABO_sigma <- sd(JABO_Nipi) # Sigma
+
+JABO_Di <- JABO_Nipi/JABO_sigma # Standard deviate
+
+JABO_seuil <- abs(min(JABO_Di)) # Seuil fixé pour irruption
+
+JABO_irr <- JABO_Di > JABO_seuil # Vecteur logique TRUE or FALSE pour irruption
+
+#Représentation graphique pour JABO
+
+JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = irruption))+
+  scale_color_manual(values = c("1" = "darkgreen", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "gray")+
+  labs(title = "Années irruptives VS non-irruptives pour JABO",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(JABO$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+          plot.title = element_text(size = 10))
+#JABO_plot
+
+```
+
+## [Visualisation des irruptions]{style="color: yellow;"}
+
+```{r}
+library(cowplot)
+plot_grid(
+  JABO_plot,
+  DUSA_plot,
+  SIFL_plot,
+  TAPI_plot,
+  ncol = 2,
+  align = "hv")
+```
+
+## [Visualisation des irruptions]{style="color: yellow;"}
+
+```{r}
+par(mfrow = c(2, 2))
+
+# JABO
+
+# DEVIATE BARPLOTS pour JABO
+
+#range(JABO_Di)
+
+cols <- c("black", "darkgreen")
+JABO_col <- ifelse(JABO_Di > 1.053, cols[2],
+                   cols[1])
+
+JABO_Diplot <- barplot(JABO_Di, JABO$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = JABO_col,
+                       main = "Déviation standard du Jaseur boréale")
+abline(h = 1.053, col = "red", lty = 2)
+
+#DUSA
+
+# DEVIATE BARPLOTS
+
+#range(DUSA_Di)
+
+cols <- c("black", "orange")
+DUSA_col <- ifelse(DUSA_Di > 0.965, cols[2],
+                                    cols[1])
+
+DUSA_Diplot <- barplot(DUSA_Di, DUSA$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = DUSA_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 0.965, col = "red", lty = 2)
+
+#SIFL
+
+# DEVIATE BARPLOT
+
+#range(SIFL_Di)
+
+cols <- c("black", "turquoise")
+SIFL_col <- ifelse(SIFL_Di > 0.495, cols[2],
+                   cols[1])
+
+SIFL_Diplot <- barplot(SIFL_Di, SIFL$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = SIFL_col,
+                       main = "Déviation standard du Sizerin flammé")
+abline(h = 0.495, col = "red", lty = 2)
+
+#TAPI
+
+# DEVIATE BARPLOT
+
+#range(TAPI_Di)
+
+cols <- c("black", "violetred")
+TAPI_col <- ifelse(TAPI_Di > 0.525, cols[2],
+                   cols[1])
+
+TAPI_Diplot <- barplot(TAPI_Di, TAPI$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = TAPI_col,
+                       main = "Déviation standard du Tarin des pins")
+abline(h = 0.525, col = "red", lty = 2)
+```
+
+## [Comparer les années irruptives vs non-irruptives]{style="color: yellow;"}
+
+Ajouter graph d'Adrien (deux groupes)
+
+## [Préparation des données pour JAGS]{style="color: yellow;"}
+
+```{r}
+DUSA <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
+JABO <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
+SIFL <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
+TAPI <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
+
+DUSA <- DUSA[!is.na(DUSA$nb_tot),] # Retrait des années >= 2007 (NA)
+JABO <- JABO[!is.na(JABO$nb_tot),]
+SIFL <- SIFL[!is.na(SIFL$nb_tot),]
+TAPI <- TAPI[!is.na(TAPI$nb_tot),]
+
+DUSA$Annee <- as.integer(as.factor(DUSA$Annee))
+JABO$Annee <- as.integer(as.factor(JABO$Annee))
+SIFL$Annee <- as.integer(as.factor(SIFL$Annee))
+TAPI$Annee <- as.integer(as.factor(TAPI$Annee))
+
+DUSA$irruption <- as.numeric(DUSA$irruption)
+JABO$irruption <- as.numeric(JABO$irruption)
+SIFL$irruption <- as.numeric(SIFL$irruption)
+TAPI$irruption <- as.numeric(TAPI$irruption)
+
+abond <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/abond_clean.csv", header = TRUE)
+bague <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/bague_clean.csv", header = TRUE)
+
+
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_irr.R")
+
+DUSA_IRR <- as.data.frame(DUSA_irr[12:length(DUSA_irr)])
+DUSA_IRR$Annee <- seq(1:length(DUSA_IRR$`DUSA_irr[12:length(DUSA_irr)]`))
+DUSA_IRR$Espece <- "DUSA"
+colnames(DUSA_IRR) <- c("irruption", "Annee", "Espece")
+
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO_irr.R")
+
+JABO_IRR <- as.data.frame(JABO_irr[12:length(JABO_irr)])
+JABO_IRR$Annee <- seq(1:length(JABO_IRR$`JABO_irr[12:length(JABO_irr)]`))
+JABO_IRR$Espece <- "JABO"
+colnames(JABO_IRR) <- c("irruption", "Annee", "Espece")
+
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL_irr.R")
+
+SIFL_IRR <- as.data.frame(SIFL_irr[12:length(SIFL_irr)])
+SIFL_IRR$Annee <- seq(1:length(SIFL_IRR$`SIFL_irr[12:length(SIFL_irr)]`))
+SIFL_IRR$Espece <- "SIFL"
+colnames(SIFL_IRR) <- c("irruption", "Annee", "Espece")
+
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI_irr.R")
+
+TAPI_IRR <- as.data.frame(TAPI_irr[12:length(TAPI_irr)])
+TAPI_IRR$Annee <- seq(1:length(TAPI_IRR$`TAPI_irr[12:length(TAPI_irr)]`))
+TAPI_IRR$Espece <- "TAPI"
+colnames(TAPI_IRR) <- c("irruption", "Annee", "Espece")
+
+bague_irr <- bague %>% 
+  left_join(DUSA_IRR, by = c("Espece", "Annee")) %>% 
+  left_join(JABO_IRR, by = c("Espece", "Annee")) %>% 
+  left_join(SIFL_IRR, by = c("Espece", "Annee")) %>% 
+  left_join(TAPI_IRR, by = c("Espece", "Annee"))
+colnames(bague_irr) <- c("X", "Espece", "Age", "Aile", "Masse", "Annee", "DUSA_IRR", "JABO_IRR", "SIFL_IRR", "TAPI_IRR")
+
+
+##### DUSA
+
+# Manipulation df bague
+
+DUSA_bague <- bague_irr[bague_irr$Espece == "DUSA",]
+DUSA_bague <- DUSA_bague[, 1:7]
+
+DUSA_bague$DUSA_IRR <- ifelse(DUSA_bague$DUSA_IRR == "TRUE", 1, 0)
+
+DUSA_bague$condition <- DUSA_bague$Aile/DUSA_bague$Masse
+```
+
+## Préparation du modèle JAGS
+```{r}
+#| echo: true
+#| eval: false
+mod_HY_DUSA <- "
+ 
+ model{
+ 
+# prior alpha
+ 
+ for (i in 1: n.annee){
+ 
+ alpha.annee[i] ~ dnorm(mu.annee, tau.annee)
+ 
+}
+ 
+ mu.annee ~ dnorm (0,0.001)
+ sigma.annee ~ dunif(0,100)
+ tau.annee <- 1/(sigma.annee * sigma.annee)
+ 
+# prior probabilité beta
+
+ beta.irru ~ dnorm(0, 0.1)
+ 
+ sigma ~ dunif(0,100)
+ tau <- 1/(sigma * sigma)
+ 
+# theta
+
+ theta ~ dunif(0.0, 20)
+ 
+# likelihood
+
+ for(i in 1:nobs) {
+ 
+  logit(mu[i]) <- max(-10, min(10, alpha.annee[Annee[i]] + beta.irru * irruption[i]))
+
+# Probabilité tiré d'une distribution beta binomiale
+
+    prob[i] ~ dbeta(mu[i] * theta, (1 - mu[i]) * theta) T(0.001, 0.999)
+    
+# Data observé tiré de la distribution
+
+    PropJeunes[i] ~ dbin(prob[i], nb_tot[i])
+ 
+}
+ 
+ mean.int <- mean(alpha.annee[])
+ mean.prob <- mean(prob[])
+ }
+"
+writeLines(mod_HY_DUSA, con = "mod_HY_DUSA.txt")
+
+# Paramètres
+
+n.annee <- length(unique(DUSA$Annee))
+nobs <- nrow(DUSA)
+
+DUSA_jagsData <- list(
+  irruption = DUSA$irruption,
+  nobs       = nobs,
+  n.annee    = n.annee,
+  Annee      = DUSA$Annee,
+  nb_tot   = as.integer(DUSA$nb_tot),
+  PropJeunes = as.integer(round(DUSA$prop_HY * DUSA$nb_tot))
+)
+
+# Données initiales
+
+initsFun <- function(){
+  list(beta.irru = rnorm(1),
+       alpha.annee = rnorm(n.annee),
+       theta = runif(1, 0.01, 10))
+}
+
+params <- c("beta.irru","mean.int","mean.prob", "alpha.annee", "sigma.annee", "sigma", "mu", "theta", "prob")
+
+#DUSA_out_jags<- jags(data = DUSA_jagsData, 
+ #               inits = initsFun, 
+  #              parameters.to.save = params, 
+   #             n.chains = 5, 
+    #            n.iter = 50000,
+     #           n.burnin = 10000, 
+      #          n.thin = 10, 
+       #         model= "mod_HY_DUSA.txt")
+
+# save(DUSA_out_jags, file = "DUSA_out_jags.txt")
+#load("DUSA_out_jags.txt")
+```
+
+## Préparation du modèle JAGS
+```{r}
+
 ```
 
