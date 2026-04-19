@@ -672,6 +672,7 @@ print(TAPI_prop)
 plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
 
 # Prop. graph pour proportion 
+
 #### DUSA
 lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
 summary(lm_DUSA_prop)

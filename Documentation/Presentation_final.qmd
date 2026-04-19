@@ -15,16 +15,14 @@ editor: visual
 
 ## 
 
-::: {layout-nrow=2}
+::: {layout-nrow="2"}
+![Durbec des sapins](Durbec.jpg){height="280px" fig-align="center"}
 
-![Durbec des sapins](Durbec.jpg){height=280px fig-align="center"}
+![Jaseur boréal](Jaseur.jpg){height="280px" fig-align="center"}
 
-![Jaseur boréal](Jaseur.jpg){height=280px fig-align="center"}
+![Sizerin flammée](Sizerin.jpg){height="280px" fig-align="center"}
 
-![Sizerin flammée](Sizerin.jpg){height=280px fig-align="center"}
-
-![Tarin des pins](Tarin.jpg){height=280px fig-align="center"}
-
+![Tarin des pins](Tarin.jpg){height="280px" fig-align="center"}
 :::
 
 ## [Hypothèses]{style="color: yellow;"}
@@ -35,7 +33,7 @@ editor: visual
 2)  Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés ?
     a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
     b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
-    
+
 ## [Jeu de données brutes]{style="color: yellow;"}
 
 ```{r}
@@ -165,7 +163,6 @@ plot_TAPI_tot_con <- ggplot(df_clean[df_clean$Espece=="TAPI",], aes(x = Annee, y
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8))
 ```
-
 
 ```{r}
 plot_DUSA_tot_con <- ggplot(df_clean[df_clean$Espece == "DUSA", ],
@@ -901,4 +898,3 @@ segments(x0 = 4, y0 = lower_ic_annee_SIFL,
 ```{r}
 
 ```
-
