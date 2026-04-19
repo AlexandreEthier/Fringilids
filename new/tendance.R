@@ -483,16 +483,22 @@ segments(x0 = 4, y0 = TAPI_lowerIC_annee,
 
 # Tendance temporelle condition ------------------------------------------------------
 
-bague <- read.csv("bague_clean.csv", header = TRUE)
-bague$Condition <- bague$Aile/bague$Masse
-bague_DUSA <- bague[bague$Espece == "DUSA",] # Ne garde que DUSA
-bague_JABO <- bague[bague$Espece == "JABO",] # Ne garde que JABO
-bague_SIFL <- bague[bague$Espece == "SIFL",] # Ne garde que SIFL
-bague_TAPI <- bague[bague$Espece == "TAPI",] # Ne garde que TAPI
+#bague <- read.csv("bague_clean.csv", header = TRUE)
+#bague$Condition <- bague$Aile/bague$Masse
+#bague_DUSA <- bague[bague$Espece == "DUSA",] # Ne garde que DUSA
+#bague_JABO <- bague[bague$Espece == "JABO",] # Ne garde que JABO
+#bague_SIFL <- bague[bague$Espece == "SIFL",] # Ne garde que SIFL
+#bague_TAPI <- bague[bague$Espece == "TAPI",] # Ne garde que TAPI
+
+load("DUSA_bague.csv")
+load("JABO_bague.csv")
+load("SIFL_bague.csv")
+load("TAPI_bague.csv")
+
 
 #### DUSA
 # condition âge confondu
-plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = Annee)) +
+plot_condition_DUSA <- ggplot(DUSA_bague, aes(x = Annee, y = condition, group = Annee)) +
   geom_boxplot(fill = "darkorange1") +
   scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
   labs(title = "Condition du durbec des sapins selon les années",
@@ -506,7 +512,7 @@ plot_condition_DUSA <- ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = 
 print(plot_condition_DUSA) # pas de différence selon les années
 
 # condition par âge 
-plot_condition_age_DUSA<-ggplot(bague_DUSA, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_DUSA<-ggplot(DUSA_bague, aes(x = Annee, y = condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
@@ -522,7 +528,7 @@ print(plot_condition_age_DUSA) # pas de différence selon les classes d'âge
 
 #### JABO
 # condition âge confondu
-plot_condition_JABO <- ggplot(bague_JABO, aes(x = Annee, y = Condition, group = Annee)) +
+plot_condition_JABO <- ggplot(JABO_bague, aes(x = Annee, y = condition, group = Annee)) +
   geom_boxplot(fill = "darkgreen") +
   scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
   labs(title = "Condition du jaseur boréal selon les années",
@@ -536,7 +542,7 @@ plot_condition_JABO <- ggplot(bague_JABO, aes(x = Annee, y = Condition, group = 
 print(plot_condition_JABO)
 
 # condition par âge 
-plot_condition_age_JABO<-ggplot(bague_JABO, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_JABO<-ggplot(JABO_bague, aes(x = Annee, y = condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
@@ -553,7 +559,7 @@ print(plot_condition_age_JABO)
 
 #### SIFL
 # condition âge confondu
-plot_condition_SIFL <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = Annee)) +
+plot_condition_SIFL <- ggplot(SIFL_bague, aes(x = Annee, y = condition, group = Annee)) +
   geom_boxplot(fill = "turquoise4") +
   scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
   labs(title = "Condition du sizerin flammé selon les années",
@@ -567,7 +573,7 @@ plot_condition_SIFL <- ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = 
 print(plot_condition_SIFL) # pas de différence selon les années
 
 # condition par âge 
-plot_condition_age_SIFL<-ggplot(bague_SIFL, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_SIFL<-ggplot(SIFL_bague, aes(x = Annee, y = condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
@@ -584,7 +590,7 @@ print(plot_condition_age_SIFL) # pas de différence selon les classes d'âge
 
 #### TAPI
 # condition âge confondu
-plot_condition_TAPI <- ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = Annee)) +
+plot_condition_TAPI <- ggplot(TAPI_bague, aes(x = Annee, y = condition, group = Annee)) +
   geom_boxplot(fill = "violetred1") +
   scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
   labs(title = "Condition du tarin des pins selon les années",
@@ -598,7 +604,7 @@ plot_condition_TAPI <- ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = 
 print(plot_condition_TAPI) # pas de différence selon les années
 
 # condition par âge 
-plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group = interaction(Annee, Age)))+
+plot_condition_age_TAPI<-ggplot(TAPI_bague, aes(x = Annee, y = condition, group = interaction(Annee, Age)))+
   geom_boxplot(aes(fill = Age))+
   scale_fill_manual(
     values = c(
@@ -612,14 +618,9 @@ plot_condition_age_TAPI<-ggplot(bague_TAPI, aes(x = Annee, y = Condition, group 
   theme_classic() 
 print(plot_condition_age_TAPI) # pas de différence selon les classes d'âge
 
-
-
-
-# Tendance de la proportion ne se font qu'à partir de 2007 car NA avant...
-# Est-ce qu'on souhaite quand même évaluer la condition et la prop. dans le temps ou seulement carac. irr
-
-# BOXPLOT + ANALYSE simulation
-
+# la condition ne montre pas de tendance sur le long terme dû : 
+# - au fait que ce sont des caractères morphologiques qui varient peu (taille de l'aile et masse)
+# - on a moins d'années que l'abondance : masque certaines tendance ?
 
 
 # Proportion jeunes -------------------------------------------------------
@@ -671,7 +672,10 @@ print(TAPI_prop)
 
 plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
 
+
+
 # Prop. graph pour proportion 
+
 #### DUSA
 lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
 summary(lm_DUSA_prop)

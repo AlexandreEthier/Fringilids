@@ -7,6 +7,8 @@ library(glmmTMB)
 library(jagsUI)
 library(coda)
 library(dplyr)
+library(performance)
+
 
 # Chargement des répertoires de travail -----------------------------------
 
@@ -77,18 +79,6 @@ colnames(bague_irr) <- c("X", "Espece", "Age", "Aile", "Masse", "Annee", "DUSA_I
 
 ##### DUSA
 
-# Manipulation df bague
-
-DUSA_bague <- bague_irr[bague_irr$Espece == "DUSA",]
-DUSA_bague <- DUSA_bague[, 1:7]
-
-DUSA_bague$DUSA_IRR <- ifelse(DUSA_bague$DUSA_IRR == "TRUE", 1, 0)
-
-DUSA_bague$condition <- DUSA_bague$Aile/DUSA_bague$Masse
-
-# save(DUSA_bague, file = "DUSA_bague.csv")
-
-
 # Approche fréquentiste proportion HY
 
 # Variable réponse (Succès | Échec)
@@ -96,6 +86,7 @@ DUSA_propHY <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption + (1 | Annee),
                        family = betabinomial(link = "logit"),
                        data = DUSA)
 
+check_overdispersion(DUSA_propHY) # pas de surdispersion
 summary(DUSA_propHY)
 
 # Vérification des conditions d'applications
@@ -279,21 +270,13 @@ plot(density(DUSA_out_jags$sims.list$theta),
 
 ##### JABO
 
-JABO_bague <- bague_irr[bague_irr$Espece == "JABO",]
-JABO_bague <- JABO_bague[, c(1,2,3,4,5,6,8)]
-
-JABO_bague$JABO_IRR <- ifelse(JABO_bague$JABO_IRR == "TRUE", 1, 0)
-
-JABO_bague$condition <- JABO_bague$Aile/JABO_bague$Masse
-
-# save(JABO_bague, file = "JABO_bague.csv")
-
 # Approche fréquentiste proportion HY
 
 # Variable réponse (Succès | Échec)
 JABO_propHY <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption + (1 | Annee), 
                        family = betabinomial(link = "logit"),
                        data = JABO)
+check_overdispersion(JABO_propHY)
 
 summary(JABO_propHY)
 
@@ -393,7 +376,7 @@ params <- c("beta.irru","mean.int","mean.prob", "alpha.annee", "sigma.annee", "s
 load("JABO_out_jags.txt")
 
 JABO_summary <- JABO_out_jags$summary[c("mean.int", "beta.irru","sigma.annee", "theta", "mean.prob"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
-JABO_summary
+JABO_summary # la proportion de jeunes est expliquée par les irruptions
 
 # La valeur élevé de theta représente une faible surdispersion
 
@@ -475,23 +458,14 @@ plot(density(JABO_out_jags$sims.list$theta),
 
 ##### SIFL
 
-SIFL_bague <- bague_irr[bague_irr$Espece == "SIFL",]
-SIFL_bague <- SIFL_bague[, c(1,2,3,4,5,6,9)]
-
-SIFL_bague$SIFL_IRR <- ifelse(SIFL_bague$SIFL_IRR == "TRUE", 1, 0)
-
-SIFL_bague$condition <- SIFL_bague$Aile/SIFL_bague$Masse
-
-# save(SIFL_bague, file = "SIFL_bague.csv")
-
-
 # Approche fréquentiste proportion HY
 
 # Variable réponse (Succès | Échec)
-SIFL_propHY <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption + (1 | Annee), 
-                       family = betabinomial(link = "logit"),
+SIFL_propHY <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption + ( 1 | Annee), 
+                       family = binomial(link = "logit"),
                        data = SIFL)
 
+check_overdispersion(SIFL_propHY, alternative = "two.sided")
 summary(SIFL_propHY)
 
 # Vérification des conditions d'applications
@@ -591,7 +565,7 @@ params <- c("beta.irru","mean.int","mean.prob", "alpha.annee", "sigma.annee", "s
 load("SIFL_out_jags.txt")
 
 SIFL_summary <- SIFL_out_jags$summary[c("mean.int", "beta.irru","sigma.annee", "theta", "mean.prob"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
-SIFL_summary
+SIFL_summary # pas d'effet des irruptions sur la prop de jeunes
 
 
 # Diagnostic
@@ -672,15 +646,6 @@ plot(density(SIFL_out_jags$sims.list$theta),
 
 ##### TAPI
 
-TAPI_bague <- bague_irr[bague_irr$Espece == "TAPI",]
-TAPI_bague <- TAPI_bague[, c(1,2,3,4,5,6,10)]
-
-TAPI_bague$TAPI_IRR <- ifelse(TAPI_bague$TAPI_IRR == "TRUE", 1, 0)
-
-TAPI_bague$condition <- TAPI_bague$Aile/TAPI_bague$Masse
-
-# save(TAPI_bague, file = "TAPI_bague.csv")
-
 # Approche fréquentiste proportion HY
 
 # Variable réponse (Succès | Échec)
@@ -688,6 +653,7 @@ TAPI_propHY <- glmmTMB(cbind(nb_HY, nb_AHY) ~ irruption + (1 | Annee),
                        family = betabinomial(link = "logit"),
                        data = TAPI)
 
+check_overdispersion(TAPI_propHY)
 summary(TAPI_propHY)
 
 # Vérification des conditions d'applications
@@ -785,7 +751,7 @@ params <- c("beta.irru","mean.int","mean.prob", "alpha.annee", "sigma.annee", "s
 load("TAPI_out_jags.txt")
 
 TAPI_summary <- TAPI_out_jags$summary[c("mean.int", "beta.irru","sigma.annee", "theta", "mean.prob"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
-TAPI_summary
+TAPI_summary # pas d'effet de l'irruption
 
 
 # Diagnostic
@@ -865,5 +831,83 @@ plot(density(TAPI_out_jags$sims.list$theta),
 
 
 
+# Condition ---------------------------------------------------------------
+
+load("DUSA_bague.csv")
+load("JABO_bague.csv")
+load("SIFL_bague.csv")
+load("TAPI_bague.csv")
+
+par(mfrow= c(2,2))
+
+boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
+        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], ylab= "Condition", 
+        main= "Condition du durbec des sapins selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
 
 
+boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
+        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], ylab= "Condition", 
+        main= "Condition du jaseur boréal selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
+        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"], ylab= "Condition", 
+        main= "Condition du sizerin flammé selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
+        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"], ylab= "Condition", 
+        main= "Condition du tarin des pins selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "0"])
+shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "1"])
+wilcox.test(condition ~ DUSA_IRR, data = DUSA_bague)
+DUSA_cond_irr<-tapply(DUSA_bague$condition, DUSA_bague$DUSA_IRR, summary)
+DUSA_cond_irr
+
+shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "0"])
+shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "1"])
+wilcox.test(condition ~ JABO_IRR, data = JABO_bague)
+JABO_cond_irr<-tapply(JABO_bague$condition, JABO_bague$JABO_IRR, summary)
+JABO_cond_irr
+
+shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "0"])
+shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "1"])
+wilcox.test(condition ~ SIFL_IRR, data = SIFL_bague)
+SIFL_cond_irr<-tapply(SIFL_bague$condition, SIFL_bague$SIFL_IRR, summary)
+SIFL_cond_irr
+
+shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "0"])
+shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "1"])
+wilcox.test(condition ~ TAPI_IRR, data = TAPI_bague)
+TAPI_cond_irr<-tapply(TAPI_bague$condition, TAPI_bague$TAPI_IRR, summary)
+TAPI_cond_irr
+
+
+DUSA_tableau_cond <- do.call(rbind, DUSA_cond_irr)
+JABO_tableau_cond <- do.call(rbind, JABO_cond_irr)
+SIFL_tableau_cond <- do.call(rbind, SIFL_cond_irr)
+TAPI_tableau_cond <- do.call(rbind, TAPI_cond_irr)
+
+tableau_cond <- rbind(DUSA_tableau_cond, JABO_tableau_cond, SIFL_tableau_cond, TAPI_tableau_cond)
+colnames(tableau_cond)<- c("Min", "1st Qu", "Median", "Mean", "3rd Qu", "Max", "NA")
+rownames(tableau_cond)<- c("DUSA non irruption", "DUSA irruption", 
+                           "JABO non irruption", "JABO irruption", 
+                           "SIFL non irruption", "SIFL irruption", 
+                           "TAPI non irruption", "TAPI irruption")
+tableau_cond <- tableau_cond[,c(1,3,4)]
+tableau_cond_irr<- tableau_cond[c(2,4,6,8), ]
+tableau_cond_nirr <- tableau_cond[c(1,3,5,7),]
+tableau <- cbind(tableau_cond_nirr[,1], tableau_cond_irr[,1],
+                 tableau_cond_nirr[,2], tableau_cond_irr[,2],
+                 tableau_cond_nirr[,3], tableau_cond_irr[,3])
+colnames(tableau) <- c("1st Qu non irruption", "1st Qu irruption", 
+                       "mean non irruption", "mean irruption", 
+                       "3rd Qu non irruption", "3rd Qu irruption")
+rownames(tableau)<- c("DUSA", "JABO", "SIFL", "TAPI")
+tableau
