@@ -53,21 +53,17 @@ TAPI$irruption <- as.factor(TAPI$irruption)
 
 DUSA_Ni <- DUSA$abond_std
 DUSA_P <- mean(DUSA$abond_std)
-
 DUSA_Nipi <- DUSA_Ni - DUSA_P # Numérateur
-
 DUSA_sigma <- sd(DUSA_Nipi) # Sigma
-
 DUSA_Di <- DUSA_Nipi/DUSA_sigma # Standard deviate
-
 DUSA_seuil <- abs(min(DUSA_Di)) # Seuil fixé pour irruption
-
 DUSA_irr <- DUSA_Di > DUSA_seuil # Vecteur logique TRUE or FALSE pour irruption
 
 # Save object to load in data_clean.R
 # save(DUSA_irr, file = "DUSA_irr.R")
 
 # Représentation graphique
+DUSA$irruption<-as.factor(DUSA$irruption)
 
 DUSA_plot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = irruption))+
   scale_color_manual(values = c( "1" = "orange", "0" = "black"))+
@@ -90,7 +86,7 @@ cols <- c("black", "orange")
 DUSA_col <- ifelse(DUSA_Di > 0.965, cols[2],
                                     cols[1])
 
-DUSA_Diplot <- barplot(DUSA_Di, DUSA$Annee,
+DUSA_Diplot <- barplot(DUSA_Di, 
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = DUSA_col,
@@ -98,26 +94,21 @@ DUSA_Diplot <- barplot(DUSA_Di, DUSA$Annee,
 abline(h = 0.965, col = "red", lty = 2)
 
 
-
 ##### JABO
 
 JABO_Ni <- JABO$abond_std
 JABO_P <- mean(JABO$abond_std)
-
 JABO_Nipi <- JABO_Ni - JABO_P # Numérateur
-
 JABO_sigma <- sd(JABO_Nipi) # Sigma
-
 JABO_Di <- JABO_Nipi/JABO_sigma # Standard deviate
-
 JABO_seuil <- abs(min(JABO_Di)) # Seuil fixé pour irruption
-
 JABO_irr <- JABO_Di > JABO_seuil # Vecteur logique TRUE or FALSE pour irruption
 
 # Save object to load in data_clean.R
 # save(JABO_irr, file = "JABO_irr.R")
 
 # Représentation graphique
+JABO$irruption<- as.factor(JABO$irruption)
 
 JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = irruption))+
   scale_color_manual(values = c("1" = "#009929", "0" = "black"))+
@@ -140,7 +131,7 @@ cols <- c("black", "#009929")
 JABO_col <- ifelse(JABO_Di > 1.053, cols[2],
                    cols[1])
 
-JABO_Diplot <- barplot(JABO_Di, JABO$Annee,
+JABO_Diplot <- barplot(JABO_Di,
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = JABO_col,
@@ -152,22 +143,17 @@ abline(h = 1.053, col = "red", lty = 2)
 
 SIFL_Ni <- SIFL$abond_std
 SIFL_P <- mean(SIFL$abond_std)
-
 SIFL_Nipi <- SIFL_Ni - SIFL_P # Numérateur
-
 SIFL_sigma <- sd(SIFL_Nipi) # Sigma
-
 SIFL_Di <- SIFL_Nipi/SIFL_sigma # Standard deviate
-
 SIFL_seuil <- abs(min(SIFL_Di)) # Seuil fixé pour irruption
-
 SIFL_irr <- SIFL_Di > SIFL_seuil # Vecteur logique TRUE or FALSE pour irruption
 
 # Save object to load in data_clean.R
 # save(SIFL_irr, file = "SIFL_irr.R")
 
 # Représentation graphique
-
+SIFL$irruption<-as.factor(SIFL$irruption)
 SIFL_plot <- ggplot(SIFL, aes(x = Annee, y = abond_std, color = irruption))+
   scale_color_manual(values = c("1" = "turquoise", "0" = "black"))+
   geom_point(size = 4)+
@@ -188,7 +174,7 @@ cols <- c("black", "turquoise")
 SIFL_col <- ifelse(SIFL_Di > 0.495, cols[2],
                    cols[1])
 
-SIFL_Diplot <- barplot(SIFL_Di, SIFL$Annee,
+SIFL_Diplot <- barplot(SIFL_Di,
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = SIFL_col,
@@ -215,7 +201,7 @@ TAPI_irr <- TAPI_Di > TAPI_seuil # Vecteur logique TRUE or FALSE pour irruption
 # save(TAPI_irr, file = "TAPI_irr.R")
 
 # Représentation graphique
-
+TAPI$irruption<-as.factor(TAPI$irruption)
 TAPI_plot <- ggplot(TAPI, aes(x = Annee, y = abond_std, color = irruption))+
   scale_color_manual(values = c("1" = "violetred", "0" = "black"))+
   geom_point(size = 4)+
@@ -237,15 +223,15 @@ cols <- c("black", "violetred")
 TAPI_col <- ifelse(TAPI_Di > 0.525, cols[2],
                    cols[1])
 
-TAPI_Diplot <- barplot(TAPI_Di, TAPI$Annee,
+TAPI_Diplot <- barplot(TAPI_Di,
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = TAPI_col,
                        main = "Déviation standard du Durbec des sapins")
 abline(h = 0.525, col = "red", lty = 2)
 
-
-
+plot_grid(DUSA_plot, JABO_plot, SIFL_plot, TAPI_plot)
+plot_grid()
 
 
 
