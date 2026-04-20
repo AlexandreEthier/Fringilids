@@ -19,10 +19,10 @@ TAPI <- read.csv("TAPI.csv", header = TRUE)
 
 # Filtrer tout avant 2007
 
-DUSA <- DUSA[DUSA$Annee >= "2007",]
-JABO <- JABO[JABO$Annee >= "2007",]
-SIFL <- SIFL[SIFL$Annee >= "2007",]
-TAPI <- TAPI[TAPI$Annee >= "2007",]
+# DUSA <- DUSA[DUSA$Annee >= "2007",]
+# JABO <- JABO[JABO$Annee >= "2007",]
+# SIFL <- SIFL[SIFL$Annee >= "2007",]
+# TAPI <- TAPI[TAPI$Annee >= "2007",]
 
 DUSA$irruption <- as.factor(DUSA$irruption)
 JABO$irruption <- as.factor(JABO$irruption)
