@@ -841,25 +841,31 @@ load("TAPI_bague.csv")
 par(mfrow= c(2,2))
 
 boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
-        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], ylab= "Condition", 
+        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], 
+        col = c("grey","orange"), 
+        ylab= "Condition", 
         main= "Condition du durbec des sapins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
-
 boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
-        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], ylab= "Condition", 
+        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], 
+        col = c("grey","forestgreen"), 
+        ylab= "Condition", 
         main= "Condition du jaseur boréal selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
-
 boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
-        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"], ylab= "Condition", 
+        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"],
+        col = c("grey","turquoise3"), 
+        ylab= "Condition", 
         main= "Condition du sizerin flammé selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
 
 boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
-        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"], ylab= "Condition", 
+        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"],
+        col = c("grey","violetred"), 
+        ylab= "Condition", 
         main= "Condition du tarin des pins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
