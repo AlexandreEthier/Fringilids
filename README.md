@@ -190,7 +190,7 @@ Script R qui permet de caractériser les années irruptives et non-irruptives. O
 ###### Équation JAGS proportion
 
 
-$log(\mu_{abondance_i}) = \alpha_{annee} + X_i\beta_{irruption} + \epsilon_i$
+$log(\mu_{abondance_i}) = \alpha_{annee} + X_i\beta_{irruption}
 
 $\beta_{irruption} \sim N(0, 0.1)$
 
