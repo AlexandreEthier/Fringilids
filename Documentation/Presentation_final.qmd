@@ -4,6 +4,7 @@ subtitle: "en collaboration avec l'Observatoire d'oiseaux de Tadoussac"
 author: "Maxence Poirier-Joanette, Adrien Badet, Alexandre Ethier, Bérince Hounsouvo"
 format: 
   revealjs:
+    embed-resources: true
     theme: black
     transition: slide
     slide-number: true
