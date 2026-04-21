@@ -474,9 +474,20 @@ plot(density(JABO_out_jags$sims.list$theta),
      xlab = "theta",
      main = "Postérieur de Theta")
 
+#graphique
+JABO_plot_sum<- JABO_summary[c("mean.int", "beta.irru"), c("mean", "2.5%", "97.5%")]
+JABO_plot_sum_p <- plogis(JABO_plot_sum)
+
+plot(JABO_plot_sum_p[,"mean"], xlab = " ", ylab = "Proportion de jeunes",
+     ylim = c(0,1), xlim = c(0.5,2.5), xaxt = "n", main = "Proportion de jeunes chez JABO selon l'irruption")
+axis(1, at = 1:2, labels = c("Non irruption", "Irruption"))
+segments(x0 = 1, y0 = JABO_plot_sum_p["mean.int", "2.5%"], x1 = 1, y1 = JABO_plot_sum_p["mean.int", "97.5%"])
+segments(x0 = 2, y0 = JABO_plot_sum_p["beta.irru", "2.5%"], x1 = 2, y1 = JABO_plot_sum_p["beta.irru", "97.5%"])
+text(x = 1.1, y = 0.47, labels = "0.47")
+text(x = 2.1, y = 0.79, labels = "0.79")
+
 
 ##### SIFL
-
 # Approche fréquentiste proportion HY
 
 # Variable réponse (Succès | Échec)
