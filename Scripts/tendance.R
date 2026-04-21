@@ -120,6 +120,7 @@ DUSA_sim <- DUSA[, "Annee"]
 DUSA_sim <- as.data.frame(DUSA_sim)
 DUSA_sim <- rename(DUSA_sim, Annee = "DUSA_sim")
 
+
 set.seed(0088)
 
 # BOUCLE DE RANDOMISATION
@@ -673,7 +674,7 @@ plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
 
 
 
-# Proportion lm + randomisation -------------------------------------------
+# Prop. graph pour proportion 
 
 #### DUSA
 lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
@@ -688,7 +689,7 @@ DUSA_int_prop <- lm_DUSA_prop$coefficients["(Intercept)"]
 DUSA_annee_prop <- lm_DUSA_prop$coefficients["Annee"]
 DUSA_sd_prop <- coef(summary(lm_DUSA_prop))[, "Std. Error"]
 
-# Intervalles de confiance
+# Intercepte
 upper_ic_annee_DUSA_prop <- DUSA_annee_prop + (1.96 * DUSA_sd_prop[2])
 lower_ic_annee_DUSA_prop <- DUSA_annee_prop - (1.96 * DUSA_sd_prop[2])
 
@@ -699,44 +700,6 @@ abline(h = 0, lty = 2, col = "red")
 segments(x0 = 1, y0 = (lower_ic_annee_DUSA_prop),
          x1 = 1, y1 = (upper_ic_annee_DUSA_prop))
 
-# simulation
-DUSA$Annee <- as.numeric(DUSA$Annee)
-n_sim <- 5000
-
-DUSA_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
-DUSA_sim_prop <- DUSA[, "Annee"]
-DUSA_sim_prop <- as.data.frame(DUSA_sim_prop)
-DUSA_sim_prop <- rename(DUSA_sim_prop, Annee = "DUSA_sim_prop")
-
-set.seed(1234)
-
-for(i in 1:n_sim){
-  
-  cat("iter = ", i, "\n")
-  
-  DUSA_sim_prop$prop <- sample(x = DUSA$prop_HY, replace = FALSE)
-  
-  lm_DUSA_rand_prop <- lm(prop ~ Annee, data = DUSA_sim_prop)
-  
-  DUSA_output_prop[i,1] <- coef(lm_DUSA_rand_prop)[1] # Beta intercepte (abond_std)
-  DUSA_output_prop[i,2] <- coef(lm_DUSA_rand_prop)[2] # Beta année
-  
-}
-#save(DUSA_output_prop, file = "DUSA_output_prop.R")
-load("DUSA_output.R")
-
-pbeta_annee <- sum(DUSA_output_prop[, 2] <= coef(lm_DUSA_prop)[2])/n_sim
-pbeta_annee # 0.28
-
-hist(DUSA_output_prop[,1])
-abline(v =(coef(lm_DUSA_prop)[1]), lty = 2, col= "red")
-
-hist(DUSA_output_prop[,2])
-abline(v =(coef(lm_DUSA_prop)[2]), lty = 2, col= "red")
-text(x = -0.010, y = 900, labels = "P = 0.28")
-
-
-
 #### JABO
 lm_JABO_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = JABO)
 
@@ -744,7 +707,7 @@ par(mfrow = c(2,2))
 plot(lm_JABO_prop)
 dev.off()
 
-summary(lm_JABO_prop) 
+summary(lm_JABO_prop) # vérification par simulation ?
 
 # graph coef
 JABO_int_prop <- lm_JABO_prop$coefficients["(Intercept)"]
@@ -763,52 +726,14 @@ segments(x0 = 1, y0 = (lower_ic_annee_JABO_prop),
          x1 = 1, y1 = (upper_ic_annee_JABO_prop))
 
 
-# simulation
-JABO$Annee <- as.numeric(JABO$Annee)
-n_sim <- 5000
-
-JABO_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
-JABO_sim_prop <- JABO[, "Annee"]
-JABO_sim_prop <- as.data.frame(JABO_sim_prop)
-JABO_sim_prop <- rename(JABO_sim_prop, Annee = "JABO_sim_prop")
-
-set.seed(1234)
-
-for(i in 1:n_sim){
-  
-  cat("iter = ", i, "\n")
-  
-  JABO_sim_prop$prop <- sample(x = JABO$prop_HY, replace = FALSE)
-  
-  lm_JABO_rand_prop <- lm(prop ~ Annee, data = JABO_sim_prop)
-  
-  JABO_output_prop[i,1] <- coef(lm_JABO_rand_prop)[1] # Beta intercepte (abond_std)
-  JABO_output_prop[i,2] <- coef(lm_JABO_rand_prop)[2] # Beta année
-  
-}
-# save(JABO_output_prop, file = "JABO_output_prop.R")
-load("JABO_output.R")
-
-pbeta_annee <- sum(JABO_output_prop[, 2] <= coef(lm_JABO_prop)[2])/n_sim
-pbeta_annee # 0.019
-
-hist(JABO_output_prop[,1])
-abline(v =(coef(lm_JABO_prop)[1]), lty = 2, col= "red")
-
-hist(JABO_output_prop[,2])
-abline(v =(coef(lm_JABO_prop)[2]), lty = 2, col= "red")
-text(x = -0.03, y = 600, labels = "P = 0.019")
-
-
-
 #### SIFL
-lm_SIFL_prop <- lm(prop_HY ~ Annee, weights = nb_tot, data = SIFL)
+lm_SIFL_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = SIFL)
 
 par(mfrow = c(2,2))
 plot(lm_SIFL_prop)
 dev.off()
 
-summary(lm_SIFL_prop) 
+summary(lm_SIFL_prop) # vérification par simulation ?
 
 # graph coef
 SIFL_int_prop <- lm_SIFL_prop$coefficients["(Intercept)"]
@@ -826,44 +751,6 @@ abline(h = 0, lty = 2, col = "red")
 segments(x0 = 1, y0 = (lower_ic_annee_SIFL_prop),
          x1 = 1, y1 = (upper_ic_annee_SIFL_prop))
 
-
-# simulation
-SIFL$Annee <- as.numeric(SIFL$Annee)
-n_sim <- 5000
-
-SIFL_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
-SIFL_sim_prop <- SIFL[, "Annee"]
-SIFL_sim_prop <- as.data.frame(SIFL_sim_prop)
-SIFL_sim_prop <- rename(SIFL_sim_prop, Annee = "SIFL_sim_prop")
-
-set.seed(1234)
-
-for(i in 1:n_sim){
-  
-  cat("iter = ", i, "\n")
-  
-  SIFL_sim_prop$prop <- sample(x = SIFL$prop_HY, replace = FALSE)
-  
-  lm_SIFL_rand_prop <- lm(prop ~ Annee, data = SIFL_sim_prop)
-  
-  SIFL_output_prop[i,1] <- coef(lm_SIFL_rand_prop)[1] # Beta intercepte (abond_std)
-  SIFL_output_prop[i,2] <- coef(lm_SIFL_rand_prop)[2] # Beta année
-  
-}
-# save(SIFL_output_prop, file = "SIFL_output_prop.R")
-load("SIFL_output.R")
-
-pbeta_annee <- sum(SIFL_output_prop[, 2] >= coef(lm_SIFL_prop)[2])/n_sim
-pbeta_annee # 0.049
-
-hist(SIFL_output_prop[,1])
-abline(v =(coef(lm_SIFL_prop)[1]), lty = 2, col= "red")
-
-hist(SIFL_output_prop[,2])
-abline(v =(coef(lm_SIFL_prop)[2]), lty = 2, col= "red")
-text(x = 0.017, y = 800, labels = "P = 0.049")
-
-
 #### TAPI
 lm_TAPI_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = TAPI)
 
@@ -871,7 +758,7 @@ par(mfrow = c(2,2))
 plot(lm_TAPI_prop)
 dev.off()
 
-summary(lm_TAPI_prop) 
+summary(lm_TAPI_prop) # vérification par simulation ?
 
 # graph coef
 TAPI_int_prop <- lm_TAPI_prop$coefficients["(Intercept)"]
@@ -888,43 +775,6 @@ plot((TAPI_annee_prop),
 abline(h = 0, lty = 2, col = "red")
 segments(x0 = 1, y0 = (lower_ic_annee_TAPI_prop),
          x1 = 1, y1 = (upper_ic_annee_TAPI_prop))
-
-
-# simulation
-TAPI$Annee <- as.numeric(TAPI$Annee)
-n_sim <- 5000
-
-TAPI_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
-TAPI_sim_prop <- TAPI[, "Annee"]
-TAPI_sim_prop <- as.data.frame(TAPI_sim_prop)
-TAPI_sim_prop <- rename(TAPI_sim_prop, Annee = "TAPI_sim_prop")
-
-set.seed(1234)
-
-for(i in 1:n_sim){
-  
-  cat("iter = ", i, "\n")
-  
-  TAPI_sim_prop$prop <- sample(x = TAPI$prop_HY, replace = FALSE)
-  
-  lm_TAPI_rand_prop <- lm(prop ~ Annee, data = TAPI_sim_prop)
-  
-  TAPI_output_prop[i,1] <- coef(lm_TAPI_rand_prop)[1] # Beta intercepte (abond_std)
-  TAPI_output_prop[i,2] <- coef(lm_TAPI_rand_prop)[2] # Beta année
-  
-}
-# save(TAPI_output_prop, file = "TAPI_output_prop.R")
-load("TAPI_output.R")
-
-pbeta_annee <- sum(TAPI_output_prop[, 2] >= coef(lm_TAPI_prop)[2])/n_sim
-pbeta_annee # 0.32
-
-hist(TAPI_output_prop[,1])
-abline(v =(coef(lm_TAPI_prop)[1]), lty = 2, col= "red")
-
-hist(TAPI_output_prop[,2])
-abline(v =(coef(lm_TAPI_prop)[2]), lty = 2, col= "red")
-text(x = 0.007, y = 600, labels = "P = 0.328")
 
 
 tab_comp_prop <- data.frame(c(DUSA_int_prop, JABO_int_prop,  SIFL_int_prop,TAPI_int_prop),

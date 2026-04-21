@@ -15,7 +15,7 @@ setwd("/Users/maxencepoirier-joanette/Rstudio/FOR7046") # Maxence
 
 # ABOND
 
-abond <- read_excel("Abondance.xlsx")
+abond <- read_excel("/Users/alexe/Fringilids/Data/OG/Abondance.xlsx")
 
 # Changement headers
 
@@ -28,6 +28,10 @@ abond <- abond %>%
     names_to = "Espece",
     values_to = "abond")
 
+# Ajout abond_std
+
+abond$abond_std <- round(abond$abond/abond$Effort, 3)
+
 # csv object in wd
 # write.csv(abond, file = "abond_clean.csv")
 
@@ -35,7 +39,7 @@ abond <- abond %>%
 # BAGUE
 
 bague <- read_excel("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Baguage.xlsx")
-bague <- read_excel("/Users/alexe/Fringilids/Data/Baguage.xlsx")
+bague <- read_excel("/Users/alexe/Fringilids/Data/OG/Baguage.xlsx")
 
 head(bague)
 str(bague)
@@ -169,9 +173,7 @@ DUSA$cond_moy_AHY[12:length(DUSA$cond_moy_AHY)] <- round(DUSA_cond_AHY$cond_moy,
 
 load("DUSA_irr.R")
 
-DUSA$irruption <- NA
-
-DUSA$irruption[12:length(DUSA$irruption)] <- DUSA_irr
+DUSA$irruption <- DUSA_irr
 
 DUSA$irruption <- ifelse(DUSA$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
 DUSA$irruption <- as.factor(as.numeric(DUSA$irruption))
@@ -258,9 +260,7 @@ JABO$cond_moy_AHY[12:length(JABO$cond_moy_AHY)] <- round(JABO_cond_AHY$cond_moy,
 
 load("JABO_irr.R")
 
-JABO$irruption <- NA
-
-JABO$irruption[12:length(JABO$irruption)] <- JABO_irr
+JABO$irruption <- JABO_irr
 
 JABO$irruption <- ifelse(JABO$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
 JABO$irruption <- as.factor(as.numeric(JABO$irruption))
@@ -347,9 +347,7 @@ SIFL$cond_moy_AHY[12:length(SIFL$cond_moy_AHY)] <- round(SIFL_cond_AHY$cond_moy,
 # Load vecteur irruption
 load("SIFL_irr.R")
 
-SIFL$irruption <- NA
-
-SIFL$irruption[12:length(SIFL$irruption)] <- SIFL_irr
+SIFL$irruption <- SIFL_irr
 
 SIFL$irruption <- ifelse(SIFL$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
 SIFL$irruption <- as.factor(as.numeric(SIFL$irruption))
@@ -435,16 +433,13 @@ TAPI$cond_moy_AHY[12:length(TAPI$cond_moy_AHY)] <- round(TAPI_cond_AHY$cond_moy,
 # Load vecteur irruption
 load("TAPI_irr.R")
 
-TAPI$irruption <- NA
-
-TAPI$irruption[12:length(TAPI$irruption)] <- TAPI_irr
+TAPI$irruption <- TAPI_irr
 
 TAPI$irruption <- ifelse(TAPI$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
 TAPI$irruption <- as.factor(as.numeric(TAPI$irruption))
 
 # csv object in wd
 # write.csv(TAPI, "TAPI.csv")
-
 
 #### objets OISEAU_bague
 

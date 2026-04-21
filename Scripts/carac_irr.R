@@ -77,6 +77,25 @@ bague_irr <- bague %>%
 colnames(bague_irr) <- c("X", "Espece", "Age", "Aile", "Masse", "Annee", "DUSA_IRR", "JABO_IRR", "SIFL_IRR", "TAPI_IRR")
 
 
+
+# Il manque ces lignes de code: (20/04/2026)
+
+#DUSA_bague <- bague_irr[bague_irr$Espece == "DUSA",]
+#DUSA_bague <- DUSA_bague[, 1:8]
+
+#DUSA_bague$DUSA_IRR <- ifelse(DUSA_bague$DUSA_IRR == "TRUE", 1, 0)
+
+#DUSA_bague$condition <- DUSA_bague$Aile/DUSA_bague$Masse
+
+# save(DUSA_bague, file = "DUSA_bague.csv")
+
+
+
+
+
+
+
+
 ##### DUSA
 
 # Approche fréquentiste proportion HY
@@ -728,6 +747,8 @@ TAPI_jagsData <- list(
   PropJeunes = as.integer(round(TAPI$prop_HY * TAPI$nb_tot))
 )
 
+
+
 # Données initiales
 
 initsFun <- function(){
@@ -831,6 +852,7 @@ plot(density(TAPI_out_jags$sims.list$theta),
 
 
 
+
 # Condition ---------------------------------------------------------------
 
 load("DUSA_bague.csv")
@@ -841,31 +863,25 @@ load("TAPI_bague.csv")
 par(mfrow= c(2,2))
 
 boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
-        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], 
-        col = c("grey","orange"), 
-        ylab= "Condition", 
+        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], ylab= "Condition", 
         main= "Condition du durbec des sapins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
+
 boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
-        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], 
-        col = c("grey","forestgreen"), 
-        ylab= "Condition", 
+        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], ylab= "Condition", 
         main= "Condition du jaseur boréal selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
+
 boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
-        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"],
-        col = c("grey","turquoise3"), 
-        ylab= "Condition", 
+        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"], ylab= "Condition", 
         main= "Condition du sizerin flammé selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
 
 boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
-        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"],
-        col = c("grey","violetred"), 
-        ylab= "Condition", 
+        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"], ylab= "Condition", 
         main= "Condition du tarin des pins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 

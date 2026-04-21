@@ -19,10 +19,10 @@ TAPI <- read.csv("TAPI.csv", header = TRUE)
 
 # Filtrer tout avant 2007
 
-DUSA <- DUSA[DUSA$Annee >= "2007",]
-JABO <- JABO[JABO$Annee >= "2007",]
-SIFL <- SIFL[SIFL$Annee >= "2007",]
-TAPI <- TAPI[TAPI$Annee >= "2007",]
+# DUSA <- DUSA[DUSA$Annee >= "2007",]
+# JABO <- JABO[JABO$Annee >= "2007",]
+# SIFL <- SIFL[SIFL$Annee >= "2007",]
+# TAPI <- TAPI[TAPI$Annee >= "2007",]
 
 DUSA$irruption <- as.factor(DUSA$irruption)
 JABO$irruption <- as.factor(JABO$irruption)
@@ -135,7 +135,7 @@ JABO_Diplot <- barplot(JABO_Di,
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = JABO_col,
-                       main = "Déviation standard du Durbec des sapins")
+                       main = "Déviation standard du Jaseur boréal")
 abline(h = 1.053, col = "red", lty = 2)
 
 
@@ -178,7 +178,7 @@ SIFL_Diplot <- barplot(SIFL_Di,
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = SIFL_col,
-                       main = "Déviation standard du Durbec des sapins")
+                       main = "Déviation standard du Sizerin flammé")
 abline(h = 0.495, col = "red", lty = 2)
 
 
@@ -227,7 +227,7 @@ TAPI_Diplot <- barplot(TAPI_Di,
                        xlab = "Année",
                        ylab = "Déviation standard",
                        col = TAPI_col,
-                       main = "Déviation standard du Durbec des sapins")
+                       main = "Déviation standard du Tarin des pins")
 abline(h = 0.525, col = "red", lty = 2)
 
 plot_grid(DUSA_plot, JABO_plot, SIFL_plot, TAPI_plot)
