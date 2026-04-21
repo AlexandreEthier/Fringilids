@@ -441,8 +441,73 @@ TAPI$irruption <- as.factor(as.numeric(TAPI$irruption))
 # csv object in wd
 # write.csv(TAPI, "TAPI.csv")
 
+#### objets OISEAU_bague
+
+load("DUSA_irr.R")
+
+DUSA_IRR <- as.data.frame(DUSA_irr[12:length(DUSA_irr)])
+DUSA_IRR$Annee <- seq(1:length(DUSA_IRR$`DUSA_irr[12:length(DUSA_irr)]`))
+DUSA_IRR$Espece <- "DUSA"
+colnames(DUSA_IRR) <- c("irruption", "Annee", "Espece")
+
+load("JABO_irr.R")
+
+JABO_IRR <- as.data.frame(JABO_irr[12:length(JABO_irr)])
+JABO_IRR$Annee <- seq(1:length(JABO_IRR$`JABO_irr[12:length(JABO_irr)]`))
+JABO_IRR$Espece <- "JABO"
+colnames(JABO_IRR) <- c("irruption", "Annee", "Espece")
+
+load("SIFL_irr.R")
+
+SIFL_IRR <- as.data.frame(SIFL_irr[12:length(SIFL_irr)])
+SIFL_IRR$Annee <- seq(1:length(SIFL_IRR$`SIFL_irr[12:length(SIFL_irr)]`))
+SIFL_IRR$Espece <- "SIFL"
+colnames(SIFL_IRR) <- c("irruption", "Annee", "Espece")
+
+load("TAPI_irr.R")
+
+TAPI_IRR <- as.data.frame(TAPI_irr[12:length(TAPI_irr)])
+TAPI_IRR$Annee <- seq(1:length(TAPI_IRR$`TAPI_irr[12:length(TAPI_irr)]`))
+TAPI_IRR$Espece <- "TAPI"
+colnames(TAPI_IRR) <- c("irruption", "Annee", "Espece")
+
+bague_irr <- bague %>% 
+  left_join(DUSA_IRR, by = c("Espece", "Annee")) %>% 
+  left_join(JABO_IRR, by = c("Espece", "Annee")) %>% 
+  left_join(SIFL_IRR, by = c("Espece", "Annee")) %>% 
+  left_join(TAPI_IRR, by = c("Espece", "Annee"))
+colnames(bague_irr) <- c("X", "Espece", "Age", "Aile", "Masse", "Annee", "DUSA_IRR", "JABO_IRR", "SIFL_IRR", "TAPI_IRR")
 
 
+# Manipulation df bague
+
+DUSA_bague <- bague_irr[bague_irr$Espece == "DUSA",]
+DUSA_bague <- DUSA_bague[, 1:7]
+DUSA_bague$DUSA_IRR <- ifelse(DUSA_bague$DUSA_IRR == "TRUE", 1, 0)
+DUSA_bague$condition <- DUSA_bague$Aile/DUSA_bague$Masse
+
+# save(DUSA_bague, file = "DUSA_bague.csv")
+
+JABO_bague <- bague_irr[bague_irr$Espece == "JABO",]
+JABO_bague <- JABO_bague[, c(1,2,3,4,5,6,8)]
+JABO_bague$JABO_IRR <- ifelse(JABO_bague$JABO_IRR == "TRUE", 1, 0)
+JABO_bague$condition <- JABO_bague$Aile/JABO_bague$Masse
+
+# save(JABO_bague, file = "JABO_bague.csv")
+
+SIFL_bague <- bague_irr[bague_irr$Espece == "SIFL",]
+SIFL_bague <- SIFL_bague[, c(1,2,3,4,5,6,9)]
+SIFL_bague$SIFL_IRR <- ifelse(SIFL_bague$SIFL_IRR == "TRUE", 1, 0)
+SIFL_bague$condition <- SIFL_bague$Aile/SIFL_bague$Masse
+
+# save(SIFL_bague, file = "SIFL_bague.csv")
+
+TAPI_bague <- bague_irr[bague_irr$Espece == "TAPI",]
+TAPI_bague <- TAPI_bague[, c(1,2,3,4,5,6,10)]
+TAPI_bague$TAPI_IRR <- ifelse(TAPI_bague$TAPI_IRR == "TRUE", 1, 0)
+TAPI_bague$condition <- TAPI_bague$Aile/TAPI_bague$Masse
+
+# save(TAPI_bague, file = "TAPI_bague.csv")
 
 
 

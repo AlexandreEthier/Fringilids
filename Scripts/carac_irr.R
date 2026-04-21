@@ -77,6 +77,25 @@ bague_irr <- bague %>%
 colnames(bague_irr) <- c("X", "Espece", "Age", "Aile", "Masse", "Annee", "DUSA_IRR", "JABO_IRR", "SIFL_IRR", "TAPI_IRR")
 
 
+
+# Il manque ces lignes de code: (20/04/2026)
+
+#DUSA_bague <- bague_irr[bague_irr$Espece == "DUSA",]
+#DUSA_bague <- DUSA_bague[, 1:8]
+
+#DUSA_bague$DUSA_IRR <- ifelse(DUSA_bague$DUSA_IRR == "TRUE", 1, 0)
+
+#DUSA_bague$condition <- DUSA_bague$Aile/DUSA_bague$Masse
+
+# save(DUSA_bague, file = "DUSA_bague.csv")
+
+
+
+
+
+
+
+
 ##### DUSA
 
 # Approche fréquentiste proportion HY
@@ -728,6 +747,8 @@ TAPI_jagsData <- list(
   PropJeunes = as.integer(round(TAPI$prop_HY * TAPI$nb_tot))
 )
 
+
+
 # Données initiales
 
 initsFun <- function(){
@@ -828,6 +849,7 @@ plot(density(TAPI_out_jags$sims.list$sigma.annee ),
 plot(density(TAPI_out_jags$sims.list$theta),
      xlab = "theta",
      main = "Postérieur de Theta")
+
 
 
 
