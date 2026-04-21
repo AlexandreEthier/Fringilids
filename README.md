@@ -163,7 +163,7 @@ Un jeu de données par espèce a été sauvegardé en objet R (`DUSA`, `JABO`, `
 Script R qui défini les années irruptives pour les quatre espèces cibles. Les irruptions ont été définies selon l'équation suivante (Widick et al., 2023):
 
 $$
-D_{i}t = \frac{N_{it} - P_{it}}{\sigma_{i}}
+D_{it} = \frac{N_{it} - P_{it}}{\sigma_{i}}
 $$
 
 où $D_{ij}$ correspond à l'écart standardisé de l'espèce i à l'année t, $N_{it}$ correspond au décompte moyen de l'espèce i à l'année t, $P_{it}$ correspond à la valeur prédite de la tendance à long-terme de l'espèce i à l'année t et $\sigma_{i}$ correspond à l'écart-type de toutes les années sans tendance pour l'espèce i.
@@ -182,6 +182,31 @@ OUTPUT DE LA RANDOMISATION (Voir data.R)
 ##### `carac_irr.R`
 
 Script R qui permet de caractériser les années irruptives et non-irruptives. On s'intéresse entre autres à l'âge des individus bagués et inférer à la population globale. On modélise, avec `JAGS`, un modèle mixte suivant une distribution beta binomiale. 
+
+
+
+
+
+###### Équation JAGS proportion
+
+
+$log(\mu_{abondance_i}) = \alpha_{annee} + X_i\beta_{irruption}$
+
+$\beta_{irruption} \sim N(0, 0.1)$
+
+$\sigma_{irruption} \sim unif(0, 100)$
+
+$\alpha_{{annee}} \sim N(\sigma_{annee}, \tau_{annee})$
+
+$\sigma_{annee} \sim unif(0, 0.1)$
+
+$\tau_{annee} = \frac{1} {\sigma^2_{annee}}$
+
+
+
+
+
+
 
 
 

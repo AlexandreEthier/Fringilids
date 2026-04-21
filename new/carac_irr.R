@@ -841,25 +841,31 @@ load("TAPI_bague.csv")
 par(mfrow= c(2,2))
 
 boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
-        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], ylab= "Condition", 
+        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], 
+        col = c("grey","orange"), 
+        ylab= "Condition", 
         main= "Condition du durbec des sapins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
-
 boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
-        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], ylab= "Condition", 
+        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], 
+        col = c("grey","forestgreen"), 
+        ylab= "Condition", 
         main= "Condition du jaseur boréal selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
-
 boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
-        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"], ylab= "Condition", 
+        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"],
+        col = c("grey","turquoise3"), 
+        ylab= "Condition", 
         main= "Condition du sizerin flammé selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
 
 boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
-        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"], ylab= "Condition", 
+        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"],
+        col = c("grey","violetred"), 
+        ylab= "Condition", 
         main= "Condition du tarin des pins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
@@ -869,6 +875,8 @@ shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "1"])
 wilcox.test(condition ~ DUSA_IRR, data = DUSA_bague)
 DUSA_cond_irr<-tapply(DUSA_bague$condition, DUSA_bague$DUSA_IRR, summary)
 DUSA_cond_irr
+DUSA_diff <- DUSA_cond_irr$`0`[4]- DUSA_cond_irr$`1`[4]
+DUSA_diff
 
 shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "0"])
 shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "1"])
@@ -911,3 +919,139 @@ colnames(tableau) <- c("1st Qu non irruption", "1st Qu irruption",
                        "3rd Qu non irruption", "3rd Qu irruption")
 rownames(tableau)<- c("DUSA", "JABO", "SIFL", "TAPI")
 tableau
+
+
+## Randomisation
+## DUSA
+##number of iterations
+DUSA_bague$DUSA_IRR<-as.factor(DUSA_bague$DUSA_IRR)
+DUSA_bague$condition <- as.numeric(DUSA_bague$condition)
+nsims <- 5000
+DUSA_output_cond <- rep(NA, times = nsims)
+set.seed(2018)
+
+#for (i in 1:nsims) {
+  
+  rand.group <- sample(DUSA_bague$DUSA_IRR, replace = FALSE)
+  
+  rand.means <- tapply(X = DUSA_bague$condition,
+                       INDEX = rand.group,
+                       FUN = mean, na.rm = TRUE)
+  
+  DUSA_output_cond[i] <- rand.means["0"] - rand.means["1"]
+}
+# save(DUSA_output_cond, file = "DUSA_output_cond.R")
+load("DUSA_output_cond.R")
+
+DUSA_cond_irr<-tapply(DUSA_bague$condition, DUSA_bague$DUSA_IRR, summary)
+DUSA_cond_irr
+DUSA_diff <- DUSA_cond_irr$`0`[4]- DUSA_cond_irr$`1`[4]
+DUSA_diff
+p_DUSA <- sum(output_DUSA <= DUSA_diff)/nsims
+p_DUSA
+
+hist(output_DUSA, main = "Histogramme de fréquence de différence de moyennes de condition de JABO",
+     ylab = "Fréquence",
+     xlab = "Différences des moyennes de condition selon l'irruption", xlim = c(-0.04, 0.02))
+abline(v = DUSA_diff, col= "red", lty =2)
+
+## JABO
+##number of iterations
+JABO_bague$JABO_IRR<-as.factor(JABO_bague$JABO_IRR)
+JABO_bague$condition <- as.numeric(JABO_bague$condition)
+nsims <- 5000
+JABO_output_cond <- rep(NA, times = nsims)
+set.seed(2018)
+
+for (i in 1:nsims) {
+  
+  rand.group <- sample(JABO_bague$JABO_IRR, replace = FALSE)
+  
+  rand.means <- tapply(X = JABO_bague$condition,
+                       INDEX = rand.group,
+                       FUN = mean, na.rm = TRUE)
+  
+  JABO_output_cond[i] <- rand.means["0"] - rand.means["1"]
+}
+# save(JABO_output_cond, file = "JABO_output_cond.R")
+load("JABO_output_cond.R")
+
+JABO_cond_irr<-tapply(JABO_bague$condition, JABO_bague$JABO_IRR, summary)
+JABO_cond_irr
+JABO_diff <- JABO_cond_irr$`0`[4]- JABO_cond_irr$`1`[4]
+JABO_diff
+p_JABO <- sum(output_JABO >= JABO_diff)/nsims
+p_JABO
+
+hist(output_JABO, main = "Histogramme de fréquence de différence de moyennes de condition de JABO",
+     ylab = "Fréquence",
+     xlab = "Différences des moyennes de condition selon l'irruption", xlim = c(-0.07, 0.13))
+abline(v = JABO_diff, col= "red", lty =2)
+
+
+## SIFL
+##number of iterations
+SIFL_bague$SIFL_IRR<-as.factor(SIFL_bague$SIFL_IRR)
+SIFL_bague$condition <- as.numeric(SIFL_bague$condition)
+nsims <- 5000
+SIFL_output_cond <- rep(NA, times = nsims)
+set.seed(2018)
+
+for (i in 1:nsims) {
+  
+  rand.group <- sample(SIFL_bague$SIFL_IRR, replace = FALSE)
+  
+  rand.means <- tapply(X = SIFL_bague$condition,
+                       INDEX = rand.group,
+                       FUN = mean, na.rm = TRUE)
+  
+  SIFL_output_cond[i] <- rand.means["0"] - rand.means["1"]
+}
+# save(SIFL_output_cond, file = "SIFL_output_cond.R")
+load("SIFL_output_cond.R")
+
+SIFL_cond_irr<-tapply(SIFL_bague$condition, SIFL_bague$SIFL_IRR, summary)
+SIFL_cond_irr
+SIFL_diff <- SIFL_cond_irr$`0`[4]- SIFL_cond_irr$`1`[4]
+SIFL_diff
+p_SIFL <- sum(output_SIFL >= SIFL_diff)/nsims
+p_SIFL
+
+hist(output_SIFL, main = "Histogramme de fréquence de différence de moyennes de condition de SIFL",
+     ylab = "Fréquence",
+     xlab = "Différences des moyennes de condition selon l'irruption", xlim = c(-0.07, 0.17))
+abline(v = SIFL_diff, col= "red", lty =2)
+
+
+## TAPI
+##number of iterations
+TAPI_bague$TAPI_IRR<-as.factor(TAPI_bague$TAPI_IRR)
+TAPI_bague$condition <- as.numeric(TAPI_bague$condition)
+nsims <- 5000
+TAPI_output_cond <- rep(NA, times = nsims)
+set.seed(2018)
+
+for (i in 1:nsims) {
+  
+  rand.group <- sample(TAPI_bague$TAPI_IRR, replace = FALSE)
+  
+  rand.means <- tapply(X = TAPI_bague$condition,
+                       INDEX = rand.group,
+                       FUN = mean, na.rm = TRUE)
+  
+  TAPI_output_cond[i] <- rand.means["0"] - rand.means["1"]
+}
+# save(TAPI_output_cond, file = "TAPI_output_cond.R")
+load("TAPI_output_cond.R")
+
+TAPI_cond_irr<-tapply(TAPI_bague$condition, TAPI_bague$TAPI_IRR, summary)
+TAPI_cond_irr
+TAPI_diff <- TAPI_cond_irr$`0`[4]- TAPI_cond_irr$`1`[4]
+TAPI_diff
+p_TAPI <- sum(output_TAPI <= TAPI_diff)/nsims
+p_TAPI 
+
+hist(output_TAPI, main = "Histogramme de fréquence de différence de moyennes de condition de TAPI",
+     ylab = "Fréquence",
+     xlab = "Différences des moyennes de condition selon l'irruption", xlim = c(-0.05, 0.05))
+abline(v = TAPI_diff, col= "red", lty =2)
