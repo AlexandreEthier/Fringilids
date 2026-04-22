@@ -16,7 +16,7 @@ title-slide-attributes:
 editor: visual
 ---
 
-##
+## 
 
 ::: {layout-nrow="2"}
 ![Durbec des sapins](Durbec.jpg){height="280px" fig-align="center"}
@@ -30,7 +30,7 @@ editor: visual
 
 ## [Objectifs]{style="color: yellow;"}
 
-[1)  Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi?]{style="color: yellow;"}
+[1) Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le temps (1996-2025) ; tendances temporelles sur 30 ans de suivi?]{style="color: yellow;"}
 
 . . .
 
@@ -39,19 +39,18 @@ a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproduc
 . . .
 
 b)  Comment évolue la condition corporelle des différentes classes au cours du temps ?
-  
-. . .  
+
+. . .
 
 [2) Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés?]{style="color: yellow;"}
 
 . . .
 
-a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
+a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée aux irruptions ?
 
 . . .
 
-
-b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+b)  Est-ce que la condition corporelle est corrélée aux irruptions ?
 
 ## [Jeux de données brutes]{style="color: yellow;"}
 
@@ -100,7 +99,6 @@ str(abond)
 
 ## [Manipulations et défis de *bague*]{style="color: yellow;"}
 
-
 ```{r}
 #| echo: true
 
@@ -139,7 +137,6 @@ str(bague)
 
 ::::: columns
 ::: {.column width="65%"}
-
 ```{r}
 #| echo: true
 
@@ -222,7 +219,7 @@ DUSA$cond_moy_AHY[12:length(DUSA$cond_moy_AHY)] <- round(DUSA_cond_AHY$cond_moy,
 
 # Irruption
 
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.irr.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Irruption/DUSA_irr.R")
 
 DUSA$irruption <- NA
 
@@ -231,16 +228,13 @@ DUSA$irruption[12:length(DUSA$irruption)] <- DUSA_irr
 DUSA$irruption <- ifelse(DUSA$irruption == "TRUE", 1,0) # ifelse statement pour que irruption = TRUE soit 1
 DUSA$irruption <- as.factor(as.numeric(DUSA$irruption))
 ```
-
 :::
 
 ::: {.column width="35%"}
-
 ```{r}
 #| echo: true
 str(DUSA)
 ```
-
 :::
 :::::
 
@@ -260,32 +254,7 @@ b)  Comment évolue la condition corporelle des différentes classes au cours du
 
 [Modèle linéaire suivi d'une randomisation]{style="color: yellow;"}
 
-## [Jeux de données]{style="color: yellow;"}
-
-```{r}
-#| echo: true
-# Importe le jeu de données pour chaque espèce
-DUSA <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
-JABO <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO.csv", header = TRUE)
-SIFL <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL.csv", header = TRUE)
-TAPI <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI.csv", header = TRUE)
-
-DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
-DUSA$Annee <- as.integer(DUSA$Annee)
-
-JABO$Annee <- as.factor(as.numeric(JABO$Annee))
-JABO$Annee <- as.integer(JABO$Annee)
-
-SIFL$Annee <- as.factor(as.numeric(SIFL$Annee))
-SIFL$Annee <- as.integer(SIFL$Annee)
-
-TAPI$Annee <- as.factor(as.numeric(TAPI$Annee))
-TAPI$Annee <- as.integer(TAPI$Annee)
-
-str(DUSA)
-```
-
-## [Code pour la tendance temporelle de l'abondance des Fringillidés]{style="color: yellow;"}
+## [Code pour la tendance temporelle de l'abondance]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -359,11 +328,11 @@ plot_grid(
 
 ## [Modèle d'abondance pour DUSA]{style="color: yellow;"}
 
-:::: columns
-
+::::: columns
 ::: {.column width="50%"}
 ```{r}
 #| echo: true
+#| code-line-numbers: "|2"
 # Modèle linéaire avec une transformation log
 lm_DUSA <- lm(log(abond_std) ~ Annee, data = DUSA)
 
@@ -383,7 +352,6 @@ DUSA_upperIC_annee <- DUSA_annee + (1.96 * DUSA_sd[2])
 DUSA_lowerIC_annee <- DUSA_annee - (1.96 * DUSA_sd[2])
 
 
-
 ```
 :::
 
@@ -393,8 +361,27 @@ DUSA_lowerIC_annee <- DUSA_annee - (1.96 * DUSA_sd[2])
 summary(lm_DUSA)
 ```
 :::
+:::::
 
-::::
+```{r}
+# Importe le jeu de données pour chaque espèce
+DUSA <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA.csv", header = TRUE)
+JABO <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO.csv", header = TRUE)
+SIFL <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL.csv", header = TRUE)
+TAPI <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI.csv", header = TRUE)
+
+DUSA$Annee <- as.factor(as.numeric(DUSA$Annee))
+DUSA$Annee <- as.integer(DUSA$Annee)
+
+JABO$Annee <- as.factor(as.numeric(JABO$Annee))
+JABO$Annee <- as.integer(JABO$Annee)
+
+SIFL$Annee <- as.factor(as.numeric(SIFL$Annee))
+SIFL$Annee <- as.integer(SIFL$Annee)
+
+TAPI$Annee <- as.factor(as.numeric(TAPI$Annee))
+TAPI$Annee <- as.integer(TAPI$Annee)
+```
 
 ```{r}
 #| echo: false
@@ -499,7 +486,7 @@ axex <- 1:4
 plot(tab_comp$annee,
      xaxt = "n",
      ylim = c(-0.2, 0.25),
-     ylab = "log estimé de beta",
+     ylab = "log estimé de beta (année)",
      xlab = "Espèces",
      main = "Estimés de log beta avec IC 95% : abondance")
 abline(h = 0, lty = 2, col = "red")
@@ -522,9 +509,9 @@ axex <- 1:4
 plot(tab_comp$annee,
      xaxt = "n",
      ylim = c(-0.2, 0.25),
-     ylab = "log estimé de beta",
+     ylab = expression(paste("log estimé de ", beta, " année")),
      xlab = "Espèces",
-     main = "Estimés de log beta avec IC 95% : abondance")
+     main = expression(paste("Estimés de log ", beta,  " avec IC 95% : abondance")))
 abline(h = 0, lty = 2, col = "red")
 axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
 segments(x0 = 1, y0 = DUSA_lowerIC_annee,
@@ -577,13 +564,13 @@ DUSA_beta_annee <- sum(DUSA_output[, 2] >= coef(lm_DUSA)[2])/n_sim
 
 ```{r}
 # save(DUSA_output, file = "DUSA_output.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_output.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/DUSA_output.R")
 # save(JABO_output, file = "JABO_output.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO_output.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/JABO_output.R")
 # save(SIFL_output, file = "SIFL_output.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL_output.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/SIFL_output.R")
 # save(TAPI_output, file = "TAPI_output.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI_output.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/TAPI_output.R")
 
 
 par(mfrow = c(2, 2))
@@ -699,12 +686,12 @@ TAPI_prop<-ggplot(data = TAPI, aes(x = Annee, y = prop_HY)) +
 plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
 ```
 
-
 ## [Modèle de proportion pour DUSA]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
 #| eval: true
+#| code-line-numbers: "|2|"
 #### DUSA
 lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
 
@@ -795,6 +782,7 @@ lower_ic_annee_TAPI_prop <- TAPI_annee_prop - (1.96 * TAPI_sd_prop[2])
 ```
 
 ## [Code pour les estimés de log beta avec IC 95% pour la proportion]{style="color: yellow;"}
+
 ```{r}
 #| echo: true
 #| eval: false
@@ -805,9 +793,9 @@ tab_comp_prop
 plot(tab_comp_prop$annee,
      xaxt = "n",
      ylim = c(-0.05, 0.03),
-     ylab = "log estimé de beta",
+     ylab = expression(paste("log estimé de ", beta, " année")),
      xlab = "Espèces",
-     main = "Estimés de log beta avec IC 95% : proportion jeunes par espèce")
+     main = expression(paste("Estimés de log ", beta,  " avec IC 95% : proportion")))
 abline(h = 0, lty = 2, col = "red")
 axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
 segments(x0 = 1, y0 = lower_ic_annee_DUSA_prop,
@@ -831,6 +819,7 @@ colnames(tab_comp_prop) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
 ```
 
 ## [Visualisation des estimés de log beta avec IC 95% pour la proportion]{style="color: yellow;"}
+
 ```{r}
 axex<- 1:4
 rownames(tab_comp_prop) <- c("DUSA", "JABO", "SIFL", "TAPI")
@@ -839,9 +828,9 @@ tab_comp_prop
 plot(tab_comp_prop$annee,
      xaxt = "n",
      ylim = c(-0.05, 0.03),
-     ylab = "log estimé de beta",
+     ylab = expression(paste("log estimé de ", beta, " année")),
      xlab = "Espèces",
-     main = "Estimés de log beta avec IC 95% : proportion jeunes par espèce")
+     main = expression(paste("Estimés de log ", beta,  " avec IC 95% : proportion")))
 abline(h = 0, lty = 2, col = "red")
 axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
 segments(x0 = 1, y0 = lower_ic_annee_DUSA_prop,
@@ -854,7 +843,6 @@ segments(x0 = 4, y0 = lower_ic_annee_TAPI_prop,
          x1 = 4, y1 = upper_ic_annee_TAPI_prop)
 
 ```
-
 
 ## [Randomisation pour la proportion]{style="color: yellow;"}
 
@@ -896,10 +884,10 @@ pbeta_annee <- sum(DUSA_output_prop[, 2] <= coef(lm_DUSA_prop)[2])/n_sim # 0.28
 ```{r}
 
 #Amène tous les jeux de données
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_output_prop.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO_output_prop.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL_output_prop.R")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI_output_prop.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/DUSA_output_prop.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/JABO_output_prop.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/SIFL_output_prop.R")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_rand/TAPI_output_prop.R")
 
 #Amène les modèles linéaires
 lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
@@ -1127,8 +1115,7 @@ Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le
 
 . . .
 
-[La condition est régie par des processus morphologiques qui évolue peu dans le temps]{style="color: yellow;"}
-
+[La condition est régie par des processus morphologiques qui évoluent peu dans le temps]{style="color: yellow;"}
 
 ## [Objectif #2]{style="color: yellow;"}
 
@@ -1136,11 +1123,11 @@ Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le
 
 . . .
 
-a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec les irruptions ?
+a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée au statut irruptif de l'année ?
 
 . . .
 
-b)  Est-ce que la condition corporelle est corrélée à l'irruption ?
+b)  Est-ce que la condition corporelle est corrélée au statut irruptif de l'année ?
 
 . . .
 
@@ -1190,7 +1177,6 @@ DUSA_irr <- DUSA_Di > DUSA_seuil # Vecteur logique TRUE or FALSE pour irruption
 ```{r}
 #| echo: true
 #| eval: false
-#| code-line-numbers: "|1|15"
 # Représentation graphique pour JABO
 JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = factor(irruption)))+
   scale_color_manual(values = c("1" = "darkgreen", "0" = "black"))+
@@ -1226,6 +1212,53 @@ abline(h = 1.053, col = "red", lty = 2)
 #| results: hide
 #| message: false
 #| warning: false
+
+### DUSA
+
+#DUSA_plot
+DUSA_plot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = factor(irruption)))+
+  scale_color_manual(values = c( "1" = "orange", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "gray")+
+  labs(title = "Années irruptives VS non-irruptives pour DUSA",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+          plot.title = element_text(size =10))
+
+
+
+#### JABO
+
+JABO_Ni <- JABO$abond_std
+JABO_P <- mean(JABO$abond_std)
+
+JABO_Nipi <- JABO_Ni - JABO_P # Numérateur
+
+JABO_sigma <- sd(JABO_Nipi) # Sigma
+
+JABO_Di <- JABO_Nipi/JABO_sigma # Standard deviate
+
+JABO_seuil <- abs(min(JABO_Di)) # Seuil fixé pour irruption
+
+JABO_irr <- JABO_Di > JABO_seuil # Vecteur logique TRUE or FALSE pour irruption
+
+#Représentation graphique pour JABO
+
+JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = factor(irruption)))+
+  scale_color_manual(values = c("1" = "darkgreen", "0" = "black"))+
+  geom_point(size = 4)+
+  geom_path(linewidth = 1, col = "gray")+
+  labs(title = "Années irruptives VS non-irruptives pour JABO",
+       x = "Année",
+       y = expression("N. individus recensés *" ~ heure^{-1}))+
+  geom_hline(yintercept = mean(JABO$abond_std), col = "red", lty = 2)+
+  theme_classic()+
+  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
+          plot.title = element_text(size = 10))
+
 ##### SIFL
 
 SIFL_Ni <- SIFL$abond_std
@@ -1257,6 +1290,7 @@ SIFL_plot <- ggplot(SIFL, aes(x = Annee, y = abond_std, color = factor(irruption
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
         plot.title = element_text(size =10))
+
 #SIFL_plot
 
 ##### TAPI
@@ -1290,52 +1324,8 @@ TAPI_plot <- ggplot(TAPI, aes(x = Annee, y = abond_std, color = factor(irruption
   theme_classic()+
   theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
           plot.title = element_text(size =10))
-#TAPI_plot
-
-##### DUSA
-
-DUSA_plot <- ggplot(DUSA, aes(x = Annee, y = abond_std, color = factor(irruption)))+
-  scale_color_manual(values = c( "1" = "orange", "0" = "black"))+
-  geom_point(size = 4)+
-  geom_path(linewidth = 1, col = "gray")+
-  labs(title = "Années irruptives VS non-irruptives pour DUSA",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  geom_hline(yintercept = mean(DUSA$abond_std), col = "red", lty = 2)+
-  theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
-          plot.title = element_text(size =10))
-#DUSA_plot
 
 
-#### JABO
-
-JABO_Ni <- JABO$abond_std
-JABO_P <- mean(JABO$abond_std)
-
-JABO_Nipi <- JABO_Ni - JABO_P # Numérateur
-
-JABO_sigma <- sd(JABO_Nipi) # Sigma
-
-JABO_Di <- JABO_Nipi/JABO_sigma # Standard deviate
-
-JABO_seuil <- abs(min(JABO_Di)) # Seuil fixé pour irruption
-
-JABO_irr <- JABO_Di > JABO_seuil # Vecteur logique TRUE or FALSE pour irruption
-
-#Représentation graphique pour JABO
-
-JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = factor(irruption)))+
-  scale_color_manual(values = c("1" = "darkgreen", "0" = "black"))+
-  geom_point(size = 4)+
-  geom_path(linewidth = 1, col = "gray")+
-  labs(title = "Années irruptives VS non-irruptives pour JABO",
-       x = "Année",
-       y = expression("N. individus recensés *" ~ heure^{-1}))+
-  geom_hline(yintercept = mean(JABO$abond_std), col = "red", lty = 2)+
-  theme_classic()+
-  theme(axis.text.x = element_text(size = 10, angle = 45, vjust = 0.8),
-          plot.title = element_text(size = 10))
 
 
 ```
@@ -1344,6 +1334,23 @@ JABO_plot <- ggplot(JABO, aes(x = Annee, y = abond_std, color = factor(irruption
 
 ```{r}
 par(mfrow = c(2, 2))
+
+#DUSA
+
+# DEVIATE BARPLOTS
+
+#range(DUSA_Di)
+
+cols <- c("black", "orange")
+DUSA_col <- ifelse(DUSA_Di > 0.965, cols[2],
+                                    cols[1])
+
+DUSA_Diplot <- barplot(DUSA_Di, DUSA$Annee,
+                       xlab = "Année",
+                       ylab = "Déviation standard",
+                       col = DUSA_col,
+                       main = "Déviation standard du Durbec des sapins")
+abline(h = 0.965, col = "red", lty = 2)
 
 # JABO
 
@@ -1362,22 +1369,6 @@ JABO_Diplot <- barplot(JABO_Di, JABO$Annee,
                        main = "Déviation standard du Jaseur boréal")
 abline(h = 1.053, col = "red", lty = 2)
 
-#DUSA
-
-# DEVIATE BARPLOTS
-
-#range(DUSA_Di)
-
-cols <- c("black", "orange")
-DUSA_col <- ifelse(DUSA_Di > 0.965, cols[2],
-                                    cols[1])
-
-DUSA_Diplot <- barplot(DUSA_Di, DUSA$Annee,
-                       xlab = "Année",
-                       ylab = "Déviation standard",
-                       col = DUSA_col,
-                       main = "Déviation standard du Durbec des sapins")
-abline(h = 0.965, col = "red", lty = 2)
 
 #SIFL
 
@@ -1419,8 +1410,8 @@ abline(h = 0.525, col = "red", lty = 2)
 ```{r}
 library(cowplot)
 plot_grid(
-  JABO_plot,
   DUSA_plot,
+  JABO_plot,
   SIFL_plot,
   TAPI_plot,
   ncol = 2,
@@ -1446,7 +1437,7 @@ $logit(\mu_{_i}) = \alpha_{annee} + \beta_{irru}*irru{_i}$
 ```{r}
 #| echo: true
 #| eval: true
-#| code-line-numbers: "|3-13|15-17|19-28|30-44|54-55|57-64|68-71|74|76-83|86"
+#| code-line-numbers: "|3-13|15-17|19-30|32-46|56-58|59-66|70-73|76|78-85|88"
 
 library(jagsUI)
 
@@ -1535,7 +1526,7 @@ params <- c("beta.irru","mean.int","mean.prob", "alpha.annee", "sigma.annee", "s
        #         model= "mod_HY_DUSA.txt")
 
 # save(DUSA_out_jags, file = "DUSA_out_jags.txt")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_out_jags.txt")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/DUSA_out_jags.txt")
 ```
 
 ## [Rhat et erreur MC]{style="color: yellow;"}
@@ -1723,7 +1714,7 @@ plot(density(DUSA_out_jags$sims.list$theta),
 
 ```{r}
 #| echo: true
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_out_jags.txt")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/DUSA_out_jags.txt")
 
 DUSA_summary <- DUSA_out_jags$summary[c("mean.int", "beta.irru","sigma.annee", "theta", "mean.prob"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
 DUSA_summary
@@ -1737,10 +1728,10 @@ DUSA_summary
 
 # Output des JAGS de chaque espèce
 
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_out_jags.txt")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO_out_jags.txt")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI_out_jags.txt")
-load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL_out_jags.txt")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/DUSA_out_jags.txt")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/JABO_out_jags.txt")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/TAPI_out_jags.txt")
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/SIFL_out_jags.txt")
 
 # Extrait les IC de l'effet des irruptions
 
@@ -1797,7 +1788,7 @@ segments(x0 = axex, y0 = tab_comp_JAGS$ic_inf,
           x1 = axex, y1 = tab_comp_JAGS$ic_sup)
 ```
 
-## [Effets des irruptions par espèce sur la proporon]{style="color: yellow;"}
+## [Effets des irruptions par espèce sur la proportion]{style="color: yellow;"}
 
 ```{r}
 mean <- (tab_comp_JAGS$ic_inf + tab_comp_JAGS$ic_sup) / 2
@@ -1806,10 +1797,10 @@ axex <- 1:4
 plot(axex, tab_comp_JAGS$mean,
       xaxt = "n",
       ylim = range(c(tab_comp_JAGS$ic_inf, tab_comp_JAGS$ic_sup)),
-      ylab = "Effet de l'irruption (beta_irru)",
+      ylab = expression(paste("log estimé de ", beta, " irruption")),
       xlab = "Espèces",
       pch = 16,
-      main = "Effet des irruptions sur la proportion")
+      main = expression(paste("Estimés de log ", beta,  " avec IC 95% : proportion")))
  
 axis(1, at = axex, labels = tab_comp_JAGS$Espece)
  
@@ -1819,6 +1810,47 @@ segments(x0 = axex, y0 = tab_comp_JAGS$ic_inf,
           x1 = axex, y1 = tab_comp_JAGS$ic_sup)
 ```
 
+## [Effets des irruptions par espèce sur la proportion]{style="color: yellow;"}
+
+::::: columns
+::: {.column width="40%"}
+```{r}
+#| echo: true
+#| eval: false
+#graphique
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/JABO_out_jags.txt")
+JABO_summary <- JABO_out_jags$summary[c("mean.int", "beta.irru","sigma.annee", "theta", "mean.prob"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
+JABO_plot_sum<- JABO_summary[c("mean.int", "beta.irru"), c("mean", "2.5%", "97.5%")]
+JABO_plot_sum_p <- plogis(JABO_plot_sum)
+
+plot(JABO_plot_sum_p[,"mean"], xlab = " ", ylab = "Proportion de jeunes",
+     ylim = c(0,1), xlim = c(0.5,2.5), xaxt = "n", main = "Proportion de jeunes chez JABO selon l'irruption")
+axis(1, at = 1:2, labels = c("Non irruption", "Irruption"))
+segments(x0 = 1, y0 = JABO_plot_sum_p["mean.int", "2.5%"], x1 = 1, y1 = JABO_plot_sum_p["mean.int", "97.5%"])
+segments(x0 = 2, y0 = JABO_plot_sum_p["beta.irru", "2.5%"], x1 = 2, y1 = JABO_plot_sum_p["beta.irru", "97.5%"])
+text(x = 1.1, y = 0.47, labels = "0.47")
+text(x = 2.1, y = 0.79, labels = "0.79")
+```
+
+:::
+::: {.column width="60%"}
+```{r}
+#graphique
+load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/Output_JAGS/JABO_out_jags.txt")
+JABO_summary <- JABO_out_jags$summary[c("mean.int", "beta.irru","sigma.annee", "theta", "mean.prob"), c("mean", "sd", "2.5%", "97.5%", "Rhat")]
+JABO_plot_sum<- JABO_summary[c("mean.int", "beta.irru"), c("mean", "2.5%", "97.5%")]
+JABO_plot_sum_p <- plogis(JABO_plot_sum)
+
+plot(JABO_plot_sum_p[,"mean"], xlab = " ", ylab = "Proportion de jeunes",
+     ylim = c(0,1), xlim = c(0.5,2.5), xaxt = "n", main = "Proportion de jeunes chez JABO selon l'irruption")
+axis(1, at = 1:2, labels = c("Non irruption", "Irruption"))
+segments(x0 = 1, y0 = JABO_plot_sum_p["mean.int", "2.5%"], x1 = 1, y1 = JABO_plot_sum_p["mean.int", "97.5%"])
+segments(x0 = 2, y0 = JABO_plot_sum_p["beta.irru", "2.5%"], x1 = 2, y1 = JABO_plot_sum_p["beta.irru", "97.5%"])
+text(x = 1.1, y = 0.47, labels = "0.47")
+text(x = 2.1, y = 0.79, labels = "0.79")
+```
+:::
+::::
 ## [Code pour comparer les années irruptives vs non-irruptives]{style="color: yellow;"}
 
 ```{r}
@@ -1863,7 +1895,7 @@ boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
         main= "Condition du tarin des pins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 ```
-## [Visualisation]{style="color: yellow;"}
+
 
 ```{r}
 #Importe le jeu de données
@@ -1872,31 +1904,47 @@ load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/DUSA_bague.
 load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/JABO_bague.csv")
 load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL_bague.csv")
 load("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI_bague.csv")
+```
 
-par(mfrow= c(2,2))
 
+## [Condition DUSA irruptif vs non-irruptif]{style="color: yellow;"}
+
+```{r}
 boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
         DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], 
         col = c("grey","orange"), 
         ylab= "Condition", 
         main= "Condition du durbec des sapins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
+```
 
+
+## [Condition JABO irruptif vs non-irruptif]{style="color: yellow;"}
+
+```{r}
 boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
         JABO_bague$condition[JABO_bague$JABO_IRR=="1"], 
         col = c("grey","forestgreen"), 
         ylab= "Condition", 
         main= "Condition du jaseur boréal selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
+```
 
+
+## [Condition SIFL irruptif vs non-irruptif]{style="color: yellow;"}
+```{r}
 boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
         SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"],
         col = c("grey","turquoise3"), 
         ylab= "Condition", 
         main= "Condition du sizerin flammé selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
+```
 
 
+## [Condition TAPI]{style="color: yellow;"}
+
+```{r}
 boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
         TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"],
         col = c("grey","violetred"), 
@@ -1904,6 +1952,65 @@ boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
         main= "Condition du tarin des pins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 ```
+
+
+## [Tableau des conditions selon le stade irruptif]{style="color: yellow;"}
+
+
+```{r}
+#shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "0"])
+#shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "1"])
+#wilcox.test(condition ~ DUSA_IRR, data = DUSA_bague)
+DUSA_cond_irr<-tapply(DUSA_bague$condition, DUSA_bague$DUSA_IRR, summary)
+#DUSA_cond_irr
+
+#shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "0"])
+#shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "1"])
+#wilcox.test(condition ~ JABO_IRR, data = JABO_bague)
+JABO_cond_irr<-tapply(JABO_bague$condition, JABO_bague$JABO_IRR, summary)
+#JABO_cond_irr
+
+#shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "0"])
+#shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "1"])
+#wilcox.test(condition ~ SIFL_IRR, data = SIFL_bague)
+SIFL_cond_irr<-tapply(SIFL_bague$condition, SIFL_bague$SIFL_IRR, summary)
+#SIFL_cond_irr
+
+#shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "0"])
+#shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "1"])
+#wilcox.test(condition ~ TAPI_IRR, data = TAPI_bague)
+TAPI_cond_irr<-tapply(TAPI_bague$condition, TAPI_bague$TAPI_IRR, summary)
+#TAPI_cond_irr
+
+
+DUSA_tableau_cond <- do.call(rbind, DUSA_cond_irr)
+JABO_tableau_cond <- do.call(rbind, JABO_cond_irr)
+SIFL_tableau_cond <- do.call(rbind, SIFL_cond_irr)
+TAPI_tableau_cond <- do.call(rbind, TAPI_cond_irr)
+
+tableau_cond <- rbind(DUSA_tableau_cond, JABO_tableau_cond, SIFL_tableau_cond, TAPI_tableau_cond)
+colnames(tableau_cond)<- c("Min", "1st Qu", "Median", "Mean", "3rd Qu", "Max", "NA")
+rownames(tableau_cond)<- c("DUSA non irruption", "DUSA irruption", 
+                           "JABO non irruption", "JABO irruption", 
+                           "SIFL non irruption", "SIFL irruption", 
+                           "TAPI non irruption", "TAPI irruption")
+tableau_cond <- tableau_cond[,c(1,3,4)]
+tableau_cond_irr<- tableau_cond[c(2,4,6,8), ]
+tableau_cond_nirr <- tableau_cond[c(1,3,5,7),]
+tableau <- cbind(tableau_cond_nirr[,1], tableau_cond_irr[,1],
+                 tableau_cond_nirr[,2], tableau_cond_irr[,2],
+                 tableau_cond_nirr[,3], tableau_cond_irr[,3])
+colnames(tableau) <- c("1st Qu non irruption", "1st Qu irruption", 
+                       "mean non irruption", "mean irruption", 
+                       "3rd Qu non irruption", "3rd Qu irruption")
+rownames(tableau)<- c("DUSA", "JABO", "SIFL", "TAPI")
+tableau
+```
+
+. . .
+
+[Différences statistiques significatives, mais différences biologiques minimes]{style="color: yellow;"}
+
 
 ## [Objectif #2]{style="color: yellow;"}
 
@@ -1915,10 +2022,7 @@ Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés
 
 . . .
 
-[Pour la condition, c'est très peu concluant]{style="color: yellow;"}
-. . .
-
-
+[Pour la condition, différences marginales]{style="color: yellow;"} . . .
 
 ## [Discussion]{style="color: yellow;"}
 
@@ -1927,11 +2031,3 @@ Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés
 ## [Merci]{style="color: yellow;"}
 
 ![](Merci.png)
-
-##
-
-##
-
-
-
-
