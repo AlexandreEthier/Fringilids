@@ -443,7 +443,6 @@ TAPI_log
 
 ##### GROUPÉ
 
-
 # Combine les 4 graphiques en 2x2
 plot_grid(DUSA_log,
           JABO_log,
@@ -478,6 +477,339 @@ segments(x0 = 3, y0 = SIFL_lowerIC_annee,
          x1 = 3, y1 = SIFL_upperIC_annee)
 segments(x0 = 4, y0 = TAPI_lowerIC_annee,
          x1 = 4, y1 = TAPI_upperIC_annee)
+
+
+
+# Proportion jeunes -------------------------------------------------------
+
+# plot proportion
+DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "darkorange") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de durbec des sapins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(DUSA_prop)
+
+JABO_prop<-ggplot(data = JABO, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "forestgreen") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de jaseur boréal par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(JABO_prop)
+
+SIFL_prop<-ggplot(data = SIFL, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "turquoise4") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de sizerin flammé par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(SIFL_prop)
+
+TAPI_prop<-ggplot(data = TAPI, aes(x = Annee, y = prop_HY)) +
+  geom_col(fill= "violetred") +
+  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
+  xlab("Année") +
+  ylab("Proportion HY") +
+  geom_text(aes(label = nb_tot), vjust = -0.5)+
+  labs(fill = "Proportion HY", title = "Proportion de jeunes de tarin des pins par année")+
+  scale_y_continuous(labels = percent)+
+  theme_classic()
+print(TAPI_prop)
+
+plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
+
+
+
+#### DUSA
+lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
+summary(lm_DUSA_prop)
+
+par(mfrow = c(2,2))
+plot(lm_DUSA_prop)
+dev.off()
+
+# graph coef
+DUSA_int_prop <- lm_DUSA_prop$coefficients["(Intercept)"]
+DUSA_annee_prop <- lm_DUSA_prop$coefficients["Annee"]
+DUSA_sd_prop <- coef(summary(lm_DUSA_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_DUSA_prop <- DUSA_annee_prop + (1.96 * DUSA_sd_prop[2])
+lower_ic_annee_DUSA_prop <- DUSA_annee_prop - (1.96 * DUSA_sd_prop[2])
+
+plot((DUSA_annee_prop),
+     ylim = c(-0.040,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de DUSA")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_DUSA_prop),
+         x1 = 1, y1 = (upper_ic_annee_DUSA_prop))
+
+
+# simulation
+DUSA$Annee <- as.numeric(DUSA$Annee)
+n_sim <- 5000
+
+DUSA_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
+DUSA_sim_prop <- DUSA[, "Annee"]
+DUSA_sim_prop <- as.data.frame(DUSA_sim_prop)
+DUSA_sim_prop <- rename(DUSA_sim_prop, Annee = "DUSA_sim_prop")
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  DUSA_sim_prop$prop <- sample(x = DUSA$prop_HY, replace = FALSE)
+  
+  lm_DUSA_rand_prop <- lm(prop ~ Annee, data = DUSA_sim_prop)
+  
+  DUSA_output_prop[i,1] <- coef(lm_DUSA_rand_prop)[1] # Beta intercepte (abond_std)
+  DUSA_output_prop[i,2] <- coef(lm_DUSA_rand_prop)[2] # Beta année
+  
+}
+#save(DUSA_output_prop, file = "DUSA_output_prop.R")
+load("DUSA_output_prop.R")
+
+pbeta_annee <- sum(DUSA_output_prop[, 2] <= coef(lm_DUSA_prop)[2])/n_sim
+pbeta_annee # 0.28
+
+hist(DUSA_output_prop[,1])
+abline(v =(coef(lm_DUSA_prop)[1]), lty = 2, col= "red")
+
+hist(DUSA_output_prop[,2])
+abline(v =(coef(lm_DUSA_prop)[2]), lty = 2, col= "red")
+text(x = -0.010, y = 900, labels = "P = 0.28")
+
+
+#### JABO
+lm_JABO_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = JABO)
+
+par(mfrow = c(2,2))
+plot(lm_JABO_prop)
+dev.off()
+
+summary(lm_JABO_prop) # vérification par simulation ?
+
+# graph coef
+JABO_int_prop <- lm_JABO_prop$coefficients["(Intercept)"]
+JABO_annee_prop <- lm_JABO_prop$coefficients["Annee"]
+JABO_sd_prop <- coef(summary(lm_JABO_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_JABO_prop <- JABO_annee_prop + (1.96 * JABO_sd_prop[2])
+lower_ic_annee_JABO_prop <- JABO_annee_prop - (1.96 * JABO_sd_prop[2])
+
+plot((JABO_annee_prop),
+     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de JABO")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_JABO_prop),
+         x1 = 1, y1 = (upper_ic_annee_JABO_prop))
+
+
+# simulation
+JABO$Annee <- as.numeric(JABO$Annee)
+n_sim <- 5000
+
+JABO_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
+JABO_sim_prop <- JABO[, "Annee"]
+JABO_sim_prop <- as.data.frame(JABO_sim_prop)
+JABO_sim_prop <- rename(JABO_sim_prop, Annee = "JABO_sim_prop")
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  JABO_sim_prop$prop <- sample(x = JABO$prop_HY, replace = FALSE)
+  
+  lm_JABO_rand_prop <- lm(prop ~ Annee, data = JABO_sim_prop)
+  
+  JABO_output_prop[i,1] <- coef(lm_JABO_rand_prop)[1] # Beta intercepte (abond_std)
+  JABO_output_prop[i,2] <- coef(lm_JABO_rand_prop)[2] # Beta année
+  
+}
+# save(JABO_output_prop, file = "JABO_output_prop.R")
+load("JABO_output_prop.R")
+
+pbeta_annee <- sum(JABO_output_prop[, 2] <= coef(lm_JABO_prop)[2])/n_sim
+pbeta_annee # 0.019
+
+hist(JABO_output_prop[,1])
+abline(v =(coef(lm_JABO_prop)[1]), lty = 2, col= "red")
+
+hist(JABO_output_prop[,2])
+abline(v =(coef(lm_JABO_prop)[2]), lty = 2, col= "red")
+text(x = -0.03, y = 600, labels = "P = 0.019")
+
+#### SIFL
+lm_SIFL_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = SIFL)
+
+par(mfrow = c(2,2))
+plot(lm_SIFL_prop)
+dev.off()
+
+summary(lm_SIFL_prop) # vérification par simulation ?
+
+# graph coef
+SIFL_int_prop <- lm_SIFL_prop$coefficients["(Intercept)"]
+SIFL_annee_prop <- lm_SIFL_prop$coefficients["Annee"]
+SIFL_sd_prop <- coef(summary(lm_SIFL_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_SIFL_prop <- SIFL_annee_prop + (1.96 * SIFL_sd_prop[2])
+lower_ic_annee_SIFL_prop <- SIFL_annee_prop - (1.96 * SIFL_sd_prop[2])
+
+plot((SIFL_annee_prop),
+     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de SIFL")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_SIFL_prop),
+         x1 = 1, y1 = (upper_ic_annee_SIFL_prop))
+
+
+
+# simulation
+SIFL$Annee <- as.numeric(SIFL$Annee)
+n_sim <- 5000
+
+SIFL_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
+SIFL_sim_prop <- SIFL[, "Annee"]
+SIFL_sim_prop <- as.data.frame(SIFL_sim_prop)
+SIFL_sim_prop <- rename(SIFL_sim_prop, Annee = "SIFL_sim_prop")
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  SIFL_sim_prop$prop <- sample(x = SIFL$prop_HY, replace = FALSE)
+  
+  lm_SIFL_rand_prop <- lm(prop ~ Annee, data = SIFL_sim_prop)
+  
+  SIFL_output_prop[i,1] <- coef(lm_SIFL_rand_prop)[1] # Beta intercepte (abond_std)
+  SIFL_output_prop[i,2] <- coef(lm_SIFL_rand_prop)[2] # Beta année
+  
+}
+# save(SIFL_output_prop, file = "SIFL_output_prop.R")
+load("SIFL_output_prop.R")
+
+pbeta_annee <- sum(SIFL_output_prop[, 2] >= coef(lm_SIFL_prop)[2])/n_sim
+pbeta_annee # 0.049
+
+hist(SIFL_output_prop[,1])
+abline(v =(coef(lm_SIFL_prop)[1]), lty = 2, col= "red")
+
+hist(SIFL_output_prop[,2])
+abline(v =(coef(lm_SIFL_prop)[2]), lty = 2, col= "red")
+text(x = 0.017, y = 800, labels = "P = 0.049")
+
+
+#### TAPI
+lm_TAPI_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = TAPI)
+
+par(mfrow = c(2,2))
+plot(lm_TAPI_prop)
+dev.off()
+
+summary(lm_TAPI_prop) # vérification par simulation ?
+
+# graph coef
+TAPI_int_prop <- lm_TAPI_prop$coefficients["(Intercept)"]
+TAPI_annee_prop <- lm_TAPI_prop$coefficients["Annee"]
+TAPI_sd_prop <- coef(summary(lm_TAPI_prop))[, "Std. Error"]
+
+# Intercepte
+upper_ic_annee_TAPI_prop <- TAPI_annee_prop + (1.96 * TAPI_sd_prop[2])
+lower_ic_annee_TAPI_prop <- TAPI_annee_prop - (1.96 * TAPI_sd_prop[2])
+
+plot((TAPI_annee_prop),
+     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
+     main = "Effet de l'année sur la proportion de jeunes de TAPI")
+abline(h = 0, lty = 2, col = "red")
+segments(x0 = 1, y0 = (lower_ic_annee_TAPI_prop),
+         x1 = 1, y1 = (upper_ic_annee_TAPI_prop))
+
+# simulation
+TAPI$Annee <- as.numeric(TAPI$Annee)
+n_sim <- 5000
+
+TAPI_output_prop <- matrix(data = NA, nrow = n_sim, ncol = 2)
+TAPI_sim_prop <- TAPI[, "Annee"]
+TAPI_sim_prop <- as.data.frame(TAPI_sim_prop)
+TAPI_sim_prop <- rename(TAPI_sim_prop, Annee = "TAPI_sim_prop")
+
+set.seed(1234)
+
+for(i in 1:n_sim){
+  
+  cat("iter = ", i, "\n")
+  
+  TAPI_sim_prop$prop <- sample(x = TAPI$prop_HY, replace = FALSE)
+  
+  lm_TAPI_rand_prop <- lm(prop ~ Annee, data = TAPI_sim_prop)
+  
+  TAPI_output_prop[i,1] <- coef(lm_TAPI_rand_prop)[1] # Beta intercepte (abond_std)
+  TAPI_output_prop[i,2] <- coef(lm_TAPI_rand_prop)[2] # Beta année
+  
+}
+# save(TAPI_output_prop, file = "TAPI_output_prop.R")
+load("TAPI_output_prop.R")
+
+pbeta_annee <- sum(TAPI_output_prop[, 2] >= coef(lm_TAPI_prop)[2])/n_sim
+pbeta_annee # 0.33
+
+hist(TAPI_output_prop[,1])
+abline(v =(coef(lm_TAPI_prop)[1]), lty = 2, col= "red")
+
+hist(TAPI_output_prop[,2])
+abline(v =(coef(lm_TAPI_prop)[2]), lty = 2, col= "red")
+text(x = 0.007, y = 600, labels = "P = 0.328")
+
+
+# Graphique
+tab_comp_prop <- data.frame(c(DUSA_int_prop, JABO_int_prop,  SIFL_int_prop,TAPI_int_prop),
+                            c(DUSA_annee_prop, JABO_annee_prop,  SIFL_annee_prop, TAPI_annee_prop),
+                            c(lower_ic_annee_DUSA_prop, lower_ic_annee_JABO_prop, lower_ic_annee_SIFL_prop, lower_ic_annee_TAPI_prop),
+                            c(upper_ic_annee_DUSA_prop, upper_ic_annee_JABO_prop, upper_ic_annee_SIFL_prop, upper_ic_annee_TAPI_prop))
+
+axex<- 1:4
+rownames(tab_comp_prop) <- c("DUSA", "JABO", "SIFL", "TAPI")
+colnames(tab_comp_prop) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
+tab_comp_prop
+plot(tab_comp_prop$annee,
+     xaxt = "n",
+     ylim = c(-0.05, 0.03),
+     ylab = "log estimé de beta",
+     xlab = "Espèces",
+     main = "Estimés de log beta avec IC 95% : proportion jeunes par espèce")
+abline(h = 0, lty = 2, col = "red")
+axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
+segments(x0 = 1, y0 = lower_ic_annee_DUSA_prop,
+         x1 = 1, y1 = upper_ic_annee_DUSA_prop)
+segments(x0 = 2, y0 = lower_ic_annee_JABO_prop,
+         x1 = 2, y1 = upper_ic_annee_JABO_prop)
+segments(x0 = 3, y0 = lower_ic_annee_SIFL_prop,
+         x1 = 3, y1 = upper_ic_annee_SIFL_prop)
+segments(x0 = 4, y0 = lower_ic_annee_TAPI_prop,
+         x1 = 4, y1 = upper_ic_annee_TAPI_prop)
+
+
+
 
 
 
@@ -621,191 +953,6 @@ print(plot_condition_age_TAPI) # pas de différence selon les classes d'âge
 # la condition ne montre pas de tendance sur le long terme dû : 
 # - au fait que ce sont des caractères morphologiques qui varient peu (taille de l'aile et masse)
 # - on a moins d'années que l'abondance : masque certaines tendance ?
-
-
-# Proportion jeunes -------------------------------------------------------
-
-# plot proportion
-DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
-  geom_col(fill= "darkorange") +
-  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
-  xlab("Année") +
-  ylab("Proportion HY") +
-  geom_text(aes(label = nb_tot), vjust = -0.5)+
-  labs(fill = "Proportion HY", title = "Proportion de jeunes de durbec des sapins par année")+
-  scale_y_continuous(labels = percent)+
-  theme_classic()
-print(DUSA_prop)
-
-JABO_prop<-ggplot(data = JABO, aes(x = Annee, y = prop_HY)) +
-  geom_col(fill= "forestgreen") +
-  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
-  xlab("Année") +
-  ylab("Proportion HY") +
-  geom_text(aes(label = nb_tot), vjust = -0.5)+
-  labs(fill = "Proportion HY", title = "Proportion de jeunes de jaseur boréal par année")+
-  scale_y_continuous(labels = percent)+
-  theme_classic()
-print(JABO_prop)
-
-SIFL_prop<-ggplot(data = SIFL, aes(x = Annee, y = prop_HY)) +
-  geom_col(fill= "turquoise4") +
-  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
-  xlab("Année") +
-  ylab("Proportion HY") +
-  geom_text(aes(label = nb_tot), vjust = -0.5)+
-  labs(fill = "Proportion HY", title = "Proportion de jeunes de sizerin flammé par année")+
-  scale_y_continuous(labels = percent)+
-  theme_classic()
-print(SIFL_prop)
-
-TAPI_prop<-ggplot(data = TAPI, aes(x = Annee, y = prop_HY)) +
-  geom_col(fill= "violetred") +
-  scale_x_continuous(breaks = seq(1, 20, by = 5), labels = c("2007", "2012", "2017", "2022")) +
-  xlab("Année") +
-  ylab("Proportion HY") +
-  geom_text(aes(label = nb_tot), vjust = -0.5)+
-  labs(fill = "Proportion HY", title = "Proportion de jeunes de tarin des pins par année")+
-  scale_y_continuous(labels = percent)+
-  theme_classic()
-print(TAPI_prop)
-
-plot_grid(DUSA_prop, JABO_prop, SIFL_prop, TAPI_prop)
-
-
-
-# Prop. graph pour proportion 
-
-#### DUSA
-lm_DUSA_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = DUSA)
-summary(lm_DUSA_prop)
-
-par(mfrow = c(2,2))
-plot(lm_DUSA_prop)
-dev.off()
-
-# graph coef
-DUSA_int_prop <- lm_DUSA_prop$coefficients["(Intercept)"]
-DUSA_annee_prop <- lm_DUSA_prop$coefficients["Annee"]
-DUSA_sd_prop <- coef(summary(lm_DUSA_prop))[, "Std. Error"]
-
-# Intercepte
-upper_ic_annee_DUSA_prop <- DUSA_annee_prop + (1.96 * DUSA_sd_prop[2])
-lower_ic_annee_DUSA_prop <- DUSA_annee_prop - (1.96 * DUSA_sd_prop[2])
-
-plot((DUSA_annee_prop),
-     ylim = c(-0.040,0.040), xlab = "", ylab= "Estimé de beta",
-     main = "Effet de l'année sur la proportion de jeunes de DUSA")
-abline(h = 0, lty = 2, col = "red")
-segments(x0 = 1, y0 = (lower_ic_annee_DUSA_prop),
-         x1 = 1, y1 = (upper_ic_annee_DUSA_prop))
-
-#### JABO
-lm_JABO_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = JABO)
-
-par(mfrow = c(2,2))
-plot(lm_JABO_prop)
-dev.off()
-
-summary(lm_JABO_prop) # vérification par simulation ?
-
-# graph coef
-JABO_int_prop <- lm_JABO_prop$coefficients["(Intercept)"]
-JABO_annee_prop <- lm_JABO_prop$coefficients["Annee"]
-JABO_sd_prop <- coef(summary(lm_JABO_prop))[, "Std. Error"]
-
-# Intercepte
-upper_ic_annee_JABO_prop <- JABO_annee_prop + (1.96 * JABO_sd_prop[2])
-lower_ic_annee_JABO_prop <- JABO_annee_prop - (1.96 * JABO_sd_prop[2])
-
-plot((JABO_annee_prop),
-     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
-     main = "Effet de l'année sur la proportion de jeunes de JABO")
-abline(h = 0, lty = 2, col = "red")
-segments(x0 = 1, y0 = (lower_ic_annee_JABO_prop),
-         x1 = 1, y1 = (upper_ic_annee_JABO_prop))
-
-
-#### SIFL
-lm_SIFL_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = SIFL)
-
-par(mfrow = c(2,2))
-plot(lm_SIFL_prop)
-dev.off()
-
-summary(lm_SIFL_prop) # vérification par simulation ?
-
-# graph coef
-SIFL_int_prop <- lm_SIFL_prop$coefficients["(Intercept)"]
-SIFL_annee_prop <- lm_SIFL_prop$coefficients["Annee"]
-SIFL_sd_prop <- coef(summary(lm_SIFL_prop))[, "Std. Error"]
-
-# Intercepte
-upper_ic_annee_SIFL_prop <- SIFL_annee_prop + (1.96 * SIFL_sd_prop[2])
-lower_ic_annee_SIFL_prop <- SIFL_annee_prop - (1.96 * SIFL_sd_prop[2])
-
-plot((SIFL_annee_prop),
-     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
-     main = "Effet de l'année sur la proportion de jeunes de SIFL")
-abline(h = 0, lty = 2, col = "red")
-segments(x0 = 1, y0 = (lower_ic_annee_SIFL_prop),
-         x1 = 1, y1 = (upper_ic_annee_SIFL_prop))
-
-#### TAPI
-lm_TAPI_prop <- lm(prop_HY ~Annee, weights = nb_tot, data = TAPI)
-
-par(mfrow = c(2,2))
-plot(lm_TAPI_prop)
-dev.off()
-
-summary(lm_TAPI_prop) # vérification par simulation ?
-
-# graph coef
-TAPI_int_prop <- lm_TAPI_prop$coefficients["(Intercept)"]
-TAPI_annee_prop <- lm_TAPI_prop$coefficients["Annee"]
-TAPI_sd_prop <- coef(summary(lm_TAPI_prop))[, "Std. Error"]
-
-# Intercepte
-upper_ic_annee_TAPI_prop <- TAPI_annee_prop + (1.96 * TAPI_sd_prop[2])
-lower_ic_annee_TAPI_prop <- TAPI_annee_prop - (1.96 * TAPI_sd_prop[2])
-
-plot((TAPI_annee_prop),
-     ylim = c(-0.050,0.040), xlab = "", ylab= "Estimé de beta",
-     main = "Effet de l'année sur la proportion de jeunes de TAPI")
-abline(h = 0, lty = 2, col = "red")
-segments(x0 = 1, y0 = (lower_ic_annee_TAPI_prop),
-         x1 = 1, y1 = (upper_ic_annee_TAPI_prop))
-
-
-tab_comp_prop <- data.frame(c(DUSA_int_prop, JABO_int_prop,  SIFL_int_prop,TAPI_int_prop),
-                            c(DUSA_annee_prop, JABO_annee_prop,  SIFL_annee_prop, TAPI_annee_prop),
-                            c(lower_ic_annee_DUSA_prop, lower_ic_annee_JABO_prop, lower_ic_annee_SIFL_prop, lower_ic_annee_TAPI_prop),
-                            c(upper_ic_annee_DUSA_prop, upper_ic_annee_JABO_prop, upper_ic_annee_SIFL_prop, upper_ic_annee_TAPI_prop))
-
-axex<- 1:4
-rownames(tab_comp_prop) <- c("DUSA", "JABO", "SIFL", "TAPI")
-colnames(tab_comp_prop) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
-tab_comp_prop
-plot(tab_comp_prop$annee,
-     xaxt = "n",
-     ylim = c(-0.05, 0.03),
-     ylab = "log estimé de beta",
-     xlab = "Espèces",
-     main = "Estimés de log beta avec IC 95% : proportion jeunes par espèce")
-abline(h = 0, lty = 2, col = "red")
-axis(side = 1, at = axex, labels = c("DUSA", "JABO", "SIFL", "TAPI"))
-segments(x0 = 1, y0 = lower_ic_annee_DUSA_prop,
-         x1 = 1, y1 = upper_ic_annee_DUSA_prop)
-segments(x0 = 2, y0 = lower_ic_annee_JABO_prop,
-         x1 = 2, y1 = upper_ic_annee_JABO_prop)
-segments(x0 = 3, y0 = lower_ic_annee_SIFL_prop,
-         x1 = 3, y1 = upper_ic_annee_SIFL_prop)
-segments(x0 = 4, y0 = lower_ic_annee_TAPI_prop,
-         x1 = 4, y1 = upper_ic_annee_TAPI_prop)
-
-
-
-
 
 
 
