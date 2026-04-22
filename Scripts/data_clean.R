@@ -171,7 +171,7 @@ DUSA$cond_moy_AHY[12:length(DUSA$cond_moy_AHY)] <- round(DUSA_cond_AHY$cond_moy,
 
 # Load vecteur irruption
 
-load("DUSA_irr.R")
+load("Irruption/DUSA_irr.R")
 
 DUSA$irruption <- DUSA_irr
 
