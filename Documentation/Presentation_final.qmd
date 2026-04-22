@@ -4,7 +4,6 @@ subtitle: "en collaboration avec l'Observatoire d'oiseaux de Tadoussac"
 author: "Maxence Poirier-Joanette, Adrien Badet, Alexandre Ethier, Bérince Hounsouvo"
 format: 
   revealjs:
-    embed-resources: true
     theme: black
     transition: slide
     slide-number: true
@@ -638,16 +637,16 @@ JABO <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data
 SIFL <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/SIFL.csv", header = TRUE)
 TAPI <- read.csv("/Users/maxencepoirier-joanette/Rstudio/FOR7046/Fringilids/Data/TAPI.csv", header = TRUE)
 
-DUSA <- DUSA[DUSA$Annee >= "2007",]
-JABO <- JABO[JABO$Annee >= "2007",]
-SIFL <- SIFL[SIFL$Annee >= "2007",]
-TAPI <- TAPI[TAPI$Annee >= "2007",]
+#DUSA <- DUSA[DUSA$Annee >= "2007",]
+#JABO <- JABO[JABO$Annee >= "2007",]
+#SIFL <- SIFL[SIFL$Annee >= "2007",]
+#TAPI <- TAPI[TAPI$Annee >= "2007",]
 
 library(scales) # objet percent
 
 DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
   geom_col(fill= "darkorange") +
-  scale_x_continuous(breaks = seq(2007, 2022, by = 5)) +
+  scale_x_continuous(breaks = seq(2007, 2022, by = 5), limits = c(2006,2025)) +
   xlab("Année") +
   ylab("Proportion HY") +
   geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
@@ -659,7 +658,7 @@ DUSA_prop<-ggplot(data = DUSA, aes(x = Annee, y = prop_HY)) +
 
 JABO_prop<-ggplot(data = JABO, aes(x = Annee, y = prop_HY)) +
   geom_col(fill= "forestgreen") +
-  scale_x_continuous(breaks = seq(2007, 2022, by = 5)) +
+  scale_x_continuous(breaks = seq(2007, 2022, by = 5), limits = c(2006,2025)) +
   xlab("Année") +
   ylab("Proportion HY") +
   geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
@@ -671,7 +670,7 @@ JABO_prop<-ggplot(data = JABO, aes(x = Annee, y = prop_HY)) +
 
 SIFL_prop<-ggplot(data = SIFL, aes(x = Annee, y = prop_HY)) +
   geom_col(fill= "turquoise4") +
-  scale_x_continuous(breaks = seq(2007, 2022, by = 5)) +
+  scale_x_continuous(breaks = seq(2007, 2022, by = 5), limits = c(2006,2025)) +
   xlab("Année") +
   ylab("Proportion HY") +
   geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
@@ -683,7 +682,7 @@ SIFL_prop<-ggplot(data = SIFL, aes(x = Annee, y = prop_HY)) +
 
 TAPI_prop<-ggplot(data = TAPI, aes(x = Annee, y = prop_HY)) +
   geom_col(fill= "violetred") +
-  scale_x_continuous(breaks = seq(2007, 2022, by = 5)) +
+  scale_x_continuous(breaks = seq(2007, 2022, by = 5), limits = c(2006,2025)) +
   xlab("Année") +
   ylab("Proportion HY") +
   geom_text(aes(label = nb_tot), vjust = -0.5, size = 2)+
@@ -795,19 +794,6 @@ lower_ic_annee_TAPI_prop <- TAPI_annee_prop - (1.96 * TAPI_sd_prop[2])
 
 ```
 
-## [Tableau IC à 95% pour la proportion de jeunes]{style="color: yellow;"}
-```{r}
-#| echo: true
-#| eval: true
-tab_comp_prop <- data.frame(c(DUSA_int_prop, JABO_int_prop,  SIFL_int_prop,TAPI_int_prop),
-                            c(DUSA_annee_prop, JABO_annee_prop,  SIFL_annee_prop, TAPI_annee_prop),
-                            c(lower_ic_annee_DUSA_prop, lower_ic_annee_JABO_prop, lower_ic_annee_SIFL_prop, lower_ic_annee_TAPI_prop),
-                            c(upper_ic_annee_DUSA_prop, upper_ic_annee_JABO_prop, upper_ic_annee_SIFL_prop, upper_ic_annee_TAPI_prop))
-rownames(tab_comp_prop) <- c("DUSA", "JABO", "SIFL", "TAPI")
-colnames(tab_comp_prop) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
-tab_comp_prop
-```
-
 ## [Code pour les estimés de log beta avec IC 95% pour la proportion]{style="color: yellow;"}
 ```{r}
 #| echo: true
@@ -832,6 +818,16 @@ segments(x0 = 3, y0 = lower_ic_annee_SIFL_prop,
          x1 = 3, y1 = upper_ic_annee_SIFL_prop)
 segments(x0 = 4, y0 = lower_ic_annee_TAPI_prop,
          x1 = 4, y1 = upper_ic_annee_TAPI_prop)
+```
+
+```{r}
+tab_comp_prop <- data.frame(c(DUSA_int_prop, JABO_int_prop,  SIFL_int_prop,TAPI_int_prop),
+                            c(DUSA_annee_prop, JABO_annee_prop,  SIFL_annee_prop, TAPI_annee_prop),
+                            c(lower_ic_annee_DUSA_prop, lower_ic_annee_JABO_prop, lower_ic_annee_SIFL_prop, lower_ic_annee_TAPI_prop),
+                            c(upper_ic_annee_DUSA_prop, upper_ic_annee_JABO_prop, upper_ic_annee_SIFL_prop, upper_ic_annee_TAPI_prop))
+rownames(tab_comp_prop) <- c("DUSA", "JABO", "SIFL", "TAPI")
+colnames(tab_comp_prop) <- c("Intercepte", "annee", "ic_inf", "ic_sup")
+#tab_comp_prop
 ```
 
 ## [Visualisation des estimés de log beta avec IC 95% pour la proportion]{style="color: yellow;"}
@@ -934,7 +930,7 @@ abline(v =(coef(lm_TAPI_prop)[2]), lty = 2, col= "red")
 text(x = 0.007, y = 600, labels = "P = 0.328")
 ```
 
-## [Code pour la tendance temporelle de la condition des Fringillidés]{style="color: yellow;"}
+## [Code pour la tendance temporelle de la condition]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
@@ -1131,7 +1127,7 @@ Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le
 
 . . .
 
-[La condition]{style="color: yellow;"}
+[La condition est régie par des processus morphologiques qui évolue peu dans le temps]{style="color: yellow;"}
 
 
 ## [Objectif #2]{style="color: yellow;"}
@@ -1140,11 +1136,11 @@ Comment évoluent les populations de fringillidés boréaux (4 espèces) dans le
 
 . . .
 
-a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec l’abondance annuelle?
+a)  Est-ce que la proportion de jeunes de l’année (indice de succès reproducteur) est corrélée avec les irruptions ?
 
 . . .
 
-b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
+b)  Est-ce que la condition corporelle est corrélée à l'irruption ?
 
 . . .
 
@@ -1156,7 +1152,7 @@ b)  Est-ce que la condition corporelle est corrélée à l'abondance annuelle ?
 
 ::: {.callout-tip title ="Irruption"}
 
-Une irruption d'oiseaux est un mouvement migratoire irrégulier et massif d'espèces (souvent boréales) vers des régions plus méridionales. L'irruption est imprévisible.
+Les irruptions d'oiseaux sont définies par le mouvement semi-périodique (migration facultative) d'un grand nombre d'individus en dehors de leur aire de résidence habituelle. Ces mouvements à grande échelle sont moins prévisibles que les migrations saisonnières et s'apparentent au déplacement d'individus en fonction de conditions environnementales favorables ou défavorables (Widick et al., 2023).
 
 ![Source: Alexi Hobbs](irruption.webp){height="280px"}
 
@@ -1435,36 +1431,22 @@ plot_grid(
 
 <br>
 
-$log(\mu_{abondance_i}) = \alpha_{annee} + X_i\beta_{irruption}$
+$S_i \sim Binomiale(p_i, n_i)$
 
 <br>
 
-$\beta_{irruption} \sim N(0, 0.1)$
+$p_i \sim Bêta(\mu_i * \theta, (1 - \mu_i) * \theta)$
 
 <br>
 
-$\sigma_{irruption} \sim unif(0, 100)$
-
-<br>
-
-$\alpha_{{annee}} \sim N(\sigma_{annee}, \tau_{annee})$
-
-<br>
-
-$\sigma_{annee} \sim unif(0, 0.1)$
-
-<br>
-
-$\tau_{annee} = \frac{1} {\sigma^2_{annee}}$
-
-<br>
+$logit(\mu_{_i}) = \alpha_{annee} + \beta_{irru}*irru{_i}$
 
 ## [Préparation du modèle JAGS]{style="color: yellow;"}
 
 ```{r}
 #| echo: true
 #| eval: true
-#| code-line-numbers: "|9|15-17|21|23-24|34|38|42|57-64|68-72|79|80|81|82|86"
+#| code-line-numbers: "|3-13|15-17|19-28|30-44|54-55|57-64|68-71|74|76-83|86"
 
 library(jagsUI)
 
@@ -1487,6 +1469,8 @@ mod_HY_DUSA <- "
 # prior probabilité beta
 
  beta.irru ~ dnorm(0, 0.1)
+ 
+ ##prior for residual variance
  
  sigma ~ dunif(0,100)
  tau <- 1/(sigma * sigma)
@@ -1943,6 +1927,11 @@ Qu'est-ce qui explique les irruptions des différentes espèces de fringillidés
 ## [Merci]{style="color: yellow;"}
 
 ![](Merci.png)
+
+##
+
+##
+
 
 
 
