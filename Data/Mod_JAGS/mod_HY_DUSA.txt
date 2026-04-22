@@ -18,8 +18,8 @@
 
  beta.irru ~ dnorm(0, 0.1)
  
- sigma ~ dunif(0,100)
- tau <- 1/(sigma * sigma)
+# sigma ~ dunif(0,100)
+ #tau <- 1/(sigma * sigma)
  
 # theta
 

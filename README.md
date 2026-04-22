@@ -202,6 +202,9 @@ $\sigma_{annee} \sim unif(0, 0.1)$
 
 $\tau_{annee} = \frac{1} {\sigma^2_{annee}}$
 
+$S_i \sim bin(p_i, n_i)$
+
+$p_i \sim bêta(\mu_i * \theta, (1 - \mu_i) * \theta)$
 
 
 
