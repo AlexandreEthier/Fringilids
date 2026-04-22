@@ -895,7 +895,7 @@ boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
         main= "Condition du tarin des pins selon les années irruptives", 
         names = c("Non irruption", "Irruption"))
 
-
+## test de comparaison de la moyenne
 shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "0"])
 shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "1"])
 wilcox.test(condition ~ DUSA_IRR, data = DUSA_bague)
