@@ -862,6 +862,89 @@ plot(density(TAPI_out_jags$sims.list$theta),
      main = "Postérieur de Theta")
 
 
+
+# Condition ---------------------------------------------------------------
+
+load("DUSA_bague.csv")
+load("JABO_bague.csv")
+load("SIFL_bague.csv")
+load("TAPI_bague.csv")
+
+par(mfrow= c(2,2))
+
+boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
+        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], ylab= "Condition", 
+        main= "Condition du durbec des sapins selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
+        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], ylab= "Condition", 
+        main= "Condition du jaseur boréal selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
+        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"], ylab= "Condition", 
+        main= "Condition du sizerin flammé selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
+        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"], ylab= "Condition", 
+        main= "Condition du tarin des pins selon les années irruptives", 
+        names = c("Non irruption", "Irruption"))
+
+
+shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "0"])
+shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "1"])
+wilcox.test(condition ~ DUSA_IRR, data = DUSA_bague)
+DUSA_cond_irr<-tapply(DUSA_bague$condition, DUSA_bague$DUSA_IRR, summary)
+DUSA_cond_irr
+
+shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "0"])
+shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "1"])
+wilcox.test(condition ~ JABO_IRR, data = JABO_bague)
+JABO_cond_irr<-tapply(JABO_bague$condition, JABO_bague$JABO_IRR, summary)
+JABO_cond_irr
+
+shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "0"])
+shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "1"])
+wilcox.test(condition ~ SIFL_IRR, data = SIFL_bague)
+SIFL_cond_irr<-tapply(SIFL_bague$condition, SIFL_bague$SIFL_IRR, summary)
+SIFL_cond_irr
+
+shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "0"])
+shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "1"])
+wilcox.test(condition ~ TAPI_IRR, data = TAPI_bague)
+TAPI_cond_irr<-tapply(TAPI_bague$condition, TAPI_bague$TAPI_IRR, summary)
+TAPI_cond_irr
+
+
+DUSA_tableau_cond <- do.call(rbind, DUSA_cond_irr)
+JABO_tableau_cond <- do.call(rbind, JABO_cond_irr)
+SIFL_tableau_cond <- do.call(rbind, SIFL_cond_irr)
+TAPI_tableau_cond <- do.call(rbind, TAPI_cond_irr)
+
+tableau_cond <- rbind(DUSA_tableau_cond, JABO_tableau_cond, SIFL_tableau_cond, TAPI_tableau_cond)
+colnames(tableau_cond)<- c("Min", "1st Qu", "Median", "Mean", "3rd Qu", "Max", "NA")
+rownames(tableau_cond)<- c("DUSA non irruption", "DUSA irruption", 
+                           "JABO non irruption", "JABO irruption", 
+                           "SIFL non irruption", "SIFL irruption", 
+                           "TAPI non irruption", "TAPI irruption")
+tableau_cond <- tableau_cond[,c(1,3,4)]
+tableau_cond_irr<- tableau_cond[c(2,4,6,8), ]
+tableau_cond_nirr <- tableau_cond[c(1,3,5,7),]
+tableau <- cbind(tableau_cond_nirr[,1], tableau_cond_irr[,1],
+                 tableau_cond_nirr[,2], tableau_cond_irr[,2],
+                 tableau_cond_nirr[,3], tableau_cond_irr[,3])
+colnames(tableau) <- c("1st Qu non irruption", "1st Qu irruption", 
+                       "mean non irruption", "mean irruption", 
+                       "3rd Qu non irruption", "3rd Qu irruption")
+rownames(tableau)<- c("DUSA", "JABO", "SIFL", "TAPI")
+tableau
+
+
 ## Randomisation
 ## DUSA
 ##number of iterations
@@ -997,84 +1080,3 @@ hist(output_TAPI, main = "Histogramme de fréquence de différence de moyennes d
      xlab = "Différences des moyennes de condition selon l'irruption", xlim = c(-0.05, 0.05))
 abline(v = TAPI_diff, col= "red", lty =2)
 
-
-# Condition ---------------------------------------------------------------
-
-load("DUSA_bague.csv")
-load("JABO_bague.csv")
-load("SIFL_bague.csv")
-load("TAPI_bague.csv")
-
-par(mfrow= c(2,2))
-
-boxplot(DUSA_bague$condition[DUSA_bague$DUSA_IRR=="0"],
-        DUSA_bague$condition[DUSA_bague$DUSA_IRR=="1"], ylab= "Condition", 
-        main= "Condition du durbec des sapins selon les années irruptives", 
-        names = c("Non irruption", "Irruption"))
-
-
-boxplot(JABO_bague$condition[JABO_bague$JABO_IRR=="0"],
-        JABO_bague$condition[JABO_bague$JABO_IRR=="1"], ylab= "Condition", 
-        main= "Condition du jaseur boréal selon les années irruptives", 
-        names = c("Non irruption", "Irruption"))
-
-
-boxplot(SIFL_bague$condition[SIFL_bague$SIFL_IRR=="0"],
-        SIFL_bague$condition[SIFL_bague$SIFL_IRR=="1"], ylab= "Condition", 
-        main= "Condition du sizerin flammé selon les années irruptives", 
-        names = c("Non irruption", "Irruption"))
-
-
-boxplot(TAPI_bague$condition[TAPI_bague$TAPI_IRR=="0"],
-        TAPI_bague$condition[TAPI_bague$TAPI_IRR=="1"], ylab= "Condition", 
-        main= "Condition du tarin des pins selon les années irruptives", 
-        names = c("Non irruption", "Irruption"))
-
-
-shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "0"])
-shapiro.test(DUSA_bague$condition[DUSA_bague$DUSA_IRR == "1"])
-wilcox.test(condition ~ DUSA_IRR, data = DUSA_bague)
-DUSA_cond_irr<-tapply(DUSA_bague$condition, DUSA_bague$DUSA_IRR, summary)
-DUSA_cond_irr
-
-shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "0"])
-shapiro.test(JABO_bague$condition[JABO_bague$JABO_IRR == "1"])
-wilcox.test(condition ~ JABO_IRR, data = JABO_bague)
-JABO_cond_irr<-tapply(JABO_bague$condition, JABO_bague$JABO_IRR, summary)
-JABO_cond_irr
-
-shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "0"])
-shapiro.test(SIFL_bague$condition[SIFL_bague$SIFL_IRR == "1"])
-wilcox.test(condition ~ SIFL_IRR, data = SIFL_bague)
-SIFL_cond_irr<-tapply(SIFL_bague$condition, SIFL_bague$SIFL_IRR, summary)
-SIFL_cond_irr
-
-shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "0"])
-shapiro.test(TAPI_bague$condition[TAPI_bague$TAPI_IRR == "1"])
-wilcox.test(condition ~ TAPI_IRR, data = TAPI_bague)
-TAPI_cond_irr<-tapply(TAPI_bague$condition, TAPI_bague$TAPI_IRR, summary)
-TAPI_cond_irr
-
-
-DUSA_tableau_cond <- do.call(rbind, DUSA_cond_irr)
-JABO_tableau_cond <- do.call(rbind, JABO_cond_irr)
-SIFL_tableau_cond <- do.call(rbind, SIFL_cond_irr)
-TAPI_tableau_cond <- do.call(rbind, TAPI_cond_irr)
-
-tableau_cond <- rbind(DUSA_tableau_cond, JABO_tableau_cond, SIFL_tableau_cond, TAPI_tableau_cond)
-colnames(tableau_cond)<- c("Min", "1st Qu", "Median", "Mean", "3rd Qu", "Max", "NA")
-rownames(tableau_cond)<- c("DUSA non irruption", "DUSA irruption", 
-                           "JABO non irruption", "JABO irruption", 
-                           "SIFL non irruption", "SIFL irruption", 
-                           "TAPI non irruption", "TAPI irruption")
-tableau_cond <- tableau_cond[,c(1,3,4)]
-tableau_cond_irr<- tableau_cond[c(2,4,6,8), ]
-tableau_cond_nirr <- tableau_cond[c(1,3,5,7),]
-tableau <- cbind(tableau_cond_nirr[,1], tableau_cond_irr[,1],
-                 tableau_cond_nirr[,2], tableau_cond_irr[,2],
-                 tableau_cond_nirr[,3], tableau_cond_irr[,3])
-colnames(tableau) <- c("1st Qu non irruption", "1st Qu irruption", 
-                       "mean non irruption", "mean irruption", 
-                       "3rd Qu non irruption", "3rd Qu irruption")
-rownames(tableau)<- c("DUSA", "JABO", "SIFL", "TAPI")
-tableau
